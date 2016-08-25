@@ -1,7 +1,7 @@
 # Table of Contents #
-- [A Relational Model of Data for Large Shared Data Banks (1970)](#a-relational-model-of-data-for-large-shared-data-banks)
-- [The Unix Time-Sharing System (1974)](#the-unix-time-sharing-system)
-- [A History and Evaluation of System R (1981)](#a-history-and-evaluation-of-system-r)
+- [A Relational Model of Data for Large Shared Data Banks (1970)](#a-relational-model-of-data-for-large-shared-data-banks-1970)
+- [The Unix Time-Sharing System (1974)](#the-unix-time-sharing-system-1974)
+- [A History and Evaluation of System R (1981)](#a-history-and-evaluation-of-system-r-1981)
 
 ## [A Relational Model of Data for Large Shared Data Banks (1970)](A_Relational_Model_of_Data_for_Large_Shared_Data_Banks.pdf) ##
 **Summary.**
