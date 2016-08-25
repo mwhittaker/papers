@@ -20,6 +20,7 @@ relations). He then describes basic relational operators, data redundancy, and
 methods to check for database consistency.
 
 **Commentary.**
+
 1. Codd's advocacy for data independence and a declarative query language have
    stood the test of time. I particularly enjoy one excerpt from the paper
    where Codd says, "The universality of the data sublanguage lies in its
