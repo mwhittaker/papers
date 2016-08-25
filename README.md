@@ -1,6 +1,6 @@
 # Table of Contents #
-- [The Unix Time-Sharing System (1974)]()
-- [A History and Evaluation of System R (1981)]()
+- [The Unix Time-Sharing System (1974)](the-unix-time-sharing-system)
+- [A History and Evaluation of System R (1981)](a-history-and-evaluation-of-system-r)
 
 
 ## [The Unix Time-Sharing System](The_Unix_Time-Sharing_System.pdf)  ##
