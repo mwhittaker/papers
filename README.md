@@ -2,7 +2,7 @@
 - [A Relational Model of Data for Large Shared Data Banks (1970)](#a-relational-model-of-data-for-large-shared-data-banks-1970)
 - [The Unix Time-Sharing System (1974)](#the-unix-time-sharing-system-1974)
 - [A History and Evaluation of System R (1981)](#a-history-and-evaluation-of-system-r-1981)
-- [Inferring Internet Denial-of-Service Activity (2006)](#inferring-internet-denial-of-service-activity-2006)
+- [Inferring Internet Denial-of-Service Activity (2001)](#inferring-internet-denial-of-service-activity-2001)
 
 ## [A Relational Model of Data for Large Shared Data Banks (1970)](A_Relational_Model_of_Data_for_Large_Shared_Data_Banks.pdf) ##
 **Summary.**
@@ -86,7 +86,7 @@ number of system design principles that System R and Unix---as presented in
    hand-optimized ones. This is an example of another systems principle of
    favoring higher-level declarative APIs which leave room for optimization.
 
-## [Inferring Internet Denial-of-Service Activity (2006)](Inferring_Internet_Denial-of-Service_Activity.pdf) ##
+## [Inferring Internet Denial-of-Service Activity (2001)](Inferring_Internet_Denial-of-Service_Activity.pdf) ##
 **Summary.**
 This paper uses *backscatter analysis* to quantitatively analyze
 denial-of-service attacks on the Internet. Most flooding denial-of-service
