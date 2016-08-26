@@ -2,6 +2,7 @@
 - [A Relational Model of Data for Large Shared Data Banks (1970)](#a-relational-model-of-data-for-large-shared-data-banks-1970)
 - [The Unix Time-Sharing System (1974)](#the-unix-time-sharing-system-1974)
 - [A History and Evaluation of System R (1981)](#a-history-and-evaluation-of-system-r-1981)
+- [Inferring Internet Denial-of-Service Activity (2006)](#inferring-internet-denial-of-service-activity-2006)
 
 ## [A Relational Model of Data for Large Shared Data Banks (1970)](A_Relational_Model_of_Data_for_Large_Shared_Data_Banks.pdf) ##
 **Summary.**
@@ -84,3 +85,29 @@ number of system design principles that System R and Unix---as presented in
    than hand-written assembly and optimized queries are likely faster than
    hand-optimized ones. This is an example of another systems principle of
    favoring higher-level declarative APIs which leave room for optimization.
+
+## [Inferring Internet Denial-of-Service Activity (2006)](Inferring_Internet_Denial-of-Service_Activity.pdf) ##
+**Summary.**
+This paper uses *backscatter analysis* to quantitatively analyze
+denial-of-service attacks on the Internet. Most flooding denial-of-service
+attacks involve IP spoofing, where each packet in an attack is given a faux IP
+address drawn uniformly at random from the space of all IP addresses. If the
+packet elicits the victim to issue a reply packet, then victims of
+denial-of-service attacks end up sending unsolicited messages to servers
+uniformly at random. By monitoring this *backscatter* at enough hosts, one can
+infer the number, intensity, and type of denial-of-service attacks.
+
+There are of course a number of assumptions upon which backscatter depends.
+
+1. *Address uniformity*. It is assumed that DOS attackers spoof IP addresses
+   uniformally at random.
+2. *Reliable delivery*. It is assumed that packets, as part of the attack and
+   response, are delivered reliably.
+3. *Backscatter hypothesis*. It is assumed that unsolicited packets arriving at
+   a host are actually part of backscatter.
+
+The paper performs a backscatter analysis on 1/256 of the IPv4 address space.
+They cluster the backscatter data using a *flow-based classification* to
+measure individual attacks and using an *event-based classification* to measure
+the intensity of attacks. The findings of the analysis are best summarized by
+the paper.
