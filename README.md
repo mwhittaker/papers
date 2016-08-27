@@ -3,7 +3,7 @@
 - [The Unix Time-Sharing System (1974)](#the-unix-time-sharing-system-1974)
 - [A History and Evaluation of System R (1981)](#a-history-and-evaluation-of-system-r-1981)
 - [Inferring Internet Denial-of-Service Activity (2001)](#inferring-internet-denial-of-service-activity-2001)
-- [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud](#boom-analytics:-exploring-data-centric,-declarative-programming-for-the-cloud)
+- [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud](#boom-analytics-exploring-data-centric-declarative-programming-for-the-cloud)
 
 ## [A Relational Model of Data for Large Shared Data Banks (1970)](A_Relational_Model_of_Data_for_Large_Shared_Data_Banks.pdf) ##
 **Summary.**
