@@ -4,6 +4,7 @@
 - [A History and Evaluation of System R (1981)](#a-history-and-evaluation-of-system-r-1981)
 - [Inferring Internet Denial-of-Service Activity (2001)](#inferring-internet-denial-of-service-activity-2001)
 - [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](#boom-analytics-exploring-data-centric-declarative-programming-for-the-cloud-2010)
+- [Logic and Lattices for Distributed Programming (2012)](#logic-and-lattices-for-distributed-programming-2012)
 
 ## [A Relational Model of Data for Large Shared Data Banks (1970)](A_Relational_Model_of_Data_for_Large_Shared_Data_Banks.pdf) ##
 **Summary.**
@@ -143,3 +144,36 @@ Zaharia's LATE policy.
 BOOM Analytics was implemented in order of magnitude fewer lines of code thanks
 to the data-centric approach and the declarative programming language. The
 implementation is also almost as fast as the systems they copy.
+
+## [Logic and Lattices for Distributed Programming (2012)](Logic_and_Lattices_for_Distributed_Programming.pdf) ##
+**Summary.**
+CRDTs provide eventual consistency without the need for coordination. However,
+they suffer a *scope problem*: simple CRDTs are easy to reason about and use,
+but more complicated CRDTs force programmers to ensure they satisfy semilattice
+properties. They also lack composability. Consider, for example, a Students set
+and a Teams set. (Alice, Bob) can be added to Teams while concurrently Bob is
+removed from Students. Each individual set may be a CRDT, but there is no
+mechanism to enforce consistency between the CRDTs.
+
+Bloom and CALM, on the other hand, allow for mechanized program analysis to
+guarantee that a program can avoid coordination. However, Bloom suffers from a
+*type problem*: it only operates on sets which procludes the use of other
+useful structures such as integers.
+
+This paper merges CRDTs and Bloom together by introducing *bounded join
+semilattices* into Bloom to form a new language: Bloom^L. Bloom^L operates over
+semilattices, applying semilattice methods. These methods can be designated as
+non-monotonic, monotonic, or homomorphic (which implies monotonic). So long as
+the program avoids non-monotonic methods, it can be realized without
+coordination. Moreover, morphisms can be implemented more efficiently than
+non-homomorphic monotonic methods. Bloom^L comes built in with a family of
+useful semilattices like booleans ordered by implication, integers ordered by
+less than and greater than, sets, and maps. Users can also define their own
+semilattices, and Bloom^L allows smooth interoperability between Bloom
+collections and Bloom^L lattices. Bloom^L's semi-naive implementation is
+comparable to Bloom's semi-naive implementation.
+
+The paper also presents two case-studies. First, they implement a key-value
+store as a map from keys to values annotated with vector clocks: a design
+inspired from Dynamo. They also implement a purely monotonic shopping cart
+using custom lattices.
