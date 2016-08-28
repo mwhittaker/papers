@@ -6,6 +6,7 @@
 - [Inferring Internet Denial-of-Service Activity (2001)](#inferring-internet-denial-of-service-activity-2001)
 - [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](#boom-analytics-exploring-data-centric-declarative-programming-for-the-cloud-2010)
 - [Logic and Lattices for Distributed Programming (2012)](#logic-and-lattices-for-distributed-programming-2012)
+- [Highly Available Transactions: Virtues and Limitations (2014)](#highly-available-transactions-virtues-and-limitations-2014)
 
 ## [A Relational Model of Data for Large Shared Data Banks (1970)](A_Relational_Model_of_Data_for_Large_Shared_Data_Banks.pdf) ##
 **Summary.**
@@ -231,3 +232,27 @@ The paper also presents two case-studies. First, they implement a key-value
 store as a map from keys to values annotated with vector clocks: a design
 inspired from Dynamo. They also implement a purely monotonic shopping cart
 using custom lattices.
+
+## [Highly Available Transactions: Virtues and Limitations (2014)](HAT_virtues_and_limitations.pdf) ##
+**Summary.**
+Serializability is the gold standard of consistency, but databases have always
+provided weaker consistency modes (e.g. Read Committed, Repeatable Read) that
+promise improved performance. In this paper, Bailis et al. determine which of
+these weaker consistency models can be implemented with high availability.
+
+First, why is high availability important?
+
+1. *Partitions.* Partitions happen, and when they do non-available systems
+   become, well, unavailable.
+2. *Latency.* Partitions may be transient, but latency is forever. Highly
+   available systems can avoid latency by eschewing coordination costs.
+
+Second, are weaker consistency models consistent enough? In short, yeah
+probably. In a survey of databases, Bailis finds that many do not employ
+serializability by default and some do not even provide full serializability.
+Bailis also finds that four of the five transactions in the TPC-C benchmark can
+be implemented with highly available transactions.
+
+After defining availability, Bailis presents the taxonomy of which consistency
+can be implemented as HATs, and also argues why some fundamentally cannot. He
+also performs benchmarks on AWS to show the performance benefits of HAT.
