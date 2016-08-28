@@ -2,8 +2,10 @@
 - [A Relational Model of Data for Large Shared Data Banks (1970)](#a-relational-model-of-data-for-large-shared-data-banks-1970)
 - [The Unix Time-Sharing System (1974)](#the-unix-time-sharing-system-1974)
 - [A History and Evaluation of System R (1981)](#a-history-and-evaluation-of-system-r-1981)
+- [A Fast File System for UNIX (1984)](#a-fast-file-system-for-unix-1984)
 - [Generalized Isolation Level Definitions (2000)](#generalized-isolation-level-definitions-2000)
 - [Inferring Internet Denial-of-Service Activity (2001)](#inferring-internet-denial-of-service-activity-2001)
+- [Analysis and Evolution of Journaling File Systems (2005)](#analysis-and-evolution-of-journaling-file-systems-2005)
 - [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](#boom-analytics-exploring-data-centric-declarative-programming-for-the-cloud-2010)
 - [Logic and Lattices for Distributed Programming (2012)](#logic-and-lattices-for-distributed-programming-2012)
 - [Highly Available Transactions: Virtues and Limitations (2014)](#highly-available-transactions-virtues-and-limitations-2014)
@@ -90,6 +92,53 @@ number of system design principles that System R and Unix---as presented in
    hand-optimized ones. This is an example of another systems principle of
    favoring higher-level declarative APIs which leave room for optimization.
 
+## [A Fast File System for UNIX (1984)](Unix_FFS.pdf) ##
+**Summary.**
+The *Fast Filesystem* (FFS) improved the read and write throughput of the
+original Unix file system by 10x by
+
+1. increasing the block size,
+2. dividing blocks into fragments, and
+3. performing smarter allocation.
+
+The original Unix file system, dubbed "the old file system", divided disk
+drives into partitions and loaded a file system on to each partition. The
+filesystem included a superblock containing metadata, a linked list of free
+data blocks known as the *free list*, and an *inode* for every file. Notably,
+the file system was composed of **512 byte** blocks; no more than 512 bytes
+could be transfered from the disk at once. Moreover, the file system had poor
+data locality. Files were often sprayed across the disk requiring lots of
+random disk accesses.
+
+The "new file system" improved performance by increasing the block size to any
+power of two at least as big as **4096 bytes**. In order to handle small files
+efficiently and avoid high internal fragmentation and wasted space, blocks were
+further divided into *fragments* at least as large as the disk sector size.
+
+          +------------+------------+------------+------------+
+    block | fragment 1 | fragment 2 | fragment 3 | fragment 4 |
+          +------------+------------+------------+------------+
+
+Files would occupy as many complete blocks as possible before populating at
+most one fragmented block.
+
+Data was also divided into *cylinder groups* where each cylinder group included
+a copy of the superblock, a list of inodes, a bitmap of available blocks (as
+opposed to a free list), some usage statistics, and finally data blocks. The
+file system took advantage of hardware specific information to place data at
+rotational offsets specific to the hardware so that files could be read with as
+little delay as possible. Care was also taken to allocate files contiguously,
+similar files in the same cylinder group, and all the inodes in a directory
+together.
+
+In addition to performance improvements, FFS also introduced
+
+1. longer filenames,
+2. advisory file locks,
+3. soft links,
+4. atomic file renaming, and
+5. disk quota enforcement.
+
 ## [Generalized Isolation Level Definitions (2000)](generalized_isolation_levels.pdf) ##
 **Summary.**
 In addition to serializability, ANSI SQL-92 defined a set of weaker isolation
@@ -168,6 +217,10 @@ They cluster the backscatter data using a *flow-based classification* to
 measure individual attacks and using an *event-based classification* to measure
 the intensity of attacks. The findings of the analysis are best summarized by
 the paper.
+
+## [Analysis and Evolution of Journaling File Systems (2005)](journaling_filesystems.pdf) ##
+**Summary.**
+
 
 ## [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](BOOM_Analytics.pdf) ##
 **Summary.**
