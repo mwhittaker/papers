@@ -9,6 +9,7 @@
 - [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](#boom-analytics-exploring-data-centric-declarative-programming-for-the-cloud-2010)
 - [Consistency Analysis in Bloom: a CALM and Collected Approach (2011)](#consistency-analysis-in-bloom-a-calm-and-collected-approach-2011)
 - [Logic and Lattices for Distributed Programming (2012)](#logic-and-lattices-for-distributed-programming-2012)
+- [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)](#resilient-distributed-datasets-a-fault-tolerant-abstraction-for-in-memory-cluster-computing-2012)
 - [Highly Available Transactions: Virtues and Limitations (2014)](#highly-available-transactions-virtues-and-limitations-2014)
 
 ## [A Relational Model of Data for Large Shared Data Banks (1970)](A_Relational_Model_of_Data_for_Large_Shared_Data_Banks.pdf) ##
@@ -321,6 +322,37 @@ The paper also presents two case-studies. First, they implement a key-value
 store as a map from keys to values annotated with vector clocks: a design
 inspired from Dynamo. They also implement a purely monotonic shopping cart
 using custom lattices.
+
+## [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)](nsdi_spark.pdf) ##
+**Summary.**
+Frameworks like MapReduce made processing large amounts of data easier, but
+they did not leverage distributed memory. If a MapReduce was run iteratively,
+it would write all of its intermediate state to disk: something that was
+prohibitively slow. This limitation made batch processing systems like
+MapReduce ill-suited to *iterative* (e.g. k-means clustering) and *interactive*
+(e.g. ad-hoc queries) workflows. Other systems like Pregel did take advantage
+of distributed memory and reused the in-memory data across computations, but
+the systems were not general-purpose.
+
+*Spark* uses *Resilient Distributed Datasets* (RDDs) to perform general
+computations in memory. RDDs are immutable partitioned collections of records.
+Unlike pure distributed shared memory abstractions which allow for arbitrary
+fine-grained writes, RDDs can only be constructed using coarse-grained
+transformations from on-disk data or other RDDs. This weaker abstraction can be
+implemented efficiently. Spark also uses RDD lineage to implement low-overhead
+fault tolerance. Rather than persist intermediate datasets, the lineage of an
+RDD can be persisted and efficiently recomputed. RDDs could also be
+checkpointed to avoid the recomputation of a long lineage graph.
+
+Spark has a Scala-integrated API and comes with a modified interactive
+interpreter. It also includes a large number of useful *transformations* (which
+construct RDDs) and *actions* (which derive data from RDDs). Users can also
+manually specify RDD persistence and partitioning to further improve
+performance.
+
+Spark subsumed a huge number of existing data processing frameworks like
+MapReduce and Pregel in a small amount of code. It was also much, much faster
+than everything else on a large number of applications.
 
 ## [Highly Available Transactions: Virtues and Limitations (2014)](HAT_virtues_and_limitations.pdf) ##
 **Summary.**
