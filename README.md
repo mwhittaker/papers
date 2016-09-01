@@ -13,7 +13,7 @@
 - [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)](#resilient-distributed-datasets-a-fault-tolerant-abstraction-for-in-memory-cluster-computing-2012)
 - [Highly Available Transactions: Virtues and Limitations (2014)](#highly-available-transactions-virtues-and-limitations-2014)
 - [Decibel: The Relational Dataset Branching System (2016)](#decibel-the-relational-dataset-branching-system-2016)
-- [Goods: Organizing Google's Datasets (2016)](#goods-organizing-google's-datasets-2016)
+- [Goods: Organizing Google's Datasets (2016)](#goods-organizing-googles-datasets-2016)
 
 ## [A Relational Model of Data for Large Shared Data Banks (1970)](A_Relational_Model_of_Data_for_Large_Shared_Data_Banks.pdf) ##
 **Summary.**
