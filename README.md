@@ -9,6 +9,7 @@
 - [Generalized Isolation Level Definitions (2000)](#generalized-isolation-level-definitions-2000)
 - [Inferring Internet Denial-of-Service Activity (2001)](#inferring-internet-denial-of-service-activity-2001)
 - [Analysis and Evolution of Journaling File Systems (2005)](#analysis-and-evolution-of-journaling-file-systems-2005)
+- [Architecture of a Database System (2007)](#architecture-of-a-database-system-2007)
 - [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](#boom-analytics-exploring-data-centric-declarative-programming-for-the-cloud-2010)
 - [Consistency Analysis in Bloom: a CALM and Collected Approach (2011)](#consistency-analysis-in-bloom-a-calm-and-collected-approach-2011)
 - [Logic and Lattices for Distributed Programming (2012)](#logic-and-lattices-for-distributed-programming-2012)
@@ -489,6 +490,94 @@ SPT was also used to analyze the effects of
 - Data journaling in which diffs are journaled instead of whole blocks.
 
 SBA and STP was also applied to ReiserFS, JFS, and NTFS.
+
+## [Architecture of a Database System (2007)](https://scholar.google.com/scholar?cluster=11466590537214723805&hl=en&as_sdt=0,5) ##
+**Chapter 1 -- Introduction.**
+Database textbooks often focus on data structures and algorithms in the context
+of a single database component. This paper, as opposed most database textbooks,
+focuses instead on *database architecture*: the design and best practices of
+modern databases that are otherwise undocumented or exist only as tribal
+knowledge.
+
+Modern relational database management systems (RDBMS) comprise five components,
+most of which are discussed in detail in this paper:
+
+1. The *client communications manager* is responsible for interfacing with
+   client connections.
+2. The *process manager* is responsible allocating workers to requests using
+   some combination of OS processes, OS threads, and user-level threads. It is
+   also responsible for *admission control*: the process by which request
+   processing is delayed until sufficient resources are available.
+3. The *relational query processor* is responsible for translating a SQL query
+   into an optimal query plan. It is also responsible for authorization.
+4. The *transactional storage manager* implements the data structures and
+   algorithms to store and read data from disk. It is also responsible for
+   managing concurrent transactions. It includes the buffer manager, the lock
+   manager, and the log manager.
+5. Finally, there are miscellaneous *shared components and utilities*.
+
+**Chapter 2 -- Process Models.**
+Database management systems have to handle multiple user requests concurrently.
+The process manager is responsible for mapping logical DBMS workers, which
+handle a DBMS client requests, to OS processes, OS threads, user-level threads,
+or some combination of the three. To simplify matters, this chapter discusses
+process models only for unikernels. There are three main process models:
+
+1. *Process per DBMS worker*. In this model, a new process is spawned for every
+   request. This method is easy to implement and provides a small amount of
+   isolation (e.g. a memory overflow in one process won't crash another
+   process). However, this model is complicated by shared in-memory data
+   structures such as the buffer pool and lock table. These are traditionally
+   shared through OS supported shared memory. Moreover, context switching
+   between processes is more expensive than context switching between threads.
+   IBM DB2, PostgreSQL, and Oracle use this process model.
+2. *Thread per DBMS worker*. In this model, a new thread (OS or user-level) is
+   spawned for every request. This model can handle more requests than the
+   previous model, and shared in-memory data structures (e.g. buffer pool, log
+   tail) can simply reside in the heap. However, it is less portable and harder
+   to implement and debug.  IBM DB2, Microsoft SQL Server, MySQL, Informix, and
+   Sybase use this process model.
+3. *Process pool*. In this model, requests are dispatched to a fixed number of
+   processes; a new process is not spawned for every request. This approach has
+   all the benefits of the process per DBMS worker approach but with much less
+   overhead.
+
+The process manager is also responsible for admission control: the process by
+which a request is not serviced until sufficient resources are available.
+Without admission control, a database can start thrashing; for example, imagine
+a situation in which the working set of the database is larger than the buffer
+pool, and all I/Os become cache misses. Admission control provides *graceful
+degradation*; throughput should not decrease, and latency should scale
+proportionally with the number of requests. Typically a two-tier admission
+control policy is used:
+
+- First, the client communication manager limits the number of concurrently
+  open connections.
+- Second, the execution admission controller runs after a query has been
+  planned and delays execution until there are enough resources available to
+  satisfy the query optimizer's estimated
+
+    - disk access and number of I/Os,
+    - CPU load, and
+    - memory footprint.
+
+The memory footprint is particularly important because it is most commonly the
+cause of thrashing.
+
+**Chapter 3 -- Parallel Architecture: Processes and Memory Coordination.**
+TODO
+
+**Chapter 4 -- Relational Query Processor.**
+TODO
+
+**Chapter 5 -- Storage Management.**
+TODO
+
+**Chapter 6 -- Transactions: Concurrency Control and Recovery.**
+TODO
+
+**Chapter 7 -- Shared Components.**
+TODO
 
 ## [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](BOOM_Analytics.pdf) ##
 **Summary.**
