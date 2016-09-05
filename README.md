@@ -10,6 +10,7 @@
 - [The HP AutoRAID hierarchical storage system (1996)](#the-hp-autoraid-hierarchical-storage-system-1996)
 - [T Spaces: The Next Wave (1999)](#t-spaces-the-next-wave-1999)
 - [Generalized Isolation Level Definitions (2000)](#generalized-isolation-level-definitions-2000)
+- [The Click Modular Router (2000)](#the-click-modular-router-2000)
 - [Inferring Internet Denial-of-Service Activity (2001)](#inferring-internet-denial-of-service-activity-2001)
 - [SEDA: An Architecture for Well-Conditioned, Scalable Internet Services (2001)](#seda-an-architecture-for-well-conditioned,-scalable-internet-services-2001)
 - [Analysis and Evolution of Journaling File Systems (2005)](#analysis-and-evolution-of-journaling-file-systems-2005)
@@ -703,6 +704,62 @@ Similarly, the G1 phenomenon says that either
 
 The PL-2 isolation level precludes G1 (and therefore G0) and corresponds
 roughly to the READ-COMMITTED isolation level.
+
+## [The Click Modular Router (2000)](https://goo.gl/t1AlsN) ##
+**Summary.**
+Routers are more than routers. They are also firewalls, load balancers, address
+translators, etc. Unfortunately, implementing these additional router
+responsibilities is onerous; most routers are closed platforms with inflexible
+designs. The Click router architecture, on the other hand, permits the creation
+of highly modular and flexible routers with reasonable performance. Click is
+implemented in C++ and compiles router specifications to routers which run on
+general purpose machines.
+
+Much like how Unix embraces modularity by composing simple *programs* using
+*pipes*, the Click architecture organizes a network of *elements* connected by
+*connections*. Each element represents an atomic unit of computation (e.g.
+counting packets) and is implemented as a C++ object that points to the other
+elements to which it is connected. Each element has input and output ports, can
+be provided arguments as configuration strings, and can expose arbitrary
+methods to other elements and to users.
+
+Connections and ports are either *push-based* or *pull-based*. The source
+element of a push connection pushes data to the destination element. For
+example, when a network device receives a packet, it pushes it to other
+elements. Dually, the destination element of a pull connection can request to
+pull data from the source element or receive null if no such data is available.
+For example, when a network device is ready to be written to, it may pull data
+from other elements. Ports can be designated as pull, push, or agnostic. Pull
+ports must be matched with other pull ports, push ports must be matched with
+other push ports, and agnostic ports are labeled as pull or push ports during
+router initialization. *Queues* are packet storing elements with a push input
+port and pull output port; they form the interface between push and pull
+connections.
+
+Some elements can process packets with purely local information. Other elements
+require knowledge of other elements. For example, a packet dropping element
+placed before a queue might integrate the length of the queue in its packet
+dropping policy. As a compromise between purely local information and complete
+global information, Click provides *flow-based router context* to elements
+allowing them to answer queries such as "what queue would a packet reach if I
+sent it out of my second port?".
+
+Click routers are specified using a simple declarative configuration language.
+The language allows users to group elements into *compound elements* that
+behave as a single element.
+
+The Click kernel driver is a single kernel thread that processes elements on a
+task queue. When an element is processed, it may in turn push data to or pull
+data from other elements forcing them to be processed. To avoid interrupt and
+device management overheads, the driver uses polling. Every input and output
+device polls for data whenever it is run by the driver. Router configurations
+are loaded and element methods are called via the `/proc` file system. The
+driver also supports hot-swapping in new router configurations which take over
+the state of the previous router.
+
+The authors implement a fully compliant IP router using Click and explore
+various extensions to it including scheduling and dropping packets. The
+performance of the IP router is measured and analyzed.
 
 ## [Inferring Internet Denial-of-Service Activity (2001)](Inferring_Internet_Denial-of-Service_Activity.pdf) ##
 **Summary.**
