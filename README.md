@@ -756,7 +756,68 @@ The memory footprint is particularly important because it is most commonly the
 cause of thrashing.
 
 **Chapter 3 -- Parallel Architecture: Processes and Memory Coordination.**
-TODO
+Parallel hardware is ubiquitous. This chapter builds off the previous and
+explores process models for database systems with multiple cores and multiple
+machines.
+
+1. *Shared Memory.* In a shared memory model, all processors can access shared
+   RAM and disk with roughly the same performance. All three of the process
+   models presented in the last chapter (i.e. process-per-worker,
+   thread-per-worker, and process-pool/thread-pool) work well in a shared
+   memory model. The OS transparently schedules processes and threads across
+   the processors taking advantage of the parallel hardware without much
+   effort. It is much more difficult to modify the query evaluator to take
+   advantage of the multiple processors. Also, systems employing user-level
+   threading must implement thread migration to take full advantage of multiple
+   cores.
+2. *Shared-Nothing.* A shared-nothing system is a networked cluster of
+   independent machines that share, well, nothing. In a shared-nothing system,
+   all coordination and communication is left to the DBMS. Typically, tables
+   are *horizontally partitioned* between machines. That is, each machine is
+   assigned a subset of the tuples in each table using range partitioning, hash
+   partitioning, round-robin partitioning, or some sort of hybrid partitioning.
+   Each machine uses a shared memory model and receives queries, creates query
+   plans, and execute queries as usual. The big difference is that queries are
+   now evaluated on multiple machines at once, and the DBMS has to orchestrate
+   the exchange of control and data messages. The database also has to
+   implement very challenging distributed protocols like distributed deadlock
+   detection and two-phase commit. Worse, by virtue of being a distributed
+   system, shared-nothing architectures can experience *partial failure* which
+   can be handled in one of many ways.
+
+    1. Every machine can be stopped whenever any machine fails. This makes a
+       shared-nothing architecture as fault-tolerant as a shared-memory
+       architecture.
+    2. Some database systems, like Informix, simply skip over data hosted by a
+       failed machine. This has weak and unpredictable semantics.
+    3. Data can be replicated to tolerate failures. For example, a full
+       database backup could be maintained, or more sophisticated techniques
+       like [chained
+       declustering](https://scholar.google.com/scholar?cluster=10345968159835311656&hl=en&as_sdt=0,5)
+       could be employed.
+
+   Despite the complexities that arise from a shared-nothing architecture, they
+   achieve unparalleled scalability.
+3. *Shared Disk.* In a shared disk system, processors all have access to a
+   shared disk with roughly equal performance; they do not share RAM. Shared
+   disk systems are much less complicated than shared-nothing systems because
+   the failure of any machine does not lead to data unavailability. Still,
+   shared disk systems require explicit coordination for in-memory data sharing
+   including distributed lock managers, distributed buffer pools, etc.
+4. *NUMA.* NUMA systems provide a shared memory model over a cluster of
+   independent shared-nothing machines. NUMA clusters are dead, but the idea of
+   non-uniform memory access lives on in shared-memory multiprocessors. In
+   order to scale to a large number of cores, shared-memory NUMA processors
+   organize CPUs and memories into pods where intra-pod memory access is fast
+   but inter-pod memory access is slow. Databases may be able to ignore the
+   non-uniformity of a NUMA multiprocessor, or they can employ certain
+   optimizations:
+
+    - Memory should always be local to a processor.
+    - Tasks should be scheduled on the same processor it was previously run.
+
+Almost all databases support shared memory systems, and most support either
+shared-disk or shared-nothing architectures as well.
 
 **Chapter 4 -- Relational Query Processor.**
 TODO
