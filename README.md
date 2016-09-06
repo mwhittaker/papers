@@ -24,7 +24,7 @@
 - [Decibel: The Relational Dataset Branching System (2016)](#decibel-the-relational-dataset-branching-system-2016)
 - [Goods: Organizing Google's Datasets (2016)](#goods-organizing-googles-datasets-2016)
 
-## [A Relational Model of Data for Large Shared Data Banks (1970)](A_Relational_Model_of_Data_for_Large_Shared_Data_Banks.pdf) ##
+## [A Relational Model of Data for Large Shared Data Banks (1970)](TODO) ##
 **Summary.**
 In this paper, Ed Codd introduces the *relational data model*. Codd begins by
 motivating the importance of *data independence*: the independence of the way
@@ -53,7 +53,7 @@ methods to check for database consistency.
    *unifying interface* which is demonstrated in both the Unix and System R
    papers.
 
-## [The Unix Time-Sharing System (1974)](The_Unix_Time-Sharing_System.pdf)  ##
+## [The Unix Time-Sharing System (1974)](TODO) ##
 TODO(mwhittaker): Complete this paper.
 
 ## [Experience with Processes and Monitors in Mesa (1980)](https://goo.gl/1TqQQM) ##
@@ -229,7 +229,7 @@ checks.
 Mesa was evaluated by Pilot (an OS), Violet (a distributed calendar), and
 Gateway (a router).
 
-## [A History and Evaluation of System R (1981)](A_History_and_Evaluation_of_System_R.pdf) ##
+## [A History and Evaluation of System R (1981)](TODO) ##
 **Summary.**
 System R, developed between 1974 and 1979, was one of the first relational
 database systems. It was implemented in three phases: phase 0, 1, and 2. Phase
@@ -279,7 +279,7 @@ number of system design principles that System R and Unix---as presented in
    hand-optimized ones. This is an example of another systems principle of
    favoring higher-level declarative APIs which leave room for optimization.
 
-## [A Fast File System for UNIX (1984)](Unix_FFS.pdf) ##
+## [A Fast File System for UNIX (1984)](TODO) ##
 **Summary.**
 The *Fast Filesystem* (FFS) improved the read and write throughput of the
 original Unix file system by 10x by
@@ -326,7 +326,7 @@ In addition to performance improvements, FFS also introduced
 4. atomic file renaming, and
 5. disk quota enforcement.
 
-## [End-to-End Arguments in System Design (1984)](end_to_end.pdf) ##
+## [End-to-End Arguments in System Design (1984)](TODO) ##
 **Summary.**
 This paper presents the *end-to-end argument*:
 
@@ -374,7 +374,7 @@ prohibitively expensive for the application alone to ensure reliable delivery.
 The network may be able to perform a small amount of work to help guarantee
 reliable delivery making the file transfer more efficient.
 
-## [The Design of the POSTGRES Storage System (1987)](postgres_storage.pdf) ##
+## [The Design of the POSTGRES Storage System (1987)](TODO) ##
 **Summary.**
 POSTGRES, the ancestor of PostgreSQL, employed a storage system with three
 interesting characteristics:
@@ -653,7 +653,7 @@ To evaluate the expressiveness and performance of T Spaces, the authors
 implement a collaborative web-crawling application, a web-search information
 delivery system, and a universal information appliance.
 
-## [Generalized Isolation Level Definitions (2000)](generalized_isolation_levels.pdf) ##
+## [Generalized Isolation Level Definitions (2000)](TODO) ##
 **Summary.**
 In addition to serializability, ANSI SQL-92 defined a set of weaker isolation
 levels that applications could use to improve performance at the cost of
@@ -835,7 +835,7 @@ rings.
 To handle node failures, nodes maintain `r` successors. When a successors node
 fails, lookup is routed to the next of the `r` successors.
 
-## [Inferring Internet Denial-of-Service Activity (2001)](Inferring_Internet_Denial-of-Service_Activity.pdf) ##
+## [Inferring Internet Denial-of-Service Activity (2001)](TODO) ##
 **Summary.**
 This paper uses *backscatter analysis* to quantitatively analyze
 denial-of-service attacks on the Internet. Most flooding denial-of-service
@@ -922,7 +922,7 @@ I/O using a dynamically resizable thread pool that issues synchronous calls; OS
 support for asynchronous file I/O was weak at the time. The authors evaluate
 Sandstorm by implementing and evaluating an HTTP server and Gnutella router.
 
-## [Analysis and Evolution of Journaling File Systems (2005)](journaling_filesystems.pdf) ##
+## [Analysis and Evolution of Journaling File Systems (2005)](TODO) ##
 **Summary.**
 The authors develop and apply two file system analysis techniques dubbed
 *Semantic Block-Level Analysis* (SBA) and *Semantice Trace Playback* (STP) to
@@ -1136,7 +1136,7 @@ TODO
 **Chapter 7 -- Shared Components.**
 TODO
 
-## [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](BOOM_Analytics.pdf) ##
+## [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](TODO) ##
 **Summary.**
 Programming distributed systems is hard. Really hard. This paper conjectures
 that *data-centric* programming done with *declarative programming languages*
@@ -1167,7 +1167,7 @@ BOOM Analytics was implemented in order of magnitude fewer lines of code thanks
 to the data-centric approach and the declarative programming language. The
 implementation is also almost as fast as the systems they copy.
 
-## [Consistency Analysis in Bloom: a CALM and Collected Approach (2011)](bloom_calm_and_collected.pdf) ##
+## [Consistency Analysis in Bloom: a CALM and Collected Approach (2011)](TODO) ##
 **Summary.**
 Strong consistency eases reasoning about distributed systems, but it requires
 coordination which entails higher latency and unavailability. Adopting weaker
@@ -1203,7 +1203,7 @@ The paper also implements a key-value store and shopping cart using Bloom and
 uses various visualization tools to guide the design of coordination-free
 implementations.
 
-## [Logic and Lattices for Distributed Programming (2012)](Logic_and_Lattices_for_Distributed_Programming.pdf) ##
+## [Logic and Lattices for Distributed Programming (2012)](TODO) ##
 **Summary.**
 CRDTs provide eventual consistency without the need for coordination. However,
 they suffer a *scope problem*: simple CRDTs are easy to reason about and use,
@@ -1236,7 +1236,7 @@ store as a map from keys to values annotated with vector clocks: a design
 inspired from Dynamo. They also implement a purely monotonic shopping cart
 using custom lattices.
 
-## [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)](nsdi_spark.pdf) ##
+## [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)](TODO) ##
 **Summary.**
 Frameworks like MapReduce made processing large amounts of data easier, but
 they did not leverage distributed memory. If a MapReduce was run iteratively,
@@ -1267,7 +1267,7 @@ Spark subsumed a huge number of existing data processing frameworks like
 MapReduce and Pregel in a small amount of code. It was also much, much faster
 than everything else on a large number of applications.
 
-## [Highly Available Transactions: Virtues and Limitations (2014)](HAT_virtues_and_limitations.pdf) ##
+## [Highly Available Transactions: Virtues and Limitations (2014)](TODO) ##
 **Summary.**
 Serializability is the gold standard of consistency, but databases have always
 provided weaker consistency modes (e.g. Read Committed, Repeatable Read) that
@@ -1291,7 +1291,7 @@ After defining availability, Bailis presents the taxonomy of which consistency
 can be implemented as HATs, and also argues why some fundamentally cannot. He
 also performs benchmarks on AWS to show the performance benefits of HAT.
 
-## [Decibel: The Relational Dataset Branching System (2016)](#decibel.pdf) ##
+## [Decibel: The Relational Dataset Branching System (2016)](TODO) ##
 **Summary.**
 *Decibel* is like git for relational data.
 
@@ -1377,7 +1377,7 @@ future research.
    git, even a modestly sized diff can become confusing. Would a non-trivial
    diff of a large dataset be incomprehensible?
 
-## [Goods: Organizing Google's Datasets (2016)](goods.pdf) ##
+## [Goods: Organizing Google's Datasets (2016)](TODO) ##
 **Summary.**
 In fear of fettering development and innovation, companies often allow
 engineers free reign to generate and analyze datasets at will. This often leads
