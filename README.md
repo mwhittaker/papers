@@ -1125,7 +1125,114 @@ Almost all databases support shared memory systems, and most support either
 shared-disk or shared-nothing architectures as well.
 
 **Chapter 4 -- Relational Query Processor.**
-TODO
+The *relational query processor* is responsible for converting a textual query
+into an optimized dataflow query plan that's ready to be executed.
+
+The first step in processing a query is that of *query parsing and
+authorization*. The query parser must check the syntactic well-formedness of a
+textual query, convert the text into an internal query representation, type
+check the query by resolving table and column references against information in
+the catalog, and perform any necessary authorization. Certain forms of
+authorization must be deferred to query execution. For example, a database may
+restrict a user's access to tuples from a table that satisfy a certain
+predicate. This *row-level security* depends on the values of the tuples and
+must be deferred to query execution. In fact, some authorization which *could*
+be performed during query parsing is deferred anyway.  For example, deferring
+authorization checks to execution time allows for queries to be cached and
+reused between multiple clients with varying privileges.
+
+Next, a query processor performs *query rewrites*: logical transformations that
+*simplify* and *normalize* a query without altering its semantics. Query
+rewrites include:
+
+- *View expansion.* View references in a query must be iteratively unwrapped
+  until the final query includes only base table references.
+- *Constant folding.* Expressions like `1 + R.a + 2 > 3` can be simplified to
+  `R.a > 0`.
+- *Logical predicate rewrites.* A query processor can sometimes deduce that a
+  collection of predicates is unsatisfiable (e.g. `R.a < 0 AND R.a > 10`).
+  Unsatisfiable predicates can be replaced with `FALSE` which enable further
+  simplifications and optimizations. In some distributed databases that
+  horizontally partition tables, predicates can be used to reduce the number of
+  servers that are contacted. For example, if a server is responsible for a
+  partition of a table `R` for all tuples where `0 < R.a < 100`, then it need
+  not be contacted for a query like `SELECT R.a FROM R WHERE R.a > 10000`.
+  Finally, certain *transitive predicates* can be deduced. For example, the
+  predicates `R.a = S.b AND S.b = 100` imply `R.a = 100`.
+- *Semantic optimization.* Using semantic information from the database catalog
+  can be used to further simplify queries. For example, consider an `Employee`
+  relation that has a foreign key into a `Department` relation. With this
+  information, the query
+
+        SELECT E.name
+        FROM Emp E, Department D
+        WHERE E.deptno = D.deptno
+
+  can be simplified to
+
+        SELECT E.name
+        FROM Emp E
+- *Subquery flattening.* Query optimizers are so complicated that they often
+  narrow their scope to operate only on SELECT-FROM-WHERE blocks. To enable as
+  many optimizations as possible, queries are often canonicalized and
+  subqueries are flattened when possible.
+
+Finally, a query is *optimized*. System R compiled queries into executable
+code. Later, System R developers regarded this as a mistake. Ingres compiled
+queries into interpretable dataflow diagrams. Later, Ingres developers somewhat
+ironically also regarded this as a mistake. Both compilation targets have their
+merits, but most modern databases have gone the way of Ingres to ensure
+portability. Typically, this involves optimizing individual SELECT-FROM-WHERE
+blocks into relational operator trees before stitching them all together.
+Optimizations involve:
+
+- *Plan space.* System R only considered left-deep query plans and deferred all
+  Cartesian products to the top of the plan. Modern databases sometimes
+  consider bushier trees with Cartesian products lower in the tree.
+- *Selectivity estimation.* System R's selectivity estimation was based solely
+  on relation and index cardinalities and is considered naive by today's
+  standards. Modern databases summarize data distributions using histograms and
+  other sketching data structures and use sampling to avoid expensive
+  statistics computations. Moreover, algorithms like histogram joining improve
+  selectivity estimation for joins.
+- *Search algorithms.* In addition to System R's dynamic programming bottom-up
+  approach, other databases have explored top-down approaches. Both have proven
+  successful.
+- *Parallelism.* In addition to inter-query parallelism, databases often
+  implement intra-query parallelism. In a *two-phase approach*, the best
+  single-node query plan is formed in one phase and then parallelized in a
+  second phase. In a *one-phase approach*, the optimizer takes cluster
+  information into account during optimization to try and find an optimal
+  distributed plan. It's questionable whether the performance benefits of a
+  two-phase plan warrant its complexity.
+- *Auto-tuning.* Some databases use query traces to automatically tune the
+  databases by, for example, suggesting new indexes to include.
+
+Query optimizers also have to deal with query caching and recompilation. Many
+databases allow for queries to be parsed, compiled, and stored ahead of time.
+These *prepared* queries can also include placeholders that are filled in at
+runtime. Prepared statements occasionally need to be re-optimized when, for
+example, an index is dropped. Certain databases avoid re-optimization to ensure
+predictability over performance; others aggressively re-optimize to ensure the
+best performance.  Prepared queries can improve the performance of an
+application, but preparing queries ahead of time can be burdensome.
+Consequently, databases also support query caching to reuse (parts of) queries
+without necessitating ahead-of-time preparation.
+
+Once a query is parsed, rewritten, and optimized into a dataflow plan, it must
+be executed. Typically, query plans are implemented as a tree of iterators with
+*exchange nodes* thrown in for parallelism. These iterators typically operate
+over *tuple references*: tuples of tuple pointers and column offsets. The
+actual tuple data is either stored in the buffer pool (BP-tuples) or copied
+from the buffer pool into the heap (M-tuples). Using BP-tuples avoids copies
+but is hard to implement correctly and may lead to a page being pinned in the
+buffer pool for prohibitively long. Using M-tuples can lead to unnecessary
+copies but is much simpler to implement.
+
+Data modification statements (e.g. INSERT, UPDATE, etc) are typically compiled
+into simple linear dataflow diagrams. However, care must be taken to avoid
+things like the *Halloween problem* in which updates invalidate the index
+iterators used to perform the updates.
 
 **Chapter 5 -- Storage Management.**
 TODO
