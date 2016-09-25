@@ -23,6 +23,7 @@
 1. [Conflict-free Replicated Data Types (2011)](#conflict-free-replicated-data-types-2011)
 1. [Consistency Analysis in Bloom: a CALM and Collected Approach (2011)](#consistency-analysis-in-bloom-a-calm-and-collected-approach-2011)
 1. [Dedalus: Datalog in Time and Space (2011)](#dedalus-datalog-in-time-and-space-2011)
+1. [Mesos: A Platform for Fine-Grained Resource Sharing in the Data Center (2011)](#mesos-a-platform-for-fine-grained-resource-sharing-in-the-data-center-2011)
 1. [Logic and Lattices for Distributed Programming (2012)](#logic-and-lattices-for-distributed-programming-2012)
 1. [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)](#resilient-distributed-datasets-a-fault-tolerant-abstraction-for-in-memory-cluster-computing-2012)
 1. [Discretized Streams: Fault-Tolerant Streaming Computation at Scale (2013)](#discretized-streams-fault-tolerant-streaming-computation-at-scale-2013)
@@ -1723,6 +1724,9 @@ horizontal partitioning by designating the first column of a predicate to be a
     p(A, B, N)@async <- p(A, B)@N
 
 can be used to implement things like Lamport clocks.
+
+## [Mesos: A Platform for Fine-Grained Resource Sharing in the Data Center (2011)](https://scholar.google.com/scholar?cluster=816726489244916508&hl=en&as_sdt=0,5)
+See [`https://github.com/mwhittaker/mesos_talk`](https://github.com/mwhittaker/mesos_talk).
 
 ## [Logic and Lattices for Distributed Programming (2012)](TODO) ##
 **Summary.**
