@@ -20,6 +20,7 @@
 1. [SEDA: An Architecture for Well-Conditioned, Scalable Internet Services (2001)](#seda-an-architecture-for-well-conditioned-scalable-internet-services-2001)
 1. [Xen and the Art of Virtualization (2003)](#xen-and-the-art-of-virtualization-2003)
 1. [Analysis and Evolution of Journaling File Systems (2005)](#analysis-and-evolution-of-journaling-file-systems-2005)
+1. [Live Migration of Virtual Machines (2005)](#live-migration-of-virtual-machines-2005)
 1. [Architecture of a Database System (2007)](#architecture-of-a-database-system-2007)
 1. [BOOM Analytics: Exploring Data-Centric, Declarative Programming for the Cloud (2010)](#boom-analytics-exploring-data-centric-declarative-programming-for-the-cloud-2010)
 1. [The Declarative Imperative: Experiences and Conjectures in Distributed Logic (2010)](#the-declarative-imperative-experiences-and-conjectures-in-distributed-logic-2010)
@@ -1272,6 +1273,82 @@ SPT was also used to analyze the effects of
 - Data journaling in which diffs are journaled instead of whole blocks.
 
 SBA and STP was also applied to ReiserFS, JFS, and NTFS.
+
+## [Live Migration of Virtual Machines (2005)](https://scholar.google.com/scholar?cluster=7787668674412123324&hl=en&as_sdt=0,5)
+**Summary.**
+Virtual machines have become increasingly popular in cloud and cluster
+environments. In these environments, VM migration---the process in which a
+virtual machine running on one physical machine is migrated to run on another
+physical machine---is incredibly useful. For example, it allows cluster
+administrators to migrate VMs off of a machine before decommisioning it for
+repair. In this paper, the authors present their live migration scheme that
+allows them to migrate Xen virtual machines with a very small amount of
+downtime.
+
+A key step in migrating a virtual machine is migrating its memory. There are
+typically three phases of memory migration:
+
+1. *Push*. In the push phase, the migrating VM is up and running while pages of
+   memory are pushed to the new physical machine.
+2. *Stop-and-copy*. In the stop-and-copy phase, the VM is stopped, its state is
+   transfered along with any pages that weren't pushed, and the VM is then
+   started on the new machine.
+3. *Pull*. In the pull phase, the VM is running on the new machine and pages
+   from the old machine are faulted over.
+
+A pure stop-and-copy approach is simple, but has down times proportional to the
+number of memory. A pure demand-migration scheme has small downtime but makes
+VMs slow until enough pages have been shipped over. This paper uses an
+iterative pre-copy scheme:
+
+0. *Pre-migration.* Before migration, assume a VM is running on host A.
+1. *Reservation.* Resources are reserved on host B.
+2. *Iterative pre-copy.* Memory from host A is iteratively copied to host B.
+   The pages copied in one round are the pages that were dirtied since the last
+   round.
+3. *Stop-and-copy.* The VM is stopped on host A and the remaining state and
+   memory is sent to host B.
+4. *Commitment.* Host B confirms that it has received everything correctly and
+   tells host A it is free to destroy itself.
+5. *Activation.* Host B starts the VM.
+
+The migration scheme also performs some ARP tricks to transfer the IP address
+of the machines. Note that local disk copying is not included in this paper.
+
+Imagine a VM that never writes any memory. Then a single iteration of
+pre-copying is sufficient. Alternatively, assume a VM dirties every page of
+memory at a rate faster than pre-copying. Then, pre-copying could carry on
+indefinitely. Most programs lie within these two extremes. The amount of memory
+they quickly write is dubbed the *writable working set* (WWS). The paper
+performs some experiments showing the size of the WWS for various benchmarks.
+
+There are two ways to implement VM migration:
+
+1. *Managed Migration.* In managed migration, VM migration is managed by
+   migration daemons running in dom0 of each machine. Xen inserts a shadow page
+   table underneath the operating system. It marks all the pages in the OS's
+   page table as read-only. Then, when an OS goes to write the page, the
+   machine traps into Xen which marks the page as writeable and notes that the
+   page was dirtied. After each round of pre-copying, the shadow page table and
+   dirty bits are reset. When pre-copying is done, Xen notifies the OS to get
+   ready to be migrated, then ships over the last bits of state.
+2. *Self Migration.* In self migration, each OS is responsible for migrating
+   itself. Iterative pre-copy is performed as before. Now, stop-and-copy is
+   performed in two phases to allow an OS to stop itself while still running.
+
+A higher transfer bandwidth reduces the downtime of migration but interferes
+with active services running on the machines. Conversely, a lower transfer
+bandwidth increases the downtime of migration but does not interfere as much
+with active services. This paper uses a dynamic rate limiting scheme. An
+administrator sets a lower and upper bandwidth limit. Transfer begins at the
+lower limit. The next iteration uses the estimated page dirtying rate from the
+last round plus a constant. This process terminates when the upper limit is
+reached or there is not much memory left to transfer. Moreover, pages that are
+repeatedly dirtied are not pre-copied.
+
+Migration can also take advantage of paravirtualization. OSes can sleep
+processes that write a lot, and they can report which pages are free to Xen to
+limit a full memory scan.
 
 ## [Architecture of a Database System (2007)](https://scholar.google.com/scholar?cluster=11466590537214723805&hl=en&as_sdt=0,5) ##
 **Chapter 1 -- Introduction.**
