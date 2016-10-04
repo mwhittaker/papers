@@ -332,26 +332,90 @@ checks.
 Mesa was evaluated by Pilot (an OS), Violet (a distributed calendar), and
 Gateway (a router).
 
-## [A History and Evaluation of System R (1981)](TODO) ##
+## [A History and Evaluation of System R (1981)](https://scholar.google.com/scholar?cluster=9472628621431764243&hl=en&as_sdt=0,5)
 **Summary.**
-System R, developed between 1974 and 1979, was one of the first relational
-database systems. It was implemented in three phases: phase 0, 1, and 2. Phase
-0 was a throw-away single-user database prototype that was used to polish the
-SQL interface. Phase 0 surfaced various problems that were solved in Phase 1:
-the full featured multi-user database. Phase 2 was a two year period during
-which System R was deployed to a number of real-world customers to assess the
-system. System R included
+Ed Codd proposed the relational model in 1970. As opposed to the navigational
+data models that came before it, the relational model boasted *data
+independence*: the ability for data storage and access methods to change
+independently of applications. Some worried that data independence necessitated
+poor performance. System R was one of the first relation databases and proved
+that the relational model could be implemented efficiently.
 
-- locking based concurrency control,
-- a dynamic programming based query optimizer,
-- catalogs represented as relations,
-- views and authorization,
-- embeddings in PL/I and Cobol,
-- B-tree based indexes,
-- nested loop joins, index loop joins, and sort merge joins,
-- crash recovery,
-- query compilation, and
-- various tweaks and refinements to SQL.
+System R development proceeded in three phases. *Phase 0* (1974-1975) was a
+single-user PL/I interpreter prototype that processed a subset of SQL (e.g. no
+joins) using the XRM access method. The Phase 0 prototype was always intended
+to be thrown away. Instead, the focus was on tuning the user interface SQL.
+User studies and interviews were performed to increase the usability and
+understandability of SQL. Every tuple in the database was labelled with a TID
+which contained a page number. Each tuple contained pointers into separate
+domains, and *inversions* existed to map domain values to TIDs. The Phase 0
+query optimizer aimed to minimize the number of fetched tuples and would
+perform tricks like TID intersection to evaluate conjunctions. The prototype
+also introduced the design that the system catalog should be stored as
+relations. Phase 0 brought about the following ideas:
+
+1. The optimizer should consider more than the cost of fetching tuples. It
+   should also take into account the costs of TID manipulation, data fetching,
+   etc.
+2. Number of I/Os would have been a better metric than the number of tuples
+   fetched. This would have also exposed the deficiency of the XRM access
+   method.
+3. The Phase 0 optimizer was CPU bound! This encouraged the later optimizer to
+   be a weighted cost of CPU and I/O.
+4. SQL joins are very important.
+5. The query optimizer was complicated; more care should be given towards
+   simpler and more common queries.
+
+*Phase 1* ranged from 1976 to 1977 and included the implementation of a full
+blown multi-user relational database. Phase 1 was divided into two pieces:
+
+1. The *Relational Data System* (RDS) was an optimizing SQL processor
+   responsible for query optimization.
+2. The *Research Storage System* (RSS) was the access method that replaced XRM
+   and was responsible for things like locking and logging.
+
+Users could query System R using interactive queries or by embedding SQL
+queries in PL/I or Cobol. A preprocessor would compile the embedded SQL queries
+into an access module using a repository of hand-compiled fragments. Of course,
+the compiled query plan could be invalidated over time. For example, the query
+plan could use an index which is later dropped. Thus, each query's dependencies
+were put in the system catalog and queries were recompiled when their
+dependencies were invalidated.
+
+Unlike the XRM, the RSS stored data directly in the tuples. This meant that
+certain column values were stored redundantly, but an entire row could be read
+in a single I/O. RSS also supported B+ tree indexes, tuple links, index scans,
+full table scans, link scans, tuple nested loop joins, index nested loop joins,
+and sort merge joins.
+
+The query optimizer minimized a weighted sum of RSS calls and I/Os using a
+dynamic programming approach. It avoided using some of the TID list
+intersection tricks that the Phase 0 optimizer used.
+
+Views were stored as parse trees and merged back into the SQL queries used to
+query them. Updates were only allowed on single-table views. Views were the
+atomic unit of authorization using a grant/revoke mechanism.
+
+System R used a combination of logging and shadow pages to implement recovery.
+During recovery, pages were restored to their old shadow pages, and the log was
+processed backwards.
+
+Since Phase 1 was a multi-user database, it introduced multiple granularity
+locking in the form of intension locks. Originally, it had predicate locking,
+but this was abandoned because it was (1) difficult to check for predicate
+disjointness, (2) predicates were sometimes falsely marked as overlapping, and
+(3) predicate locking broke the abstraction barrier of the RSS.
+
+*Phase 2* was a two-year period in which System R was evaluated. Users
+generally enjoyed the uniformity of SQL, and their recommendations led to the
+introduction of EXISTS, LIKE, prepared statements, and outer joins. The query
+optimizer was evaluated assuming that data was uniformly distributed and that
+all columns were independent. Shadow pages led to poor locality, extra
+bookkeeping, and semi-expensive page swapping. System R provided read
+uncommitted, read committed, and full serializable transactions. Read
+uncommitted wasn't implemented as fast as it should have been. Read committed
+had more overhead than expected. Serializable transactions ended up being the
+most commonly used.
 
 **Commentary.**
 System R introduced a bevy of influential and perennial ideas in the field of
