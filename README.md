@@ -661,6 +661,14 @@ on top of the Mach microkernel. Mach's key features include:
 - *user multiprocessing*: Tasks can use a user-level threading library.
 - *multicomputer support*: Mach abstractions can be transparently implemented
   on distributed hardware.
+- *Continuations*: In a typical operating system, when a thread blocks, all of
+  its registers are stored somewhere before another piece of code starts to
+  run. Its stack is also left intact. When the blocking thread is resumed, its
+  stored registers are put back in place and the thread starts running again.
+  This can be wasteful if the thread doesn't need all of the registers or its
+  stack. In Mach, threads can block with a continuation: an address and a bunch
+  of state. This can be more efficient since the thread only saves what it
+  needs to keep executing.
 
 Many different operating systems can be built on top of Mach. It's ideal that
 applications built for these operating systems can continue to run unmodified
