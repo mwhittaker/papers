@@ -483,7 +483,15 @@ file system took advantage of hardware specific information to place data at
 rotational offsets specific to the hardware so that files could be read with as
 little delay as possible. Care was also taken to allocate files contiguously,
 similar files in the same cylinder group, and all the inodes in a directory
-together.
+together. Moreover, if the amount of available space gets too low, then it
+becomes more and more difficult to allocate blocks efficiently. For example, it
+becomes hard to allocate the files of a block contiguously. Thus, the system
+always tries to keep ~10% of the disk free.
+
+Allocation is also improved in the FFS. A top level global policy uses file
+system wide information to decide where to put new files. Then, a local policy
+places the blocks. Care must be taken to colocate blocks that are accessed
+together, but crowding a single cyclinder group can exhaust its resources.
 
 In addition to performance improvements, FFS also introduced
 
