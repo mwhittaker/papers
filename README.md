@@ -1,6 +1,7 @@
 # Table of Contents #
 1. [A Relational Model of Data for Large Shared Data Banks (1970)](#a-relational-model-of-data-for-large-shared-data-banks-1970)
 1. [The Unix Time-Sharing System (1974)](#the-unix-time-sharing-system-1974)
+1. [Granularity of Locks and Degrees of Consistency in a Shared Database (1976)](#granularity-of-locks-and-degrees-of-consistency-in-a-shared-database-1976)
 1. [On the Duality of Operating System Structures (1979)](#on-the-duality-of-operating-system-structures-1979)
 1. [Experience with Processes and Monitors in Mesa (1980)](#experience-with-processes-and-monitors-in-mesa-1980)
 1. [A History and Evaluation of System R (1981)](#a-history-and-evaluation-of-system-r-1981)
@@ -106,6 +107,92 @@ ability to run programs in the background. All this was implemented using fork,
 exec, wait, and pipes.
 
 Unix also supported signals.
+
+## [Granularity of Locks and Degrees of Consistency in a Shared Database (1976)](https://scholar.google.com/scholar?cluster=15730220590995320737&hl=en&as_sdt=0,5)
+**Granularity of Locks Summary.**
+Locks are needed in a database system to ensure that transactions are isolated
+from one another. But what exactly should be locked?
+
+At one extreme, we could lock the entire database using a single lock. This
+*coarse-grained* approach has incredibly low locking overhead; only one lock is
+ever acquired. However, it limits the amount of concurrency in the system. Even
+if two transactions operate on disjoint data, they cannot run concurrently
+using a single global lock.
+
+At the other extreme, we could lock individual fields inside of records. This
+*fine-grained* approach has incredibly high concurrency. Two transactions could
+execute concurrently on the same record, so long as they access disjoint
+fields!  However, this approach has very high locking overhead. If the
+transaction needs to read a lot of fields from a lot of records, it will spend
+a lot of time acquiring a lot of locks.
+
+A compromise between these to extremes is to use *multiple granularity
+locking*, where a transaction can choose the granularity of its locks. For
+example, one transaction may lock a table, another may lock a page, and another
+may lock a record. Note, however, that unlike with single granularity locking,
+care must be taken to ensure that locks at different granularities do not
+conflict. For example, imagine one transaction has an exclusive lock on a page;
+another transaction must be prohibited from acquiring an exclusive lock on the
+table that the page belongs to.
+
+In this paper, Gray et al. present an implementation of multiple granularity
+locking that exploits the hierarchical nature of databases. Imagine a
+database's resources are organized into a hierarchy. For example, a database
+has tables, each table has pages, and each page has records. A transaction can
+acquire a lock on any node in this hierarchy of one of the following types:
+
+- IS: An *intention shared lock* on a node indicates that a transaction plans
+  on acquiring a shared lock on one of the descendants of the node.
+- IX: An *intention exclusive lock* on a node indicates that a transaction
+  plans on acquiring an exclusive lock on one of the descendants of the node.
+- S: A *shared lock* on a node implicitly grants the transaction shared read
+  access to the subtree rooted at the node.
+- SIX: A *SIX lock* on a node implicitly grants the transaction shared read
+  access to the subtree rooted at the node and simultaneously indicates that
+  the same transaction may acquire an exclusive lock on one of the descendants
+  of the node.
+- X: An *exclusive lock* on a node implicitly grants the transaction exclusive
+  read and write access to the subtree rooted at the node.
+
+Transactions acquire locks starting at the root and obey the following
+compatibility matrix:
+
+|     | IS  | IX  | S   | SIX | X   |
+| --- | --- | --- | --- | --- | --- |
+| IS  | ✓   | ✓   | ✓   | ✓   |     |
+| IX  | ✓   | ✓   |     |     |     |
+| S   | ✓   |     | ✓   |     |     |
+| SIX | ✓   |     |     |     |     |
+| X   |     |     |     |     |     |
+
+More specifically, these are the rules for acquiring locks:
+
+1. If a transaction wants an S or IS lock on a node, it must acquire an IX or
+   IS lock on its parent.
+2. If a transaction wants an X, SIX, or IX lock on a node, it must acquire a
+   SIX, or IX lock on its parent.
+3. Locks are either released in any order all at once after the transaction or
+   released from leaf to root.
+
+This locking protocol can easily be extended to directed acyclic graphs (DAGs)
+as well. Now, a node is implicitly shared locked if one of its parents is
+implicitly or explicitly shared locked. A node is implicitly exclusive locked
+if all of its parents are implicitly or exclusive exclusive locked. Thus when a
+shared lock is acquired on a node, it implicitly locks all nodes reachable from
+it. When an exclusive lock is acquired on a node, it implicitly locks all nodes
+[dominated](https://en.wikipedia.org/wiki/Dominator_(graph_theory) by it.
+
+The paper proves that if two lock graphs are compatible, then the implicit
+locks on the leaves are compatible. Intuitively this means that the locking
+protocol is equivalent to the naive scheme of explicitly locking the leaves,
+but it does so without the locking overhead.
+
+The protocol can again be extended to *dyamic lock graphs* where the set of
+resources changes over time. For example, we can introduce *index interval
+locks* that lock an interval of the index. To migrate a node between parents,
+we simply acquire X locks on the old and new location.
+
+**Degrees of Consistency Summary.**
 
 ## [On the Duality of Operating System Structures (1979)](https://scholar.google.com/scholar?cluster=12379045883699292297&hl=en&as_sdt=0,5)
 **Summary.**
