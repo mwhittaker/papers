@@ -180,7 +180,7 @@ implicitly or explicitly shared locked. A node is implicitly exclusive locked
 if all of its parents are implicitly or exclusive exclusive locked. Thus when a
 shared lock is acquired on a node, it implicitly locks all nodes reachable from
 it. When an exclusive lock is acquired on a node, it implicitly locks all nodes
-[dominated](https://en.wikipedia.org/wiki/Dominator_(graph_theory) by it.
+[dominated](https://en.wikipedia.org/wiki/Dominator_(graph_theory)) by it.
 
 The paper proves that if two lock graphs are compatible, then the implicit
 locks on the leaves are compatible. Intuitively this means that the locking
