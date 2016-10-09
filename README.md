@@ -193,6 +193,49 @@ locks* that lock an interval of the index. To migrate a node between parents,
 we simply acquire X locks on the old and new location.
 
 **Degrees of Consistency Summary.**
+Ensuring serializability is expensive, and some applications can get away with
+weaker consistency models. In this paper, Grey et al. present three definitions
+of four degrees of consistency.
+
+First, we can informal define what it means for a transaction to observe degree
+i consistency.
+
+- Degree 0: no dirty writes.
+- Degree 1: Degree 0 plus no writes are committed until the end of the
+  transaction.
+- Degree 2: Degree 1 plus no dirty reads.
+- Degree 3: Degree 2 plus repeatable reads.
+
+Second, we can provide definitions based on locking protocols.
+
+- Degree 0: Short X locks.
+- Degree 1: Long X locks
+- Degree 2: Long X locks and short read locks.
+- Degree 3: Long X locks and long read locks.
+
+Finally, we can define what it means for schedule to have degree i consistency.
+A transaction is a sequence of begin, end, S, X, unlock, read, and write
+actions beginning with a begin and ending with an end. A schedule is a
+shuffling of multiple transactions. A schedule is serial if every transaction
+is run one after another. A schedule is legal if obeys a locking protocol. A
+schedule is degree i consistent if every transaction observes degree i
+consistency according to the first definition.
+
+- *Assertion 1*. Definition 2 implies definition 3. That is, using the locking
+  protocol for degree i ensures degree i consistent schedules.
+- *Assertion 2*. Transactions can pick their consistency.
+
+Define the following relations on transactions:
+
+- `T1 < T2` if there is a write-write dependency between T1 and T2.
+- `T1 << T2` if `T1 < T2` or there is a write-read dependency between T1 and
+  T2.
+- `T1 <<< T2` if `T1 << T2` or there is a read-write dependency between T1 and
+  T2.
+
+Let `<*`, `<<*`, and `<<<*` be the transitive closure of `<`, `<<`, and `<<<`.
+If `<*`, `<<*`, `<<<*` is a partial order for a schedule, then the schedule is
+degree 1, 2, 3 consistent.
 
 ## [On the Duality of Operating System Structures (1979)](https://scholar.google.com/scholar?cluster=12379045883699292297&hl=en&as_sdt=0,5)
 **Summary.**
