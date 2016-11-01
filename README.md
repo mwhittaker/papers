@@ -22,6 +22,7 @@
 1. [Chord: A Scalable Peer-to-peer Lookup Service for Internet Applications (2001)](#chord-a-scalable-peer-to-peer-lookup-service-for-internet-applications-2001)
 1. [Inferring Internet Denial-of-Service Activity (2001)](#inferring-internet-denial-of-service-activity-2001)
 1. [SEDA: An Architecture for Well-Conditioned, Scalable Internet Services (2001)](#seda-an-architecture-for-well-conditioned-scalable-internet-services-2001)
+1. [The Google File System (2003)](#the-google-file-system-2003)
 1. [Xen and the Art of Virtualization (2003)](#xen-and-the-art-of-virtualization-2003)
 1. [Analysis and Evolution of Journaling File Systems (2005)](#analysis-and-evolution-of-journaling-file-systems-2005)
 1. [Live Migration of Virtual Machines (2005)](#live-migration-of-virtual-machines-2005)
@@ -1642,6 +1643,110 @@ existing OS functionality (i.e. select/poll). It implements asynchronous file
 I/O using a dynamically resizable thread pool that issues synchronous calls; OS
 support for asynchronous file I/O was weak at the time. The authors evaluate
 Sandstorm by implementing and evaluating an HTTP server and Gnutella router.
+
+## [The Google File System (2003)](https://scholar.google.com/scholar?cluster=98210925508218371&hl=en&as_sdt=0,5)
+**Overview.**
+Today, Google is a huge company with a huge amount of data. But even in 2003,
+when this paper was published, Google was still managing large amounts of data
+and needed a distributed file system to store it all. This paper introduces the
+*Google File System*: a distributed file system that differentiate itself from
+other distributed file systems by taking advantage of Google's assumptions and
+requirements:
+
+- Failures are not uncommon; in fact, they are frequent.
+- The file system stores a modest number of large, multi GB files.
+- Most reads are large streaming reads along with a small number of random
+  reads.
+- Almost all writes are appends; there are seldom random writes.
+- Bandwidth is prioritized over latency.
+
+**Design.**
+- *Interface.* GFS doesn't support a POSIX API, but it does support a standard
+  interface of `read`, `write`, `open`, etc. It also supports atomic snapshot
+  and a record append operation.
+- *Architecture.* GFS is composed of a *single master*, multiple *chunk
+  servers*, and multiple *clients*. Data is divided into 64 MB *chunks* and
+  replicated on chunk servers as files. The master manages system metadata and
+  assigns each chunk a unique *chunk handle*. Neither clients nor chunk servers
+  cache data.
+- *Single master.* Having a single master greatly simplifies the design of the
+  design of the system. To avoid the master becoming a bottleneck, clients
+  interact with it exclusively for metadata and interact with chunk servers
+  exclusively for data. A client sends a filename and chunk index to the server
+  which responds with a chunk handle and server locations. The client caches
+  this metadata and then interacts directly with chunk servers.
+- *Chunk size.* Chunks are 64 MB which is rather large compared to other file
+  systems. The large chunk size has a number of advantages: fewer master
+  interactions, persistent chunk server connections, and less metadata stored
+  on the master. It also has some disadvantages: internal fragmentation
+  (partially alleviated by lazy space allocation), and potential hot spots.
+- *Metadata.* The master manages (a) file namespaces, (b) file to chunk
+  mappings, and (c) chunk to location mappings. (a) and (b) are replicated and
+  persisted in an oplog, while (c) is constructed by contacted chunk servers.
+  The metadata typically fits in RAM on a single machine, and the price of
+  buying more RAM is worth the simplicity a single master affords. The master
+  also periodically checkpoints the oplog to avoid long recovery.
+- *Consistency model.* All file namespace operations are atomic. File
+  modification is more complex. We say a region of a file is *consistent* if
+  all clients read the same value no matter which chunk server they contact. We
+  say a file region is *defined*  if it is consistent and it reflects the most
+  recent write. Serial random writes produce defined regions. Concurrent random
+  writes produce consistent regions. A record append guarantees that data is
+  appended at least once. Serial or random record appends produce regions of
+  defined data interspersed with inconsistent data. If any write fails, the
+  data is inconsistent. Applications can cope with repeated or inconsistent
+  data by using checksums and unique identifiers.
+
+**System Interactions.**
+Each chunk is replicated to multiple chunk servers. One of the replicas is
+granted a lease from the master and designated the *primary*. These leases last
+something like 60 seconds but can be renewed by the primary. After a client
+receives the chunk handle and location of the chunk it is trying to modify, it
+streams data through the replicas in an order than minimizes distance between
+the servers. Each chunk server buffers the data. The client then contacts the
+primary and requests the data be written. The primary serializes the updates
+and then contacts the replicas and relays their responses back to the client.
+
+Record appends are performed almost identically. The only difference is that
+the primary determines to which offset the data should be written.
+
+Snapshots are performed using a copy-on-write technique. When a client issues a
+snapshot of a file to the master, it first revokes all leases on the file. It
+then modifies the file namespace to create the snapshot which points to the old
+chunks. Whenever data is written to the file, the master first copies the
+chunk.
+
+**Master Operation.**
+- *Namespace management and locking.* GFS does not maintain directory entries
+  which contain a list of the files within it. Instead, GFS maintains a map
+  from filepath to metadata in a prefix-compressed form. A tree locking scheme
+  is used to allow the metadata to be concurrently updated.
+
+- *Creation, re-replication, and rebalancing.* When a chunk is created, it has
+  to be placed on a number of replicas. The master takes many factors into
+  account when deciding which replicas to use. (1) The master tries to place
+  chunks on servers with low disk utilization. (2) The master tries to place
+  chunks on servers without many recent file creations since this implies there
+  will be imminent writes.  (3) The master tries to place chunks across racks
+  for improved fault tolerance. The master also re-replicates data when the
+  number of replicas for a chunk is too low. It also rebalances chunks to
+  balance load.
+- *Garbage collection.* When a file is deleted, its chunks are not reclaimed.
+  Instead, the file is renamed to a hidden filename and the file is kept around
+  for a couple of days. The file can also be renamed to a normal file name to
+  undo the deletion. Periodically, the master scans the namespace and deletes
+  hidden files that are too old. It also periodically reclaims orphaned chunks.
+  This form of garbage collection is necessary since the system can get into
+  weird states due to failures.
+- *Stale replica detection.* Chunks are given increasing version numbers by the
+  master whenever a lease is granted. This allows the server to detect stale
+  replicas.
+
+**Fault Tolerance and Diagnosis.**
+GFS achieves high availability by ensuring that masters and chunk servers can
+recover from failures quickly. It also replicates the master and provides
+read-only shadow masters that lag the real master. Data integrity is ensured
+with checksums.
 
 ## [Xen and the Art of Virtualization (2003)](https://scholar.google.com/scholar?cluster=11605682627859750448&hl=en&as_sdt=0,5)
 **Summary.**
