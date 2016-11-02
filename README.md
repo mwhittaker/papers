@@ -2306,8 +2306,8 @@ lot of other Google technology (e.g. GFS, Chubby, Borg, SSTable) and can
 achieve both high throughput and low latency.
 
 **Data Model and API.**
-In short, Bigtable is a `sparse, distributed, persistent multi-dimensional
-sorted map` of type: `(key: string * column: string * timestamp: int64) ->
+In short, Bigtable is a "sparse, distributed, persistent multi-dimensional
+sorted map" of type: `(key: string * column: string * timestamp: int64) ->
 value: string`. For example, a web Bigtable could be keyed by URL with columns
 like language or content. Each entry in this Bigtable could have multiple
 timestamped versions.
