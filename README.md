@@ -40,6 +40,7 @@
 1. [Mesos: A Platform for Fine-Grained Resource Sharing in the Data Center (2011)](#mesos-a-platform-for-fine-grained-resource-sharing-in-the-data-center-2011)
 1. [Don't Settle for Eventual: Scalable Causal Consistency for Wide-Area Storage with COPS (2011)](#dont-settle-for-eventual-scalable-causal-consistency-for-wide-area-storage-with-cops-2011)
 1. [Logic and Lattices for Distributed Programming (2012)](#logic-and-lattices-for-distributed-programming-2012)
+1. [Making Geo-Replicated Systems Fast as Possible, Consistent when Necessary (2012)](#making-geo-replicated-systems-fast-as-possible-consistent-when-necessary-2012)
 1. [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)](#resilient-distributed-datasets-a-fault-tolerant-abstraction-for-in-memory-cluster-computing-2012)
 1. [Apache Hadoop YARN: Yet Another Resource Negotiator (2013)](#apache-hadoop-yarn-yet-another-resource-negotiator-2013)
 1. [Discretized Streams: Fault-Tolerant Streaming Computation at Scale (2013)](#discretized-streams-fault-tolerant-streaming-computation-at-scale-2013)
@@ -3129,6 +3130,107 @@ The paper also presents two case-studies. First, they implement a key-value
 store as a map from keys to values annotated with vector clocks: a design
 inspired from Dynamo. They also implement a purely monotonic shopping cart
 using custom lattices.
+
+## [Making Geo-Replicated Systems Fast as Possible, Consistent when Necessary (2012)](#making-geo-replicated-systems-fast-as-possible-consistent-when-necessary-2012)
+Strong consistency is easy to reason about but hurts performance; weak
+consistency is hard to reason about but can be implemented efficiently.
+Allowing operations to run at different consistency levels is a first step
+towards compromising between strong and weak consistency, but databases
+that allow for mixed consistency operations place a burden on users to think
+critically about which operations should run at which consistency level to
+ensure application correctness. This paper makes three contributions:
+
+1. It introduces *RedBlue Consistency*. Intuitively, red operations are
+   synchronized while blue operations execute locally and are asynchronously
+   replicated.
+2. It provides sufficient conditions for which operations can be blue and which
+   can be red while still ensuring the system is confluent and also
+   invariant-confluent.
+3. It introduces a novel way to decompose operations into side-effect free
+   *generator operations* and *shadow operations* which are asynchronously
+   applied at all sites. This decomposition improves the commutativity of the
+   system allowing for more blue operations.
+
+It also implements a RedBlue consistent database dubbed *Gemini*.
+
+**Related Work.**
+There are a huge number of databases that can be characterized by various
+properties like low latency, causality, state convergence, single value, stable
+histories, general operations, invariants, and eventual propagation.  Moreover,
+there are a huge number of different consistency models like linearizability,
+timeline consistency, snapshot consistency, fork consistency, and eventual
+consistency.
+
+**System Model.**
+In our model, data is replicated across `k` sites. Each site has a state `S`
+and executes operations `u, v`. We denote the application of an operation `u`
+to a database state `S` as `S + u`. We say two operations `u, v` commute if for
+all database stats `S`, `S + u + v = S + v + u`. We say a database state `S` is
+valid if satisfies user's invariants. Every update is applied at a single site
+before being propagated to other sites.
+
+**RedBlue Consistency.**
+Given disjoint sets of operations `R`, and `B`, a *RedBlue order* is a partial
+order (U = R cup B, <) where elements in `R` are totally ordered. That is for
+all `r, r'` in `R`, either `r < r'` or `r' < r`.
+
+For a site `i`, an *i-causal serialization* of `O = (U, <)` is a total order
+`(O, <<)`, where
+
+1. `<<` extends `<`. That is for all `u, v` if `u < v` then `u << v`.
+2. If `site(v) = i` and `u << v` then `u < v`. This implies that if `v` on `i`
+   is concurrent with operation `u` not on `i`, then `v` must come before `u`
+   in `<<`.
+
+A system is *O-RedBlue consistent* if every site `i` runs an i-causal
+serialization of `O`. Note that if all operations are red, then RedBlue
+consistency is equivalent to serializability. If all operations are blue, then
+it is equivalent to eventual consistency.
+
+We say a RedBlue consistent system is *state convergent* if all causal
+serializations reach the final state.  Note that not all RedBlue consistent
+systems are state convergent. Two causal serializations could result in
+different states. If all blue operations commute with all other operations
+(i.e. they are *globally commutative*), then RedBlue consistency implies state
+convergence.
+
+**Replicating Side Effects.**
+Some blue operations are not commutative but can be transformed into a
+commutative alternative. We decompose an operation `u` into a generator
+operation `g_u` and shadow operation `h_u(S)` where `S + g+u = S` and `S +
+h_u(S) = S + u`. This is similar to how updates are decomposed in operation
+based CRDTs.
+
+Given a site `i`, a set of shadow operations `U` and the set of generator
+operations `V_i` executed at `i`, an i-causal serialization of `O = (U, <)` is
+a total order `O_i = (U cup V_i, <<)` where
+
+- `<<` extends `<`.
+- For any `h_v(S)` in `U` generated by `g_v` in `V_i`, `S` is the state
+  obtained by applying all the shadow operations before `g_v`.
+- For any `g_v` in `V_i` and `h_u(S)` in `U`, `h_u(S) << g_v` if and only if
+  `h_u(S) < h_v(S')`. Again this says that if `h_u(S)` and `h_v(S')` are
+  concurrent, then `g_v` and `h_v(S')` should come first.
+
+Note that even if a RedBlue consistent system is state convergent, user
+invariants can still be broken.  We say shadow operation `h_u(S)` is *invariant
+safe* if for all valid stats `S` and `S'`, `S' + h_u(S)` is valid. In words,
+replicating operations on valid states to other valid states preserves
+validity. If all blue operations are invariant safe and globally commutative
+then no site will ever enter an invalid state and sites will converge. This
+gives us guidelines on what operations can be blue and which must be red.
+
+- All non-commutative pairs of operations should be red.
+- All invariant violating operations should be red.
+- All other operations can be blue.
+
+**Gemini.**
+Gemini is a 10K line Java prototype implemented on top of MySQL. Each node in
+Gemini consists of a storage engine, proxy server, concurrency coordinator, and
+data writer. Users contact the proxy which executes the generator operations
+and delivers shadow operations to the concurrency coordinator. It uses
+optimistic concurrency control and vector clocks to ensure causal consistency.
+It is not fault tolerant.
 
 ## [Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)](TODO) ##
 **Summary.**
