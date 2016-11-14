@@ -2864,7 +2864,7 @@ Example CRDTs include vector clocks, increment-only counters,
 increment-decrement counters add-only sets, add-remove sets, maps, logs, and
 graphs.
 
-## [Consistency Analysis in Bloom: a CALM and Collected Approach (2011)](TODO) ##
+## [Consistency Analysis in Bloom: a CALM and Collected Approach (2011)](https://scholar.google.com/scholar?cluster=9165311711752272482&hl=en&as_sdt=0,5) ##
 **Summary.**
 Strong consistency eases reasoning about distributed systems, but it requires
 coordination which entails higher latency and unavailability. Adopting weaker
