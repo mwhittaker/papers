@@ -3178,6 +3178,7 @@ x + 3y <= 9
 ```
 
 **Analysis.**
+
 | Property                 | Asset | CEEI | DRF |
 | ------------------------ | ----- | ---- | --- |
 | Sharing Incentive        |       | ✓    | ✓   |
