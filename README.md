@@ -60,6 +60,7 @@
 1. [Putting Consistency Back into Eventual Consistency (2015)](#putting-consistency-back-into-eventual-consistency-2015)
 1. [Spark SQL: Relational Data Processing in Spark (2015)](#spark-sql-relational-data-processing-in-spark-2015)
 1. [Borg, Omega, and Kubernetes (2016)](#borg-omega-and-kubernetes-2016)
+1. ['Cause I'm Strong Enough: Reasoning about Consistency Choices in Distributed Systems (2016)](#cause-im-strong-enough-reasoning-about-consistency-choices-in-distributed-systems-2016)
 1. [Decibel: The Relational Dataset Branching System (2016)](#decibel-the-relational-dataset-branching-system-2016)
 1. [Disciplined Inconsistency with Consistency Types (2016)](#disciplined-inconsistency-with-consistency-types-2016)
 1. [Goods: Organizing Google's Datasets (2016)](#goods-organizing-googles-datasets-2016)
@@ -4477,6 +4478,121 @@ solved:
   programming languages manipulate them.
 - Dependency management. Programs have lots of dependencies but don't manually
   state them. This makes automated dependency management very tough.
+
+## ['Cause I'm Strong Enough: Reasoning about Consistency Choices in Distributed Systems (2016)](https://scholar.google.com/scholar?cluster=16043456868654348168&hl=en&as_sdt=0,5)
+Strong consistency increases latency; weak consistency is hard to reason about.
+Compromising between the two, a number of databases allow each operation to run
+with either strong or weak consistency. Ideally, users choose the minimal set
+of strongly consistent operations needed to enforce some application specific
+invariant. However, deciding which operations to run with strong consistency
+and which to run with weak consistency can be very challenging. This paper
+
+1. introduces a formal hybrid consistency model which subsumes many existing
+   consistency models,
+2. introduces a modular proof rule which can determine whether a given
+   consistency model enforces an invariant, and
+3. implements a prototype using a standard SMT solver.
+
+**Consistency Model, Informally.**
+Consider
+
+- a set of states `s, s_init \in State`,
+- a set of operations `Op = {o, ...}`,
+- a set of values `\bot in Val`, and
+- a set of replicas `r_1, r_2, ...`.
+
+The denotation of an operation is denoted `F_o` where
+
+- `F_o: State -> (Val x (State -> State))`,
+- `F_o^val(s) = F_o(s)[0]` (the value returned by the operation), and
+- `F_o^eff(s) = F_o(s)[1]` (the effect of the operation).
+
+For example, a banking operation may let states range over natural numbers
+where
+
+- `F_deposit_a(s) = (\bot, fun s' -> s' + a)`
+- `F_interest(s) = (\bot, fun s' -> s' + 0.05 * s)`
+- `F_query(s) = (s, fun s' -> s')`
+
+If all operations commute (i.e. `forall o1, o2, s1, s2. F_o1(s1) o F_o2(s2) =
+F_o2(s2) o F_o1(s1)`), then all replicas are guaranteed to converge. However,
+convergence does not guarantee all application invariants are maintained. For
+example, an invariant `I = {s | s >= 0}` could be violated by merging
+concurrent withdrawals. To enforce invariants, we introduce a token system
+which can be used to order certain operations.
+
+A token system `TS = (Token, #)` is a set of tokens `Token` and a symmetric
+relation `#` over `Token`. We say two sets of tokens `T1 # T2` if `exists t1 in
+T1, t2 in T2. t1 # t2`. We also update our definition of operations to acquire
+tokens:
+
+- `F_o: State -> (Val x (State -> State) x P(Token))`,
+- `F_o^val(s) = F_o(s)[0]` (the value returned by the operation),
+- `F_o^eff(s) = F_o(s)[1]` (the effect of the operation), and
+- `F_o^tok(s) = F_o(s)[2]` (the tokens acquired by the operation).
+
+Our consistency model will ensure that two operations that acquire conflicting
+operations will be ordered.
+
+**Formal Semantics.**
+Recall a *strict partial order* is a partial order that is transitive and
+irreflexive (e.g. sets ordered by strict subset). Given a partial order `R`, we
+say `(a, b) \in R` or `a -R-> b`. Consider a countably infinite set `Event` of
+events ranged over by `e, f, g`. If operations are like transactions, an event
+is like applying a transaction at a replica.
+
+- *Definition 1.* Given token system `TS = (Token, #)`, an *execution* is a
+  tuple `X = (E, oper, rval, tok, hb)` where
+    - `E \subset Event` is a finite subset of events,
+    - `oper: E -> Op` designates the operation of each event,
+    - `rval: E -> Val` designates the return value of each event,
+    - `tok: E -> P(Token)` designates the tokens acquired by each event, and
+    - `hb \subset Event x Event` is a happens before strict partial order where
+      `forall e, f. tok(e) # tok(f) => (e-hb->f or f-hb->e)`.
+
+An execution formalizes operations executing at various replicas concurrently,
+and the happens before relation captures how these operations are propagated
+between replicas. The transitivity of the happens before relation ensures at
+least causal consistency.
+
+Let
+
+- `Exec(TS)` be the set of all executions over token system `TS`, and
+- `ctxt(e, X) = (E, X.oper|E, X.rval|E, X.tok|E, X.hb|E)` be the context of `e`
+  where `E = X.hb^-1(e)`. Intuitively, `ctxt(e, X)` is the subexection of `X`
+  that only includes operations causally preceding `e`.
+
+Executions are directed graphs of operations, but without a semantics, they are
+rather meaningless. Here, we define a relation `evald_F \subset Exec(TS) x
+P(State)` where `evald_F(Y)` is the set of all final states `Y` can be in after
+all operations are propagated to all replicas. We'll see shortly that if all
+non-token-conflicting operations commute, then `evald_F` is a function.
+
+- `evald_F(Y) = {}` if `Y.E = {}`, and
+- `evald_F(Y) = {F_e^eff(s)(s') | e \in max(Y), s \in evald_F(ctxt(e, Y)), s'
+  \in evalfd_F(Y|Y.E - {e})}` otherwise.
+
+Now,
+
+- *Definition 2.* An execution `X \in Exec(TS)` is *consistent* with `TS` and
+  `F` denoted `X |= TS, F` if `forall e \in X.e. exists s \in evald_F(ctxt(e,
+  x)). X.val(e) = F_X.oper(e)^val(s) and X.tok(e = F_X.oper(e)^tok(s))`.
+
+We let `Exec(TS, F) = {X | X |= TS, F}`. Consistent operations are closed under
+context. Furthermore, `evald_F` is a function when restricted to consistent
+executions where non-token-conflicting operations commute. We call this
+function `eval_F`.
+
+This model can model a number of consistency models:
+
+- *Causal consistency.* Let `Token = {}`.
+- *Sequential consistency.* Let `Token = {t}`, `t # t`, and `F_o^tok(s) = {t}`
+  for all `o`.
+- *RedBlue Consistency.* Let `Token = {t}`, `t # t`, and `F_o^tok(s) = {t}` for
+  all red `o` and `F_o^tok(s) = {}` for all blue `o`.
+
+**State Based Proof Rule.**
+TODO
 
 ## [Decibel: The Relational Dataset Branching System (2016)](TODO) ##
 **Summary.**
