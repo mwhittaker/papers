@@ -4592,7 +4592,60 @@ This model can model a number of consistency models:
   all red `o` and `F_o^tok(s) = {}` for all blue `o`.
 
 **State Based Proof Rule.**
-TODO
+We want to construct a proof rule to establish the fact that `Exec(TS, F)
+\subset eval_F^-1(I)`. That is, every execution results in a state that
+satisfies the invariant. Since executions are closed under context, this also
+means that all operations execute on a state that satisfies the invariant.
+
+Our proof rule involves a *guarantee relation* `G(t)` over states which
+describes all possible state changes that can occur while holding token `t`.
+Similarly, `G_0` describes the state transitions that can occur without holding
+any tokens.
+
+Here is the proof rule.
+
+- *S1*: `s_init \in I`.
+- *S2*: `G_0(I) \subset I and forall t. G(t)(I) \subset I`.
+- *S3*: `forall o, s, s'.`
+    - `s \in I and`
+    - `(s, s') \in (G_0 \cup G(F_o^tok(s)^\bot))* =>`
+    - `(s', F_o^eff(s)(s')) \in G_0 \cup G(F_o^tok(s))`.
+
+In English,
+
+- *S1*: `s_init` satisfies the invariant.
+- *S2*: `G` and `G_0` preserve the invariant.
+- *S3*: If we start in any state `s` that satisfies the invariant and can
+  transition in any finite number of steps to any state `s'` without acquiring
+  any tokens conflicting with `o`, then we can transition from `s'` to
+  `F_o^eff(s)(s')` in a single step using the tokens acquired by `o`.
+
+**Event Based Proof Rule and Soundness.**
+Instead of looking at states, we can instead look at executions. That is, if we
+let invariants `I \subset Exec(TS)`, then we want to write a proof rule to
+ensure `Exec(TS, F) \subset I`. That is, all consistent executions satisfy the
+invariant. Again, we use a guarantee `G \subset Exec(TS) x Exec(TS)`.
+
+- *E1*: `X_init \in I`.
+- *E2*: `G(I) \in I.`
+- *E3*: `forall X, X', X''. forall e in X''.E.`
+    - `X'' |= TS, F and`
+    - `X' = X''|X''.E - {e} and`
+    - `e \in max(X'') and`
+    - `X = ctxt(e, X'') and`
+    - `X \in I and `
+    - `(X, X') \in G* =>`
+    - `(X', X'') \in G`.
+
+This proof rule is proven sound. The event based rule and its soundness is
+derived from this.
+
+**Examples and Automation.**
+The authors have built a banking, auction, and courseware application in this
+style. They have also built a prototype that you give `TS`, `F`, and `I` and it
+determines if `Exec(T, f) \subset eval_F^-1(I)`. Their prototype modifies the
+state-based proof rule eliminating the transitive closure and introducing
+intermediate predicates.
 
 ## [Decibel: The Relational Dataset Branching System (2016)](TODO) ##
 **Summary.**
