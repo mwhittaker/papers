@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://scholar.google.com/scholar?cluster=4658639044512647014&amp;hl=en&amp;as_sdt=0,5">Dedalus: Datalog in Time and Space (2011)</a></h2>
+
+<p><strong>Summary.</strong>
+Researchers have explored using Datalog variants to implement distributed
+systems, often with orders of magnitude less code. However, there are two
+distributed system concepts that are difficult to model in Datalog:</p>
+
+<ol>
+<li><em>mutable state</em>, and</li>
+<li><em>asynchronous processing and communication</em>.</li>
+</ol>
+
+<p>Some Datalog variants add imperative features to Datalog, but this leads to
+lost optimization opportunities and ambiguous semantics. <em>Dedalus</em> is a subset
+of Datalog with negation, aggregation, an infinite successor relation, and
+non-deterministic choice that introduces the notion of time to cleanly model
+both mutability and asynchrony.</p>
+
+<p>Let Ci and Ai range over constants and variables respectively and consider an
+infinite successor relation over an abstract domain Z. We first develop the
+core of Dedalus, <em>Dedalus0</em>, which is Datalog with negation with the additional
+syntactic restrictions:</p>
+
+<ol>
+<li><em>Schema</em>. The final attribute of every predicate is from the domain Z. This
+<em>time suffix</em> connotes the timestamp of the record.</li>
+<li><em>Time Suffix</em>. Every subgoal must be unified on a common time suffix <code>T</code> and
+the head of every rule can take of of two forms:
+<ul>
+<li>In <em>deductive rules</em>, the head's time suffix <code>S</code> is equal to <code>T</code>. These
+rules connote deductions in a single time step.</li>
+<li>In <em>inductive rules</em>, the head's time suffix <code>S</code> is the successor of <code>T</code>.
+These rules connote inductions across time.</li>
+</ul></li>
+<li><em>Positive and Negative Predicates</em>. Every extensional predicate <code>p</code> has a
+corresponding positive and negative predicate <code>p_pos</code> and <code>p_neg</code>.</li>
+<li><em>Guarded EDB</em>. No rule, except for those above, can involve extensional
+predicates.</li>
+</ol>
+
+<p>Dedalus models the <em>persistence</em> of a predicate using a simple identity
+inductive rule:</p>
+
+<pre><code>p_pos(A, B, ..., Z) @next &lt;- p_pos(A, B, ..., Z).
+</code></pre>
+
+<p><em>Mutable state</em> is modeled using a conjunction of <code>p_pos</code> and <code>p_neg</code>:</p>
+
+<pre><code>p_pos(A, B, ..., Z) @ next &lt;-
+    p_pos(A, B, ..., Z),
+    not p_neg(A, B, ..., Z).
+</code></pre>
+
+<p>This pattern is so common, it is expressed using the <code>persist[p_pos, p_neg, n]</code>
+macro. We can model a number that increases whenever an event occurs (aka a
+<em>sequence</em>) as follows:</p>
+
+<pre><code>seq(B) &lt;- seq(A), event(_), succ(A, B).
+seq(A) &lt;- seq(A), not event(_).
+seq(0)@0.
+</code></pre>
+
+<p>We can use aggregation to implement a priority queue. Consider a predicate
+<code>priority_queue(X, P)</code> with values <code>X</code> and priority <code>P</code>. We can flatten out the
+queue's contents over time by buffering values in <code>m_priority_queue</code> and
+dequeueing them into <code>priority_queue</code> in order of priority.</p>
+
+<pre><code>persist[m_priority_queue_pos, m_priority_queue_neg, 2]
+
+the_min(min&lt;P&gt;) &lt;- m_priority_queue(_, P).
+
+priority_queue(X, P)@next &lt;-
+    m_priority_queue(X, P),
+    the_min(P)
+
+m_priority_queue_neg(X, P)@next &lt;-
+    m_priority_queue(X, P),
+    the_min(P)
+</code></pre>
+
+<p>A Dedalus0 program is <em>syntactically stratifiable</em> if there are no cycles in the
+predicate dependency graph that contain a negative edge. Similarly, a program
+is <em>temporally stratifiable</em> if the <em>deductive reduction</em> of it is
+syntactically stratifiable. Every Dedalus0 program that is temporally
+stratifiable has a unique perfect model.</p>
+
+<p>A Datalog program (or Dedalus0 program) is considered <em>safe</em> if it has a finite
+model. The following syntactic restrictions imply safety:</p>
+
+<ol>
+<li>No functions.</li>
+<li>Range restricted variables. That is, all variables appearing in the head
+must appear in a non-negated subgoal.</li>
+<li>The EDB is finite.</li>
+</ol>
+
+<p>We say a Dedalus0 rule is <em>instantaneously safe</em> if it is deductive,
+function-free (1), and range-restricted (2). A Dedalus0 program is
+instantaneously safe if all rules in its deductive reduction are
+instantaneously safe. Two sets of ground atoms are <em>equivalent modulo time</em> if
+the two sets are equal after projecting out the time suffix. A Dedalus0 program
+is quiescent at time T if it its atoms are equivalent modulo time to those at
+time T-1. A Dedalus0 program is <em>temporally safe</em> if it is <em>henceforth
+quiescent</em> after some time T. The paper provides three syntactic restrictions
+that are sufficient for a temporally stratifiable program to be temporally
+safe.</p>
+
+<p>Dedalus is a superset of Dedalus0 that introduces asynchronous choice.
+Intuitively, Dedalus introduces a third <em>asynchronous</em> type of rule that allows
+the head's timestamp to be a non-deterministic value, even values that are
+earlier than the timestamp of the body! In addition, Dedalus introduces
+horizontal partitioning by designating the first column of a predicate to be a
+<em>location specifier</em>. Entanglement:</p>
+
+<pre><code>p(A, B, N)@async &lt;- p(A, B)@N
+</code></pre>
+
+<p>can be used to implement things like Lamport clocks.</p>
+  </div>
+</body>
+</html>

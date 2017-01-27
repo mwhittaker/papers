@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://scholar.google.com/scholar?cluster=11605682627859750448&amp;hl=en&amp;as_sdt=0,5">Xen and the Art of Virtualization (2003)</a></h2>
+
+<p><strong>Summary.</strong>
+Many virtual machine monitors, or <em>hypervisors</em>, aim to run unmodified guest
+operating systems by presenting a completely virtual machine. This lets any OS
+run on the hypervisor but comes with a significant performance penalty. Xen is
+an x86 hypervisor that uses <em>paravirtualization</em> to reduce virtualization
+overheads. Unlike with full virtualization, paravirtualization only virtualizes
+some components of the underlying machine. This paravirtualization requires
+modifications to the guest operating systems but not the applications running
+on it. Essentially, Xen sacrifices the ability to run unmodified guest
+operating systems for improved performance.</p>
+
+<p>There are three components that need to be paravirtualized:</p>
+
+<ul>
+<li><em>Memory management.</em> Software page tables and tagged page tables are easier
+to virtualize. Unfortunately, x86 has neither. Xen paravirtualizes the
+hardware accessible page tables leaving guest operating systems responsible
+for managing them. Page table modifications are checked by Xen.</li>
+<li><em>CPU.</em> Xen takes advantage of x86's four privileges, called <em>rings</em>. Xen runs
+at ring 0 (the most privileged ring), the guest OS runs at ring 1, and the
+applications running in the guest operating systems run at ring 3.</li>
+<li><em>Device I/O.</em> Guest operating systems communicate with Xen via bounded
+circular producer/consumer buffers. Xen communicates to guest operating
+systems using asynchronous notifications.</li>
+</ul>
+
+<p>The Xen hypervisor implements mechanisms. Policy is delegated to a privileged
+domain called dom0 that has accessed to privileges that other domains don't.</p>
+
+<p>Finally, a look at some details about Xen:</p>
+
+<ul>
+<li><em>Control transfer.</em> Guest operating systems request services from the
+hypervisor via <em>hypercalls</em>. Hypercalls are like system calls except they are
+between a guest operating system and a hypervisor rather than between an
+application and an operating system. Furthermore, each guest OS registers
+interrupt handlers with Xen. When an event occurs, Xen toggles a bitmask to
+indicate the type of event before invoking the registered handler.</li>
+<li><em>Data transfer.</em> As mentioned earlier, data transfer is performed using a
+bounded circular buffer of I/O descriptors. Requests and responses are pushed
+on to the buffer. Requests can come out of order with respect to the
+requests. Moreover, requests and responses can be batched.</li>
+<li><em>CPU Scheduling.</em> Xen uses the BVT scheduling algorithm.</li>
+<li><em>Time and timers.</em> Xen supports real time (the time in nanoseconds from
+machine boot), virtual time (time that only increases when a domain is
+executing), and clock time (an offset added to the real time).</li>
+<li><em>Virtual address translation.</em> Other hypervisors present a virtual contiguous
+physical address space on top of the actual hardware address space. The
+hypervisor maintains a shadow page table mapping physical addresses to
+hardware addresses and installs real page tables into the MMU. This has high
+overhead. Xen takes an alternate approach. Guest operating systems issue
+hypercalls to manage page table entries that are directly inserted into the
+MMU's page table. After they are installed, the page table entries are
+read-only.</li>
+<li><em>Physical memory.</em> Memory is physically partitioned into reservations.</li>
+<li><em>Network.</em> Xen provides virtual firewall-routers with one or more virtual
+network interfaces, each with a circular ring buffer.</li>
+<li><em>Disk.</em> Xen presents virtual block devices each with a ring buffer.</li>
+</ul>
+  </div>
+</body>
+</html>

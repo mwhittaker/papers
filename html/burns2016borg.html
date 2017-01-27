@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="#borg-omega-and-kubernetes-2016">Borg, Omega, and Kubernetes (2016)</a></h2>
+
+<p><strong>Summary.</strong>
+Google has spent the last decade developing three container management systems.
+<em>Borg</em> is Google's main cluster management system that manages long running
+production services and non-production batch jobs on the same set of machines
+to maximize cluster utilization. <em>Omega</em> is a clean-slate rewrite of Borg using
+more principled architecture. In Omega, all system state lives in a consistent
+Paxos-based storage system that is accessed by a multitude of components which
+act as peers. <em>Kubernetes</em> is the latest open source container manager that
+draws on lessons from both previous systems.</p>
+
+<p>All three systems use containers for security and performance isolation.
+Container technology has evolved greatly since the inception of Borg from
+chroot to jails to cgroups. Of course containers cannot prevent all forms of
+performance isolation. Today, containers also contain program images.</p>
+
+<p>Containers allow the cloud to shift from a machine-oriented design to an
+application oriented-design and tout a number of advantages.</p>
+
+<ul>
+<li>The gap between where an application is developed and where it is deployed is
+shrunk.</li>
+<li>Application writes don't have to worry about the details of the operating
+system on which the application will run.</li>
+<li>Infrastructure operators can upgrade hardware without worrying about breaking
+a lot of applications.</li>
+<li>Telemetry is tied to applications rather than machines which improves
+introspection and debugging.</li>
+</ul>
+
+<p>Container management systems typically also provide a host of other niceties
+including:</p>
+
+<ul>
+<li>naming services,</li>
+<li>autoscaling,</li>
+<li>load balancing,</li>
+<li>rollout tools, and</li>
+<li>monitoring tools.</li>
+</ul>
+
+<p>In borg, these features were integrated over time in ad-hoc ways. Kubernetes
+organizes these features under a unified and flexible API.</p>
+
+<p>Google's experience has led a number of things to avoid:</p>
+
+<ul>
+<li>Container management systems shouldn't manage ports. Kubernetes gives each
+job a unique IP address allowing it to use any port it wants.</li>
+<li>Containers should have labels, not just numbers. Borg gave each task an index
+within its job. Kubernetes allows jobs to be labeled with key-value pairs and
+be grouped based on these labels.</li>
+<li>In Borg, every task belongs to a single job. Kubernetes makes task management
+more flexible by allowing a task to belong to multiple groups.</li>
+<li>Omega exposed the raw state of the system to its components. Kubernetes
+avoids this by arbitrating access to state through an API.</li>
+</ul>
+
+<p>Despite the decade of experience, there are still open problems yet to be
+solved:</p>
+
+<ul>
+<li>Configuration. Configuration languages begin simple but slowly evolve into
+complicated and poorly designed Turing complete programming languages. It's
+ideal to have configuration files be simple data files and let real
+programming languages manipulate them.</li>
+<li>Dependency management. Programs have lots of dependencies but don't manually
+state them. This makes automated dependency management very tough.</li>
+</ul>
+  </div>
+</body>
+</html>

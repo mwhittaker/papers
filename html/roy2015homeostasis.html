@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://scholar.google.com/scholar?cluster=7243022338856545577&amp;hl=en&amp;as_sdt=0,5">The Homeostasis Protocol: Avoiding Transaction Coordination Through Program Analysis (2015)</a></h2>
+
+<p>Strong consistency is easy to reason about, but typically requires coordination
+which increases latency. Weaker consistency can improve performance but is
+difficult to reason about. This paper presents a program analysis and
+distributed protocol to run transactions with coordination-free strong
+consistency.</p>
+
+<p><strong>Analysing Transactions.</strong>
+We model a database as a finite map from objects to integers. Transactions are
+ordered sequences of reads, writes, computations, and prints; this is
+formalized below. A transaction <code>T</code> executes on a database <code>D</code> to produce a new
+database <code>D'</code> state and a log <code>G'</code> of printed values. Formally, <code>eval(D, T) =
+&lt;D', G'&gt;</code>.</p>
+
+<p><em>Symbolic tables</em> categorize the behavior of a transaction based on the initial
+database sate. Formally, a symbolic table for transaction <code>T</code> is a binary
+relation <code>Q</code> of pairs <code>&lt;P, T'&gt;</code> where <code>P</code> is a formula in first order logic
+describing the contents of a database, and <code>T'</code> is a transaction such that <code>T</code>
+and <code>T'</code> are observationally equivalent when run on databases satisfying <code>P</code>. A
+symbolic table can also be built for a set of transactions.</p>
+
+<p>Formally, transactions are expressed in a language <code>L</code> which is essentially IMP
+with database reads, database writes, and prints. A somewhat simple recursive
+algorithm walks backwards through the program computing symbolic tables.
+Essentially, the algorithm traces all paths through the programs control flow.</p>
+
+<p>There is also a higher-level language <code>L++</code> which can be compiled to <code>L</code>.</p>
+
+<p><strong>Homeostasis Protocol.</strong>
+Assume data is partitioned (not replicated) across a cluster of <code>K</code> nodes. We
+model a distributed database as a pair <code>&lt;D, Loc&gt;</code> where <code>D</code> is a database and
+<code>Loc</code> is a function from objects to an index between 1 and <code>K</code>. Each
+transaction <code>T</code> runs on a site <code>i</code>; formally, <code>l(T) = i</code>. For simplicity, we
+assume that transactions only write to objects local to the site it is running
+on.</p>
+
+<p>Each transaction runs on some site. It reads fresh versions of values on the
+site and stale versions of values on other sites. Nodes establish treaties with
+one another such that operating with stale data does not affect the correctness
+of the transaction. This is best explained by way of example. Imagine the
+following transaction is running on a site where x is remote.</p>
+
+<p><code>
+x' = r(x)
+if x' &gt; 0:
+    write(y = 1)
+else:
+    write(y = 2)
+</code></p>
+
+<p>If we establish the treaty <code>x &gt; 0</code>, then it doesn't matter what the actual
+value of <code>x</code> is. We now formalize this notion.</p>
+
+<p>Given a database <code>D</code>, a <em>local-remote partition</em> is a function <code>p</code> from objects
+to booleans. We can represent a database <code>D</code> with respect to a local-remote <code>p</code>
+as a pair <code>(l, r)</code> where <code>l</code> is a vector of values <code>x</code> such that <code>p(x)</code>, and
+<code>r</code> is a vector of values <code>x</code> such that <code>not p(x)</code>. In words, we can model a
+database as disjoint sets of local and remote values.</p>
+
+<p>We say <code>&lt;(l, r), G&gt; = &lt;(l', r') G'&gt;</code> if <code>l = l'</code> and <code>r = r'</code>. Given a database
+<code>D</code>, local-remote partition <code>p</code>, transaction <code>T</code>, and set of vectors <code>L</code> and
+<code>R</code>, we say <code>(L, R)</code> is a <em>local-remote slice</em> (LR-slice) for <code>T</code> if <code>Eval((l,
+r), T) = Eval((l, r'), T)</code> for all <code>l</code> in <code>L</code> and <code>r, r'</code> in <code>R</code>. In words, (L,
+R) is a local-remote slice for T if T's output depends only on the values of
+local values.</p>
+
+<p>A <em>global treaty</em> Gamma is a subset of possible database states. A global
+treaty is valid for a set of transactions <code>{T1, ..., Tn}</code> if <code>({l | (l, r) in
+Gamma}, {r | (l, r) in Gamma})</code> is an LR-slice for all <code>T</code>.</p>
+
+<p>The homoeostasis protocol proceeds in rounds where each round has three phases:</p>
+
+<ol>
+<li><em>Treaty generation</em> The system generates a treaty for the current database state.</li>
+<li><em>Normal execution.</em> Transactions can execute without coordination reading a
+snapshot of remote values. After each site executes a transaction, it checks
+that it does not bring the database to a state outside the treaty. If it
+doesn't, the transaction is committed. If it does, we enter the next phase.</li>
+<li><em>Cleanup.</em> All sites synchronize and communicate all values that have
+changed since the last round. All sites then run the transaction that caused
+the violation. Finally, we enter the next round.</li>
+</ol>
+
+<p><strong>Generating Treaties.</strong>
+Two big questions remain: how do we generate treaties, and how do we enforce
+treaties?</p>
+
+<p>Given an initial database state <code>D</code>, we could always pick <code>Gamma = {D}</code>. This
+requires that we synchronize after every single database modification. We want
+to pick the treaties that let us run as long as possible before synchronizing.
+We can pick the predicate <code>P</code> in the symbolic table that <code>D</code> satisfies but this
+isn't guaranteed to be a valid treaty. Instead we take the predicate <code>P</code> and
+divide it into a set of local treaties <code>P1, ..., PK</code> where the conjunction of
+all local treaties imply the global treaty. Moreover, each local treaty must be
+satisfied by the database. The conjunction of the local treaties is our global
+treaty and is guaranteed to be valid.</p>
+
+<p>Finding good local treaties is not easy. In fact, it can be undecidable pretty
+easily. We limit ourselves to linear arithmetic and leverage SMT solvers to do
+the heavy lifting for us. First, we decompose the global treaty into a
+conjunction of linear constraints. We then generate templates from the
+constraints and instantiate them using Z3.</p>
+
+<p><strong>Homeostasis in Practice.</strong>
+Roy et al. present a homoeostasis prototype. An offline preprocessing component
+takes in L++ transactions and computes join symbolic tables, using tricks to
+keep the tables small. It them initializes global and local treaties. The
+online execution component executes the homeostasis protocol described above.
+It is implemented in Java over MySQL. The analysis uses ANTLR-4 and Z3.</p>
+  </div>
+</body>
+</html>

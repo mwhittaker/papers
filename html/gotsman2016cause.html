@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://scholar.google.com/scholar?cluster=16043456868654348168&amp;hl=en&amp;as_sdt=0,5">'Cause I'm Strong Enough: Reasoning about Consistency Choices in Distributed Systems (2016)</a></h2>
+
+<p>Strong consistency increases latency; weak consistency is hard to reason about.
+Compromising between the two, a number of databases allow each operation to run
+with either strong or weak consistency. Ideally, users choose the minimal set
+of strongly consistent operations needed to enforce some application specific
+invariant. However, deciding which operations to run with strong consistency
+and which to run with weak consistency can be very challenging. This paper</p>
+
+<ol>
+<li>introduces a formal hybrid consistency model which subsumes many existing
+consistency models,</li>
+<li>introduces a modular proof rule which can determine whether a given
+consistency model enforces an invariant, and</li>
+<li>implements a prototype using a standard SMT solver.</li>
+</ol>
+
+<p><strong>Consistency Model, Informally.</strong>
+Consider</p>
+
+<ul>
+<li>a set of states <code>s, s_init \in State</code>,</li>
+<li>a set of operations <code>Op = {o, ...}</code>,</li>
+<li>a set of values <code>\bot in Val</code>, and</li>
+<li>a set of replicas <code>r_1, r_2, ...</code>.</li>
+</ul>
+
+<p>The denotation of an operation is denoted <code>F_o</code> where</p>
+
+<ul>
+<li><code>F_o: State -&gt; (Val x (State -&gt; State))</code>,</li>
+<li><code>F_o^val(s) = F_o(s)[0]</code> (the value returned by the operation), and</li>
+<li><code>F_o^eff(s) = F_o(s)[1]</code> (the effect of the operation).</li>
+</ul>
+
+<p>For example, a banking operation may let states range over natural numbers
+where</p>
+
+<ul>
+<li><code>F_deposit_a(s) = (\bot, fun s' -&gt; s' + a)</code></li>
+<li><code>F_interest(s) = (\bot, fun s' -&gt; s' + 0.05 * s)</code></li>
+<li><code>F_query(s) = (s, fun s' -&gt; s')</code></li>
+</ul>
+
+<p>If all operations commute (i.e. <code>forall o1, o2, s1, s2. F_o1(s1) o F_o2(s2) =
+F_o2(s2) o F_o1(s1)</code>), then all replicas are guaranteed to converge. However,
+convergence does not guarantee all application invariants are maintained. For
+example, an invariant <code>I = {s | s &gt;= 0}</code> could be violated by merging
+concurrent withdrawals. To enforce invariants, we introduce a token system
+which can be used to order certain operations.</p>
+
+<p>A token system <code>TS = (Token, #)</code> is a set of tokens <code>Token</code> and a symmetric
+relation <code>#</code> over <code>Token</code>. We say two sets of tokens <code>T1 # T2</code> if <code>exists t1 in
+T1, t2 in T2. t1 # t2</code>. We also update our definition of operations to acquire
+tokens:</p>
+
+<ul>
+<li><code>F_o: State -&gt; (Val x (State -&gt; State) x P(Token))</code>,</li>
+<li><code>F_o^val(s) = F_o(s)[0]</code> (the value returned by the operation),</li>
+<li><code>F_o^eff(s) = F_o(s)[1]</code> (the effect of the operation), and</li>
+<li><code>F_o^tok(s) = F_o(s)[2]</code> (the tokens acquired by the operation).</li>
+</ul>
+
+<p>Our consistency model will ensure that two operations that acquire conflicting
+operations will be ordered.</p>
+
+<p><strong>Formal Semantics.</strong>
+Recall a <em>strict partial order</em> is a partial order that is transitive and
+irreflexive (e.g. sets ordered by strict subset). Given a partial order <code>R</code>, we
+say <code>(a, b) \in R</code> or <code>a -R-&gt; b</code>. Consider a countably infinite set <code>Event</code> of
+events ranged over by <code>e, f, g</code>. If operations are like transactions, an event
+is like applying a transaction at a replica.</p>
+
+<ul>
+<li><em>Definition 1.</em> Given token system <code>TS = (Token, #)</code>, an <em>execution</em> is a
+tuple <code>X = (E, oper, rval, tok, hb)</code> where
+<ul>
+<li><code>E \subset Event</code> is a finite subset of events,</li>
+<li><code>oper: E -&gt; Op</code> designates the operation of each event,</li>
+<li><code>rval: E -&gt; Val</code> designates the return value of each event,</li>
+<li><code>tok: E -&gt; P(Token)</code> designates the tokens acquired by each event, and</li>
+<li><code>hb \subset Event x Event</code> is a happens before strict partial order where
+<code>forall e, f. tok(e) # tok(f) =&gt; (e-hb-&gt;f or f-hb-&gt;e)</code>.</li>
+</ul></li>
+</ul>
+
+<p>An execution formalizes operations executing at various replicas concurrently,
+and the happens before relation captures how these operations are propagated
+between replicas. The transitivity of the happens before relation ensures at
+least causal consistency.</p>
+
+<p>Let</p>
+
+<ul>
+<li><code>Exec(TS)</code> be the set of all executions over token system <code>TS</code>, and</li>
+<li><code>ctxt(e, X) = (E, X.oper|E, X.rval|E, X.tok|E, X.hb|E)</code> be the context of <code>e</code>
+where <code>E = X.hb^-1(e)</code>. Intuitively, <code>ctxt(e, X)</code> is the subexection of <code>X</code>
+that only includes operations causally preceding <code>e</code>.</li>
+</ul>
+
+<p>Executions are directed graphs of operations, but without a semantics, they are
+rather meaningless. Here, we define a relation <code>evald_F \subset Exec(TS) x
+P(State)</code> where <code>evald_F(Y)</code> is the set of all final states <code>Y</code> can be in after
+all operations are propagated to all replicas. We'll see shortly that if all
+non-token-conflicting operations commute, then <code>evald_F</code> is a function.</p>
+
+<ul>
+<li><code>evald_F(Y) = {}</code> if <code>Y.E = {}</code>, and</li>
+<li><code>evald_F(Y) = {F_e^eff(s)(s') | e \in max(Y), s \in evald_F(ctxt(e, Y)), s'
+\in evalfd_F(Y|Y.E - {e})}</code> otherwise.</li>
+</ul>
+
+<p>Now,</p>
+
+<ul>
+<li><em>Definition 2.</em> An execution <code>X \in Exec(TS)</code> is <em>consistent</em> with <code>TS</code> and
+<code>F</code> denoted <code>X |= TS, F</code> if <code>forall e \in X.e. exists s \in evald_F(ctxt(e,
+x)). X.val(e) = F_X.oper(e)^val(s) and X.tok(e = F_X.oper(e)^tok(s))</code>.</li>
+</ul>
+
+<p>We let <code>Exec(TS, F) = {X | X |= TS, F}</code>. Consistent operations are closed under
+context. Furthermore, <code>evald_F</code> is a function when restricted to consistent
+executions where non-token-conflicting operations commute. We call this
+function <code>eval_F</code>.</p>
+
+<p>This model can model a number of consistency models:</p>
+
+<ul>
+<li><em>Causal consistency.</em> Let <code>Token = {}</code>.</li>
+<li><em>Sequential consistency.</em> Let <code>Token = {t}</code>, <code>t # t</code>, and <code>F_o^tok(s) = {t}</code>
+for all <code>o</code>.</li>
+<li><em>RedBlue Consistency.</em> Let <code>Token = {t}</code>, <code>t # t</code>, and <code>F_o^tok(s) = {t}</code> for
+all red <code>o</code> and <code>F_o^tok(s) = {}</code> for all blue <code>o</code>.</li>
+</ul>
+
+<p><strong>State Based Proof Rule.</strong>
+We want to construct a proof rule to establish the fact that <code>Exec(TS, F)
+\subset eval_F^-1(I)</code>. That is, every execution results in a state that
+satisfies the invariant. Since executions are closed under context, this also
+means that all operations execute on a state that satisfies the invariant.</p>
+
+<p>Our proof rule involves a <em>guarantee relation</em> <code>G(t)</code> over states which
+describes all possible state changes that can occur while holding token <code>t</code>.
+Similarly, <code>G_0</code> describes the state transitions that can occur without holding
+any tokens.</p>
+
+<p>Here is the proof rule.</p>
+
+<ul>
+<li><em>S1</em>: <code>s_init \in I</code>.</li>
+<li><em>S2</em>: <code>G_0(I) \subset I and forall t. G(t)(I) \subset I</code>.</li>
+<li><em>S3</em>: <code>forall o, s, s'.</code>
+<ul>
+<li><code>s \in I and</code></li>
+<li><code>(s, s') \in (G_0 \cup G(F_o^tok(s)^\bot))* =&gt;</code></li>
+<li><code>(s', F_o^eff(s)(s')) \in G_0 \cup G(F_o^tok(s))</code>.</li>
+</ul></li>
+</ul>
+
+<p>In English,</p>
+
+<ul>
+<li><em>S1</em>: <code>s_init</code> satisfies the invariant.</li>
+<li><em>S2</em>: <code>G</code> and <code>G_0</code> preserve the invariant.</li>
+<li><em>S3</em>: If we start in any state <code>s</code> that satisfies the invariant and can
+transition in any finite number of steps to any state <code>s'</code> without acquiring
+any tokens conflicting with <code>o</code>, then we can transition from <code>s'</code> to
+<code>F_o^eff(s)(s')</code> in a single step using the tokens acquired by <code>o</code>.</li>
+</ul>
+
+<p><strong>Event Based Proof Rule and Soundness.</strong>
+Instead of looking at states, we can instead look at executions. That is, if we
+let invariants <code>I \subset Exec(TS)</code>, then we want to write a proof rule to
+ensure <code>Exec(TS, F) \subset I</code>. That is, all consistent executions satisfy the
+invariant. Again, we use a guarantee <code>G \subset Exec(TS) x Exec(TS)</code>.</p>
+
+<ul>
+<li><em>E1</em>: <code>X_init \in I</code>.</li>
+<li><em>E2</em>: <code>G(I) \in I.</code></li>
+<li><em>E3</em>: <code>forall X, X', X''. forall e in X''.E.</code>
+<ul>
+<li><code>X'' |= TS, F and</code></li>
+<li><code>X' = X''|X''.E - {e} and</code></li>
+<li><code>e \in max(X'') and</code></li>
+<li><code>X = ctxt(e, X'') and</code></li>
+<li><code>X \in I and</code></li>
+<li><code>(X, X') \in G* =&gt;</code></li>
+<li><code>(X', X'') \in G</code>.</li>
+</ul></li>
+</ul>
+
+<p>This proof rule is proven sound. The event based rule and its soundness is
+derived from this.</p>
+
+<p><strong>Examples and Automation.</strong>
+The authors have built a banking, auction, and courseware application in this
+style. They have also built a prototype that you give <code>TS</code>, <code>F</code>, and <code>I</code> and it
+determines if <code>Exec(T, f) \subset eval_F^-1(I)</code>. Their prototype modifies the
+state-based proof rule eliminating the transitive closure and introducing
+intermediate predicates.</p>
+  </div>
+</body>
+</html>

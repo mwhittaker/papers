@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://scholar.google.com/scholar?cluster=3008756295145383805&amp;hl=en&amp;as_sdt=0,5">Replicated Data Consistency Explained Through Baseball (2013)</a></h2>
+
+<p>Different cloud providers provide cloud storage with different mixes of
+consistency:</p>
+
+<ul>
+<li><em>Azure</em> provides strong consistency.</li>
+<li><em>Amazon S3</em> provides eventual consistency.</li>
+<li><em>Amazon DynamoDB</em> provides eventual and strong consistency.</li>
+<li><em>Amazon SimpleDB</em> provides eventual and strong consistency.</li>
+<li><em>Google App Engine Datastore</em> provides eventual and strong consistency.</li>
+<li><em>PNUTS</em> provides read-any, read-critical, and read-latest.</li>
+<li>Some systems provide quorum reads.</li>
+</ul>
+
+<p>Cloud providers are motivated to provide multiple consistency guarantees due to
+the inherit tradeoff between consistency, performance, and availability. This
+paper presents six consistency models in plain English and motivates their use
+with a baseball application.</p>
+
+<p><strong>Read Consistency Guarantees.</strong>
+Assuming writes linearized using something like Paxos, we define six read
+consistency guarantees:</p>
+
+<ul>
+<li><em>Strong consistency (SC).</em> Reads reflect all writes at the point of the read.</li>
+<li><em>Eventual consistency (EC).</em> Reads reflect some subset of the writes that
+happened at the point of the read.</li>
+<li><em>Consistent prefix (CP).</em> Reads reflect some prefix of writes at the point of
+the read. This is most useful for multi-object reads.</li>
+<li><em>Bounded staleness (BS).</em> Reads reflect all writes before some time <code>T</code>
+before the point of the read.</li>
+<li><em>Monotonic reads (MR).</em> This session guarantee says that repeated reads
+reflect monotonically non-decreasing sets of writes.</li>
+<li><em>Read my writes (RMW).</em> Reads followed by writes reflect the values written.</li>
+</ul>
+
+<p>These consistency guarantees can be organized using the following partial
+order:</p>
+
+<p><code>
+    SC
+CP BS MR RMW
+    EC
+</code></p>
+
+<p><strong>Baseball as a Sample Application.</strong>
+Imagine a key-value store which provides all of the read consistency guarantees
+outlined above. Consider a baseball application that writes home and visitor
+runs into two separate variables in this key value store. Consider the following game:</p>
+
+<ul>
+<li><code>Write("home", 1)</code></li>
+<li><code>Write("visitors", 1)</code></li>
+<li><code>Write("home", 2)</code></li>
+<li><code>Write("home", 3)</code></li>
+<li><code>Write("visitors", 2)</code></li>
+<li><code>Write("home", 4)</code></li>
+<li><code>Write("home", 5)</code></li>
+</ul>
+
+<p>|          | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | RUNS   |
+| -------- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ------ |
+| Visitors | 0   | 0   | 1   | 0   | 1   | 0   | 0   |     |     | 2      |
+| Home     | 1   | 0   | 1   | 1   | 0   | 2   |     |     |     | 5      |</p>
+
+<p>The read consistency guarantees allow for the following reads:</p>
+
+<p>| Read Guarantee | Permitted Reads                                      |
+| -------------- | ---------------------------------------------------- |
+| SC             | <code>2-5</code>                                                |
+| EC             | <code>{0, 1, 2}x{0, 1, 2, 3, 4, 5}</code>                       |
+| CP             | <code>0-0</code>,<code>0-1</code>,<code>1-1</code>,<code>1-2</code>,<code>1-3</code>,<code>2-3</code>,<code>2-4</code>,<code>2-5</code>      |
+| BS             | 1-inning: <code>2-3</code>,<code>2-4</code>,<code>2-5</code>                          |
+| MR             | <code>1-3</code>: <code>1-3</code>,<code>1-4</code>,<code>1-5</code>,<code>2-3</code>,<code>2-4</code>,<code>2-5</code>           |
+| RMW            | writer: <code>2-5</code>; other: <code>{0, 1, 2}x{0, 1, 2, 3, 4, 5}</code> |</p>
+
+<p><strong>Read Requirements for Participants.</strong>
+Different users of the baseball database have different consistency
+requirements:</p>
+
+<ul>
+<li><em>Official scorekeeper.</em> The official scorekeeper is the sole person
+responsible for updating the scores (e.g. <code>Write("visitors", Read("visitors")
+&lt;ul&gt;
+&lt;li&gt;1)</code>). The scorekeeper requires strongly consistent writes, but since they
+are the only one writing, they can get by with RMW instead of SC.</li>
+</ul></li>
+<li><em>Umpire.</em> The umpire reads the score after the top of the 9th inning to see
+if the home team is winning. This requires SC.</li>
+<li><em>Radio reporter.</em> The radio reporter reports the current score of the game
+every 30 minutes. The score doesn't have to be fresh, but it should be a
+score that existed at some point. Moreover, the score should not time travel
+backwards. We can accomplish this with CP and MR. Alternatively, we can use
+30-minute BS.</li>
+<li><em>Sports writer.</em> The sports writer writes a report of the game one hour after
+the game is over. 1 hour BS suffices.</li>
+<li><em>Statistician.</em> The statistician maintains the total yearly runs. They
+require SC to read the daily runs but only RMW to read the yearly runs.</li>
+<li><em>Stat watcher.</em> Stat watchers read the stats every day or so. Eventual
+consistency suffices.</li>
+</ul>
+
+<p><strong>Lessons.</strong>
+- All of the six presented consistency guarantees are useful.
+- Different clients may want different consistencies even when accessing the
+  same data.
+- Even simple databases may have diverse users with different consistency
+  needs.
+- Clients should be able to choose their desired consistency.</p>
+  </div>
+</body>
+</html>

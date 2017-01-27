@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="TODO">A Fast File System for UNIX (1984)</a></h2>
+
+<p><strong>Summary.</strong>
+The <em>Fast Filesystem</em> (FFS) improved the read and write throughput of the
+original Unix file system by 10x by</p>
+
+<ol>
+<li>increasing the block size,</li>
+<li>dividing blocks into fragments, and</li>
+<li>performing smarter allocation.</li>
+</ol>
+
+<p>The original Unix file system, dubbed "the old file system", divided disk
+drives into partitions and loaded a file system on to each partition. The
+filesystem included a superblock containing metadata, a linked list of free
+data blocks known as the <em>free list</em>, and an <em>inode</em> for every file. Notably,
+the file system was composed of <strong>512 byte</strong> blocks; no more than 512 bytes
+could be transfered from the disk at once. Moreover, the file system had poor
+data locality. Files were often sprayed across the disk requiring lots of
+random disk accesses.</p>
+
+<p>The "new file system" improved performance by increasing the block size to any
+power of two at least as big as <strong>4096 bytes</strong>. In order to handle small files
+efficiently and avoid high internal fragmentation and wasted space, blocks were
+further divided into <em>fragments</em> at least as large as the disk sector size.</p>
+
+<pre><code>      +------------+------------+------------+------------+
+block | fragment 1 | fragment 2 | fragment 3 | fragment 4 |
+      +------------+------------+------------+------------+
+</code></pre>
+
+<p>Files would occupy as many complete blocks as possible before populating at
+most one fragmented block.</p>
+
+<p>Data was also divided into <em>cylinder groups</em> where each cylinder group included
+a copy of the superblock, a list of inodes, a bitmap of available blocks (as
+opposed to a free list), some usage statistics, and finally data blocks. The
+file system took advantage of hardware specific information to place data at
+rotational offsets specific to the hardware so that files could be read with as
+little delay as possible. Care was also taken to allocate files contiguously,
+similar files in the same cylinder group, and all the inodes in a directory
+together. Moreover, if the amount of available space gets too low, then it
+becomes more and more difficult to allocate blocks efficiently. For example, it
+becomes hard to allocate the files of a block contiguously. Thus, the system
+always tries to keep ~10% of the disk free.</p>
+
+<p>Allocation is also improved in the FFS. A top level global policy uses file
+system wide information to decide where to put new files. Then, a local policy
+places the blocks. Care must be taken to colocate blocks that are accessed
+together, but crowding a single cyclinder group can exhaust its resources.</p>
+
+<p>In addition to performance improvements, FFS also introduced</p>
+
+<ol>
+<li>longer filenames,</li>
+<li>advisory file locks,</li>
+<li>soft links,</li>
+<li>atomic file renaming, and</li>
+<li>disk quota enforcement.</li>
+</ol>
+  </div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="TODO">Generalized Isolation Level Definitions (2000)</a></h2>
+
+<p><strong>Summary.</strong>
+In addition to serializability, ANSI SQL-92 defined a set of weaker isolation
+levels that applications could use to improve performance at the cost of
+consistency. The definitions were implementation-independent but ambiguous.
+Berenson et al. proposed a revision of the isolation level definitions that was
+unambiguous but specific to locking. Specifically, they define a set of
+<em>phenomena</em>:</p>
+
+<ul>
+<li>P0: <code>w1(x) ... w2(x) ...</code>      <em>"dirty write"</em></li>
+<li>P1: <code>w1(x) ... r2(x) ...</code>      <em>"dirty read"</em></li>
+<li>P2: <code>r1(x) ... w2(x) ...</code>      <em>"unrepeatable read"</em></li>
+<li>P3: <code>r1(P) ... w2(y in P) ...</code> <em>"phantom read"</em></li>
+</ul>
+
+<p>and define the isolation levels according to which phenomena they preclude.
+This preclusion can be implemented by varying how long certain types of locks
+are held:</p>
+
+<p>| write locks | read locks | phantom locks | precluded      |
+| ----------- | ---------- | ------------- | -------------- |
+| short       | short      | short         | P0             |
+| long        | short      | short         | P0, P1         |
+| long        | long       | short         | P0, P1, P2     |
+| long        | long       | long          | P0, P1, P2, P3 |</p>
+
+<p>This locking-specific <em>preventative</em> approach to defining isolation levels,
+while unambiguous, rules out many non-locking implementations of concurrency
+control. Notably, it does not allow for multiversioning and does not allow
+non-committed transactions to experience weaker consistency than committed
+transactions. Moreover, many isolation levels are naturally expressed as
+invariants between multiple objects, but these definitions are all over a
+single object.</p>
+
+<p>This paper introduces implementation-independent unambiguous isolation level
+definitions. The definitions also include notions of predicates at all levels.
+It does so by first introducing the definition of a <em>history</em> as a partial
+order of read/write/commit/abort events and total order of commited object
+versions.  It then introduces three dependencies: <em>read-dependencies</em>,
+<em>anti-dependencies</em>, and <em>write-dependencies</em> (also known as write-read,
+read-write, and write-write dependencies). Next, it describes how to construct
+dependency graph and defines isolation levels as constraints on these graphs.</p>
+
+<p>For example, the G0 phenomenon says that a dependency graph contains a
+write-dependency cycle. PL-1 is the isolation level that precludes G0.
+Similarly, the G1 phenomenon says that either</p>
+
+<ol>
+<li>a committed transaction reads an aborted value,</li>
+<li>a committed transaction reads an intermediate value, or</li>
+<li>there is a write-read/write-write cycle.</li>
+</ol>
+
+<p>The PL-2 isolation level precludes G1 (and therefore G0) and corresponds
+roughly to the READ-COMMITTED isolation level.</p>
+  </div>
+</body>
+</html>

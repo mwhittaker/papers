@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://scholar.google.com/scholar?cluster=17914402714677808535&amp;hl=en&amp;as_sdt=0,5">Brewer's Conjecture and the Feasibility of Consistent, Available, Partition-Tolerant Web Services (2002)</a></h2>
+
+<p>Informally, The CAP theorem states that partition-tolerant distributed systems
+cannot be simultaneously consistent and available. Informally,</p>
+
+<ul>
+<li>a <em>consistent</em> system is one which provides ACID-like guarantees;</li>
+<li>an <em>available</em> system is one where every request is met with a successful
+response;</li>
+<li>a <em>partition-tolerant</em> system is one which behaves correctly despite the
+possibility of partitions (duh!).</li>
+</ul>
+
+<p><strong>Formal Model.</strong>
+Formally, we'll consider a distributed system that implements a single readable
+and writeable <em>data object</em>. We say the data object is atomic, or consistent,
+if it is linearizable. We say the data object is available if "every request
+received by a non-failing node in the system [results] in a response." During a
+network partition, messages sent across the partition can be arbitrarily lost.
+Worse, any message can be lost by modelling it as an instantaneous network
+partition between the sender and receiver. Thus, a partition-tolerant system
+must be able to handle arbitrary message loss.</p>
+
+<p><strong>Asynchronous Networks Impossibility Result.</strong>
+In an asynchronous network, messages can be reordered and delayed arbitrarily.
+Moreover, nodes do not have any form of clock. They must "make decisions based
+only on the messages received."</p>
+
+<p><em>Theorem 1</em> It is impossible in the asynchronous network model to implement a
+read/write data object that guarantees availability and atomic consistency in
+all fair executions (including those in which messages are lost).</p>
+
+<p><em>Proof.</em> Assume for contradiction there is a distributed system under the
+asynchronous network model with at least two nodes that is available and
+consistent in all fair executions.  Partition the network into two non-empty
+subsets <code>G1</code> and <code>G2</code>, and assume that all messages are dropped between the two
+partitions. Also assume the system has initial value <code>v0</code>. Consider an
+execution which first sends a write request with value <code>v1 != v0</code> to <code>G1</code>.  By
+availability, the write must be accepted. After it does, we issue a read
+request to <code>G2</code>. Again by availability, we must receive a response. Since <code>G2</code>
+has received no messages from <code>G1</code>, it must return <code>v0</code> which is inconsistent.</p>
+
+<p>In our proof, we assumed that messages between the two partitions were dropped.
+In the asynchronous model, this assumption is actually too strong. Intuitively,
+<code>G2</code> cannot differentiate between dropped and delayed messages, so it suffices
+to delay messages between <code>G1</code> and <code>G2</code> rather than just dropping them.</p>
+
+<p><em>Corollary 1.1</em> It is impossible in the asynchronous network model to implement
+a read/write data object that guarantees availability in all fair executions
+and atomic consistency in fair executions in which no messages are lost.</p>
+
+<p><em>Proof.</em> Take the counterexample execution from above. After the read returns,
+deliver all outstanding messages from <code>G1</code> to <code>G2</code>. In this execution, all
+messages are delivered, but the system is still inconsistent.</p>
+
+<p><strong>Solutions in the Asynchronous Model.</strong>
+The CAP theorem tells us that partition-tolerant distributed registers cannot
+be simultaneously consistent and available, but we can settle for less.</p>
+
+<ul>
+<li><em>CP</em>. Trivially, a system which drops all requests is CP. However, we can
+often provide much better availability than this. For example, imagine if all
+nodes in the system forwarded requests to a single master node. This system
+is consistent, and as long as the master is alive, it is also available.</li>
+<li><em>CA</em>. If you assume partitions will never happen, then you can have a
+consistent and available system.</li>
+<li><em>AP</em>. Trivially, a system which always returns the initial value is available
+and partition-tolerant. Alternatively, you can settle for one of many weak
+consistency models.</li>
+</ul>
+
+<p><strong>Partially Synchronous Networks Impossibility Result.</strong>
+In the partially synchronous network model, nodes are equipped with timers that
+progress at the same rate. This allows them to trigger events to occur after a
+certain amount of time. For example, they can send a message and wait for a
+response with a timeout. Moreover, we assume that every message is delivered in
+at most <code>t_msg</code> or is otherwise lost.</p>
+
+<p><em>Theorem 2.</em> It is impossible in the partially synchronous network model to
+implement a read/write data object that guarantees availability and atomic
+consistency in all executions (even those in which messages are lost).</p>
+
+<p><em>Proof.</em> The proof is the same as the proof for Theorem 1 with some slight
+differences I don't quite understand.</p>
+
+<p><strong>Solutions in Partially Synchronous Networks.</strong>
+The partially synchronous analogue of Corollary 1.1 does not hold. That is,
+assuming all messages are delivered, a system can achieve both consistency and
+availability. For example, the CP system described above satisfies this
+property.</p>
+
+<p><strong>Weaker Consistency.</strong>
+We can easily implement weaker consistency models in the partially synchronous
+network model. Here, we define <em>t-Connected Consistency</em>. We say an execution
+of a read-write object is t-Connected Consistent if</p>
+
+<ol>
+<li>If no messages are lost, t-Consistent Consistency is equivalent to
+linearizability.</li>
+<li>If messages are lost, then there exists a partial order P such that
+<ol>
+<li>Writes are totally ordered in P, and reads are ordered with respect to
+writes.</li>
+<li>The value returned by every read is the value of the preceding write or
+the initial value if no such write exists.</li>
+<li>The ordering of events at each node is respected by P.</li>
+<li>If there is an interval of time longer than t in which no messages are
+lost, a completes before the interval, and b starts after the interval,
+then b does not precede a in P.</li>
+</ol></li>
+</ol>
+
+<p>Intuitively, t-Connected Consistency is very similar to linearizability except
+that requests can be reordered when messages are being dropped. We can
+implement a read-write data object that is t-Connected Consistent for some t
+defined below. We designate a single node as the master node.</p>
+
+<ul>
+<li>When a read arrives at a node, it forwards it to the master. If the master
+responds, the value is cached and returned to the client. If the master does
+not respond, then the value with the highest sequence number cached at the
+node is returned to the client.</li>
+<li>When a write arrives at a node, it sends it to the master. The node
+acknowledges the client after a response from the master or after a timeout.
+The node periodically sends unacknowledged values to the master.</li>
+<li>When a write arrives at the master, it assigns the write an increasing
+sequence number. Periodically, it broadcasts the latest value and sequence
+number.</li>
+</ul>
+
+<p>Let P be the partial order where writes are ordered according to their sequence
+number and reads follow the write that produced its value. Letting t be enough
+time for a write to commit and a broadcast to happen, this system is
+t-Connected Consistent.</p>
+  </div>
+</body>
+</html>

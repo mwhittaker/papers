@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="#making-geo-replicated-systems-fast-as-possible-consistent-when-necessary-2012">Making Geo-Replicated Systems Fast as Possible, Consistent when Necessary (2012)</a></h2>
+
+<p>Strong consistency is easy to reason about but hurts performance; weak
+consistency is hard to reason about but can be implemented efficiently.
+Allowing operations to run at different consistency levels is a first step
+towards compromising between strong and weak consistency, but databases
+that allow for mixed consistency operations place a burden on users to think
+critically about which operations should run at which consistency level to
+ensure application correctness. This paper makes three contributions:</p>
+
+<ol>
+<li>It introduces <em>RedBlue Consistency</em>. Intuitively, red operations are
+synchronized while blue operations execute locally and are asynchronously
+replicated.</li>
+<li>It provides sufficient conditions for which operations can be blue and which
+can be red while still ensuring the system is confluent and also
+invariant-confluent.</li>
+<li>It introduces a novel way to decompose operations into side-effect free
+<em>generator operations</em> and <em>shadow operations</em> which are asynchronously
+applied at all sites. This decomposition improves the commutativity of the
+system allowing for more blue operations.</li>
+</ol>
+
+<p>It also implements a RedBlue consistent database dubbed <em>Gemini</em>.</p>
+
+<p><strong>Related Work.</strong>
+There are a huge number of databases that can be characterized by various
+properties like low latency, causality, state convergence, single value, stable
+histories, general operations, invariants, and eventual propagation.  Moreover,
+there are a huge number of different consistency models like linearizability,
+timeline consistency, snapshot consistency, fork consistency, and eventual
+consistency.</p>
+
+<p><strong>System Model.</strong>
+In our model, data is replicated across <code>k</code> sites. Each site has a state <code>S</code>
+and executes operations <code>u, v</code>. We denote the application of an operation <code>u</code>
+to a database state <code>S</code> as <code>S + u</code>. We say two operations <code>u, v</code> commute if for
+all database stats <code>S</code>, <code>S + u + v = S + v + u</code>. We say a database state <code>S</code> is
+valid if satisfies user's invariants. Every update is applied at a single site
+before being propagated to other sites.</p>
+
+<p><strong>RedBlue Consistency.</strong>
+Given disjoint sets of operations <code>R</code>, and <code>B</code>, a <em>RedBlue order</em> is a partial
+order (U = R cup B, &lt;) where elements in <code>R</code> are totally ordered. That is for
+all <code>r, r'</code> in <code>R</code>, either <code>r &lt; r'</code> or <code>r' &lt; r</code>.</p>
+
+<p>For a site <code>i</code>, an <em>i-causal serialization</em> of <code>O = (U, &lt;)</code> is a total order
+<code>(O, &lt;&lt;)</code>, where</p>
+
+<ol>
+<li><code>&lt;&lt;</code> extends <code>&lt;</code>. That is for all <code>u, v</code> if <code>u &lt; v</code> then <code>u &lt;&lt; v</code>.</li>
+<li>If <code>site(v) = i</code> and <code>u &lt;&lt; v</code> then <code>u &lt; v</code>. This implies that if <code>v</code> on <code>i</code>
+is concurrent with operation <code>u</code> not on <code>i</code>, then <code>v</code> must come before <code>u</code>
+in <code>&lt;&lt;</code>.</li>
+</ol>
+
+<p>A system is <em>O-RedBlue consistent</em> if every site <code>i</code> runs an i-causal
+serialization of <code>O</code>. Note that if all operations are red, then RedBlue
+consistency is equivalent to serializability. If all operations are blue, then
+it is equivalent to eventual consistency.</p>
+
+<p>We say a RedBlue consistent system is <em>state convergent</em> if all causal
+serializations reach the final state.  Note that not all RedBlue consistent
+systems are state convergent. Two causal serializations could result in
+different states. If all blue operations commute with all other operations
+(i.e. they are <em>globally commutative</em>), then RedBlue consistency implies state
+convergence.</p>
+
+<p><strong>Replicating Side Effects.</strong>
+Some blue operations are not commutative but can be transformed into a
+commutative alternative. We decompose an operation <code>u</code> into a generator
+operation <code>g_u</code> and shadow operation <code>h_u(S)</code> where <code>S + g+u = S</code> and <code>S +
+h_u(S) = S + u</code>. This is similar to how updates are decomposed in operation
+based CRDTs.</p>
+
+<p>Given a site <code>i</code>, a set of shadow operations <code>U</code> and the set of generator
+operations <code>V_i</code> executed at <code>i</code>, an i-causal serialization of <code>O = (U, &lt;)</code> is
+a total order <code>O_i = (U cup V_i, &lt;&lt;)</code> where</p>
+
+<ul>
+<li><code>&lt;&lt;</code> extends <code>&lt;</code>.</li>
+<li>For any <code>h_v(S)</code> in <code>U</code> generated by <code>g_v</code> in <code>V_i</code>, <code>S</code> is the state
+obtained by applying all the shadow operations before <code>g_v</code>.</li>
+<li>For any <code>g_v</code> in <code>V_i</code> and <code>h_u(S)</code> in <code>U</code>, <code>h_u(S) &lt;&lt; g_v</code> if and only if
+<code>h_u(S) &lt; h_v(S')</code>. Again this says that if <code>h_u(S)</code> and <code>h_v(S')</code> are
+concurrent, then <code>g_v</code> and <code>h_v(S')</code> should come first.</li>
+</ul>
+
+<p>Note that even if a RedBlue consistent system is state convergent, user
+invariants can still be broken.  We say shadow operation <code>h_u(S)</code> is <em>invariant
+safe</em> if for all valid stats <code>S</code> and <code>S'</code>, <code>S' + h_u(S)</code> is valid. In words,
+replicating operations on valid states to other valid states preserves
+validity. If all blue operations are invariant safe and globally commutative
+then no site will ever enter an invalid state and sites will converge. This
+gives us guidelines on what operations can be blue and which must be red.</p>
+
+<ul>
+<li>All non-commutative pairs of operations should be red.</li>
+<li>All invariant violating operations should be red.</li>
+<li>All other operations can be blue.</li>
+</ul>
+
+<p><strong>Gemini.</strong>
+Gemini is a 10K line Java prototype implemented on top of MySQL. Each node in
+Gemini consists of a storage engine, proxy server, concurrency coordinator, and
+data writer. Users contact the proxy which executes the generator operations
+and delivers shadow operations to the concurrency coordinator. It uses
+optimistic concurrency control and vector clocks to ensure causal consistency.
+It is not fault tolerant.</p>
+  </div>
+</body>
+</html>

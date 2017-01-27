@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="TODO">Decibel: The Relational Dataset Branching System (2016)</a></h2>
+
+<p><strong>Summary.</strong>
+<em>Decibel</em> is like git for relational data.</p>
+
+<p>Often, teams need to simultaneously query, analyze, clean, or curate a
+collection of data without clobbering each other's work. Currently, the best
+solution available involves each team member making copies of the entire
+database. This is undesirable for a number of reasons:</p>
+
+<ul>
+<li>Data is stored very redundantly, wasting a huge amount of storage.</li>
+<li>It is difficult to share or merge changes made to local snapshots of the
+data.</li>
+<li>There is no systematic way to say which version of the data was used for a
+given experiment.</li>
+</ul>
+
+<p>Version control solves these problems, but existing version control systems
+(e.g. git) have a couple of shortcomings when applied naively to large
+datasets:</p>
+
+<ul>
+<li>Using distributed version control systems like git, clients clone an entire
+copy of a repository's contents. This is infeasible when working with large
+datasets.</li>
+<li>Version control systems like git operate on arbitrary data and do not
+understand the structure of relational data. This makes certain operations
+like generic diffing a bad fit.</li>
+<li>Systems like git do not support high-level data management or query APIs.</li>
+</ul>
+
+<p>Decibel manages <em>datasets</em> which are collections of relations, and each
+relation's schema includes an immutable primary key which is used to track the
+version of each row. Beginning with an initial snapshot of a dataset, users can
+check out, branch, and commit changes to the data set in a style very similar
+to git. When data is merged, non-conflicting changes to separate columns of the
+same row are both applied. If conflicting changes to the same column of the
+same row occur, one branch's changes take priority. Diffing two tables across
+two branches results in a table of insertions and deletions. Finally, data can
+be queried across versions using VQuel: a query language which is notably not
+SQL.</p>
+
+<p>This paper describes three physical realizations of Decibel's logical data
+model.</p>
+
+<ol>
+<li>In a <em>tuple-first</em> representation, tables contain every version of every
+row, and each row is annotated with a bitmap indicating the set of versions
+in which the row is live. In a <em>tuple-oriented</em> approach, each of <code>N</code> tuples
+comes with a <code>B</code>-bit bitmap for <code>B</code> branches. In a <em>branch-oriented</em>
+approach, there are <code>B</code> <code>N</code>-bit bitmaps.</li>
+<li>In a <em>version-first</em> representation, all the changes made to a table in a
+branch are stored together in the same file, and these branched files
+contain pointers to their ancestors forming a directed acyclic graph.</li>
+<li>In a <em>hybrid</em> representation, data is stored similarly to the version-first
+approach, but each of the branched files (called <em>segments</em>) includes a
+<em>segment index</em>: a bitmap, like in the tuple-first representation, that
+tracks the liveness of each row for all descendent branches. Moreover, there
+is a single <em>branch-segment bitmap</em> which for each branch, records the set
+of segments with a tuple live in that branch.</li>
+</ol>
+
+<p>The tuple-first representation is good for multi-version queries, the
+version-first representation is good for single-version queries, and the hybrid
+approach is good at both.</p>
+
+<p>This paper also presents a versioned database benchmarking framework in the
+form of a set of branching strategies and characteristic queries to analyze
+Decibel and any future versioned databases.</p>
+
+<p><strong>Commentary.</strong>
+A git-like versioned relational database seems like a great idea! This paper
+focuses on how to <em>implement</em> and <em>analyze</em> such a database efficiently; it
+focuses less on the higher-level semantics of data versioning. Notably, two
+unanswered questions stuck out to me that seem like interesting areas for
+future research.</p>
+
+<ol>
+<li>The current merging strategy seems inconvenient, if not inconsistent.
+Imagine a table <code>R(key, a, b)</code> with the invariant that <code>a + b &lt; 10</code>. Imagine
+branch <code>b1</code> updates a tuple <code>(0, 0, 0)</code> to <code>(0, 9, 0)</code> and branch <code>b2</code>
+updates it to <code>(0, 0, 9)</code>.  If these tuples are merged, the tuple becomes
+<code>(0, 9, 9)</code> violating the invariant. In systems like git, users can manually
+inspect and verify the correctness of the merge, but if a large dataset is
+being merged, this becomes infeasible. I think more research is needed to
+determine if this strategy is good enough and won't cause problems in
+practice. Or if it is insufficient, what merging strategies can be applied
+on large datasets.  Perhaps ideas could be borrowed from CRDT literature; if
+all columns were semilattices, the columns could be merged in a sane way.</li>
+<li>How useful is diffing when dealing with large datasets? When working with
+git, even a modestly sized diff can become confusing. Would a non-trivial
+diff of a large dataset be incomprehensible?</li>
+</ol>
+  </div>
+</body>
+</html>

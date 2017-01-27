@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://scholar.google.com/scholar?cluster=4496511741683930603&amp;hl=en&amp;as_sdt=0,5">Conflict-free Replicated Data Types (2011)</a></h2>
+
+<p><strong>Summary.</strong>
+Eschewing strong consistency in favor of weaker consistency allows for higher
+availability and lower latency. On the other hand, programming with weaker
+consistency models like eventual consistency has traditionally been ad-hoc and
+error-prone. CRDTs provide a way to achieve eventual consistency in a
+principled way.</p>
+
+<p>This paper considers a set of non-byzantine processes <code>{p_1, ..., p_n}</code>
+connected by an asynchronous network. Each process <code>p_i</code> maintains some state
+<code>s_i</code> that is updated over time. Processes use some mechanism like gossip to
+communicate states to one another, and whenever a process <code>p_i</code> receives state
+<code>s_j</code> from process <code>p_j</code>, it merges <code>s_j</code> into its state <code>s_i</code>.</p>
+
+<p>More formally, each process maintains a <em>state-based object</em> which we model as
+a five tuple <code>(S, s^0, q, u, m)</code> where</p>
+
+<ul>
+<li><code>S</code> is a set of states,</li>
+<li><code>s^0 \in S</code> is the initial state,</li>
+<li><code>q: S -&gt; 'a</code> is a query method,</li>
+<li><code>u: S -&gt; 'a -&gt; S</code> is an update method, and</li>
+<li><code>m: S -&gt; S -&gt; S</code> is a merge method.</li>
+</ul>
+
+<p>All process begin with the initial state <code>s^0</code>. Clients can query the value of
+the object with <code>q</code> (i.e. <code>s.q()</code>) and update the object with <code>u</code> (e.g.
+<code>s.u(a)</code>). When processes communicate state, they are merged with <code>m</code> (e.g.
+<code>s_i.m(s_j)</code>).</p>
+
+<p>Method invocations (i.e. invocations of <code>q</code>, <code>u</code>, or <code>m</code>) are totally ordered
+on each process and sequentially numbered starting from 1. States are similarly
+ordered and numbered, updating with every method invocation:</p>
+
+<pre><code>s^0 . f^1 . s^1 . f^2 . s^2 . ...
+</code></pre>
+
+<p>An object's <em>state-based causal history</em> traces its updates over logical time.
+Formally, a causal history <code>C = [c_1, ..., c_n]</code> is an <code>n</code>-tuple of versioned
+sets <code>c_i^0, c_i^1, c_i^2, ...</code> (one for each process) where each set contains
+updates (e.g.  <code>u_i^k(a)</code>). A causal history is updated at a process <code>i</code> as
+follows:</p>
+
+<ul>
+<li>When <code>i</code> issues a query, <code>c_i</code> is unchanged. That is, <code>c_i^k = c_i^{k+1}</code>.</li>
+<li>When <code>i</code> issues an update, it is added to <code>c_i</code>. That is, <code>c_i^{k+1} = c_i^k
+\cup {u_i^k}</code>.</li>
+<li>When <code>i</code> merges another state <code>s_j</code>, <code>c_i</code> and <code>c_j</code> are merged. That is,
+<code>c_i^{k+1} = c_i^k \cup c_j^k</code>.</li>
+</ul>
+
+<p>An update is <em>delivered</em> at <code>i</code> when it enters <code>c_i</code>. An update <code>u</code> <em>happens
+before</em> another update <code>v_i^k</code> when <code>u</code> is in <code>c_i^k</code>. Two updates are
+<em>concurrent</em> if neither happens before the other.</p>
+
+<p>These definitions are notationally dense but are a simple formalization of
+Lamport's notions of logical time. Here is an illustration of how causal
+history evolves over time for a three process system.</p>
+
+<pre><code>p_0: {} -[u(a)]-&gt; {u(a)} -.
+                           \
+p_1: {} -[q]----&gt; {} -------`-[m]-&gt; {u(a)}---.-[m]-&gt; {u(a), v(b)}
+                                            /
+p_2: {} -[v(b)]-&gt; {v(b)} ------------------'
+</code></pre>
+
+<p>We define an object to be <em>eventually consistent</em> if it satisfies the following
+three properties:</p>
+
+<ul>
+<li><em>Eventual delivery:</em> An update delivered at a correct process is eventually
+delivered to all correct processes.</li>
+<li><em>Convergence:</em> If two processes have the same updates, they will <em>eventually</em>
+have the same states.</li>
+<li><em>Termination:</em> All methods terminate.</li>
+</ul>
+
+<p>A <em>strongly eventually consistent</em> (SEC) object is one that is eventually
+consistent and additionally satisfies the following property.</p>
+
+<ul>
+<li><em>Strong Convergence:</em> If two processes have the same updates, they have the
+same states.</li>
+</ul>
+
+<p>A state based object imbued with a partial order <code>(S, &lt;=, s^0, q, u, m)</code> is a
+<em>monotonic semilattice</em> if</p>
+
+<ul>
+<li><code>(S, &lt;=)</code> is a join semilattice,</li>
+<li><code>s_i.m(s_j)</code> computes the least upper bound (or join) or <code>s_i</code> and <code>s_j</code>, and</li>
+<li>state is monotonically non-decreasing over updates (i.e. <code>s &lt;= s.u(x)</code>).</li>
+</ul>
+
+<p>State-based objects that are monotonic semilattices (CvRDTs) are SEC.</p>
+
+<p>Dual to state-based objects are <em>operation-based objects</em>. In the
+operation-based model, processes communicate updates to one another rather than
+states. When a process receives an update it applies it to its state. Formally,
+an op-based object is a 6 tuple <code>(S, s^0, q, t, u, P)</code> where</p>
+
+<ul>
+<li><code>S</code> is a set of states,</li>
+<li><code>s^0 \in S</code> is the initial state,</li>
+<li><code>q</code> is a query method,</li>
+<li><code>t</code> is a side-effect free prepare-update method,</li>
+<li><code>u</code> is an effect-update method, and</li>
+<li><code>P</code> is a precondition (not used much in this paper).</li>
+</ul>
+
+<p>Calls to <code>u</code> must be immediately preceded by calls to <code>t</code>. Op-based causal
+histories are defined similarly to state-based causal histories where <code>t</code>
+behaves like <code>q</code> and <code>m</code> is now missing. The definition of happens-before and
+concurrent operations extends naturally from earlier. An op-based object whose
+updates commute is a CvRDT. If messages are delivered exactly once, message
+delivery respect the causal order, then CvRDTs are SEC.</p>
+
+<p>Turns out, CvRDTs and CmRDTs are equivalent in that they can simulate one
+another. Moreover SEC is incomparable to sequential consistency. Consider an
+add-wins set CRDT in which one process performs <code>add(e); remove(e')</code> and
+another performs <code>add(e'); remove(e)</code>. When the two sets are merged, they
+contain <code>e</code> and <code>e'</code>, but under sequential consistency, one of the removes must
+occur last.</p>
+
+<p>Example CRDTs include vector clocks, increment-only counters,
+increment-decrement counters add-only sets, add-remove sets, maps, logs, and
+graphs.</p>
+  </div>
+</body>
+</html>

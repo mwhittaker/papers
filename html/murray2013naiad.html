@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://scholar.google.com/scholar?cluster=2514717880214148696&amp;hl=en&amp;as_sdt=0,5">Naiad: A Timely Dataflow System (2013)</a></h2>
+
+<p>Naiad is a data-parallel dataflow framework that supports <em>low-latency</em>, <em>high
+throughput</em>, <em>iterative and incremental computations</em>, and <em>consistent
+intermediate results</em>. There are a lot of batch processing systems, stream
+processing systems, graph processing systems, etc. out there. Most of these
+systems satisfy most of these properties. Naiad achieves <em>all</em> of them in a
+single system making things more efficient, succinct, and maintainable. Naiad
+uses a new computation model, <em>timely dataflow</em>, which includes the following
+features:</p>
+
+<ol>
+<li>structured loops which allow iterative computation and feedback,</li>
+<li>stateful vertices, and</li>
+<li>vertex notifications for the end of a epoch or the end of an iteration.</li>
+</ol>
+
+<p><strong>Timely Dataflow.</strong>
+Computation in the timely dataflow model is expressed as a directed, possibly
+cyclic graph of stateful vertices and edges that deliver messages. Messages are
+annotated with logical timestamps that allow vertices to distinguish messages
+from different epochs and loop iterations. Moreover, vertices are notified when
+all of the messages of a given timestamp have been delivered.</p>
+
+<p><em>Graph Structure.</em>
+A timely dataflow graph has specially designated <em>input vertices</em> and <em>output
+vertices</em>. Inputs are pumped into the input vertices by an external system, and
+all inputs are tagged with an epoch. The output vertices pump outputs to an
+external system, and they also tag outputs with epochs.</p>
+
+<p>Timely dataflow graphs can contain cycles, but not arbitrary cycles. Cycles
+must be organized into possibly nested structures called <em>loop contexts</em>. Each
+loop context contains three specially designated vertices:</p>
+
+<ol>
+<li>an <em>ingress vertex</em> at the beginning of the loop,</li>
+<li>an <em>egress vertex</em> at the end of the loop, and</li>
+<li>a <em>feedback vertex</em> along a cycle within the loop context.</li>
+</ol>
+
+<p>Each message in a timely dataflow is labelled with a logical timestamp of the
+form <code>(e, (c_1, ..., c_k))</code> where <code>e</code> is an epoch and <code>(c_1, ..., c_k)</code> is a
+list of <code>k</code> loop counters. As data flows through a loop context, the three
+special nodes adjust the timestamp as follows:</p>
+
+<ul>
+<li>ingress: <code>(e, &lt;c_1, ..., c_k&gt;) -&gt; (e, &lt;c_1, ..., c_k, 0&gt;)</code></li>
+<li>egress: <code>(e, &lt;c_1, ..., c_k, c_{k+1}&gt;) -&gt; (e, &lt;c_1, ..., c_k&gt;)</code></li>
+<li>feedback: <code>(e, &lt;c_1, ..., c_k&gt;) -&gt; (e, &lt;c_1, ..., c_k + 1&gt;)</code></li>
+</ul>
+
+<p>Timestamps are compared pairwise and loop counters are compared
+lexicographically.</p>
+
+<p><em>Vertex Computation.</em>
+Vertices implement two callbacks:</p>
+
+<ul>
+<li><code>v.OnRecv(e: Edge, m: Message, t: Timestamp)</code></li>
+<li><code>v.OnNotify(t: Timestamp)</code></li>
+</ul>
+
+<p>and can invoke two library functions:</p>
+
+<ul>
+<li><code>this.SendBy(e: Edge, m: Message, t: Timestamp)</code></li>
+<li><code>this.NotifyAt(t: Timestamp)</code></li>
+</ul>
+
+<p><code>OnRecv</code> is called when a message is received. <code>SendBy</code> is used to send a
+message. <code>v.NotifyAt(t)</code> causes a <code>v.OnNotify(t)</code> timestamp to be called
+later once all messages with timestamp less than or equal to <code>t</code> have been
+delivered. <code>OnRecv</code> and <code>OnNotify</code> can run arbitrary code so long as they don't
+send messages back in time.</p>
+
+<p><em>Achieving Timely Dataflow.</em>
+Here, we outline how to implement timely dataflow in a single-threaded process.
+Let an <em>event</em> be a message or notification request. Each event in a timely
+dataflow has a position and timestamp, dubbed a <em>pointsamp</em>, of the form <code>(t:
+Timestamp, l: Edge | Vertex)</code>. Specifically,</p>
+
+<ul>
+<li>a <code>v.SendBy(e, m, t)</code> produces an event with pointstamp <code>(t, e)</code>, and</li>
+<li>a <code>v.NotifyAt(t)</code> produces an event with pointstamp <code>(t, v)</code>.</li>
+</ul>
+
+<p>Define a <em>could-result-in</em> relation where <code>(t1, l1)</code> could-result-in <code>(t1, l2)</code>
+if there exists a path of vertices and edges <code>psi = (l1, ..., l2)</code> where
+<code>psi(t1) &lt;= t2</code>. That is, there is some path from <code>l1</code> to <code>l2</code> which updates
+<code>t1</code> to a timestamp less than <code>t2</code>. There may be multiple paths from <code>l1</code> to
+<code>l2</code>, so the system maintains a map <code>Psi[l1, l2]</code> of the minimum path.</p>
+
+<p>Our single-threaded timely dataflow scheduler maintains a set of <em>active
+pointstamps</em>: the set of pointstamps for which there is a pending event. Each
+active pointstamp is mapped to an <em>occurrence count</em> (the number of pending
+events with this particular pointstamp) and a <em>precursor count</em> (the number of
+active pointstamps that could-result-in this one). When an new pending event is
+created, the occurrence count is updated and it's initial precursor count is
+created. Moreover, the precursor counts of downstream nodes are updated. All
+nodes with a precursor count of 0 are said to be on the frontier, and the
+system can deliver notifications on the frontier. Finally, input vertices set
+up the appropriate active pointstamps which update as data is fed into the
+system.</p>
+
+<p><strong>Distributed Implementation.</strong>
+Naiad is a distributed implementation of the timely dataflow model. Like other
+batch and stream processing systems, Naiad uses data parallelism to increase
+the aggregate computation, memory, and bandwidth of the system. A logical
+dataflow graph is compiled and expanded a physical dataflow graph which
+includes physical details like the partitioning along each edge.</p>
+
+<p>Workers are responsible for delivering the messages and notifications to the
+vertices it runs. Each vertex is run single-threaded, and if a vertex sends a
+message to anther vertex in the same worker, the worker can immediately
+transfer control between the two vertexes. Vertexes can specify a level of
+re-entrancy but are otherwise assumed to be non-reentrant.</p>
+
+<p>Workers also participate in a global progress tracking protocol. Workers
+maintain local occurrence and precursor counts. When a worker invokes one of
+the four functions above, it broadcasts updates to the occurrence counts. The
+protocol maintains the invariant that if some pointstamp <code>p</code> is on the local
+frontier at a vertex, it is on the global frontier as well. As an optimization,
+the active pointstamps are maintained on the global graph instead of the
+physical graph. Deltas are also accumulated and buffered.</p>
+
+<p>For fault tolerance, stateful vertices implement <code>Checkpoint</code> and <code>Restore</code>
+methods. Naiad uses these to orchestrate global checkpoints and restorations.</p>
+
+<p>Micro-stragglers---nodes with unusually high latency---are the main obstacle
+for a low-latency system. Micro-stragglers can come about from TCP overheads,
+data structure contention, garbage collection etc. Naiad has mechanisms to
+mitigate these micro-stragglers.</p>
+
+<p><strong>Writing Naiad Programs.</strong>
+Naiad provides lower-level interfaces for constructing timely dataflow graphs.
+Higher-level libraries and interfaces (e.g. SQL, LINQ) can be built on top of
+this lower-level interface. This separation of library code from system code
+allows for greater flexibility.</p>
+  </div>
+</body>
+</html>

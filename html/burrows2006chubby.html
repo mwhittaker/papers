@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://scholar.google.com/scholar?cluster=14281901705280588674&amp;hl=en&amp;as_sdt=0,5">The Chubby lock service for loosely-coupled distributed systems (2006)</a></h2>
+
+<p>Chubby is Google's distributed lock service, implemented using consensus,
+that allows clients to synchronize and agree on values. Chubby is like a file
+system in which clients read and write entire files, but it also supports
+advisory locks, event notification and more. Chubby's main goals are
+reliability, availability, and easy-to-understand semantics. It's secondary
+goals are throughput and storage capacity.</p>
+
+<p><strong>Rationale.</strong>
+Chubby is a centralized lock service that internally uses Paxos. There are a
+number of advantages to implementing a lock service rather than providing a
+Paxos library that clients can use directly:</p>
+
+<ol>
+<li>Programs are often not written like state machines which makes it difficult
+to integrate something like Paxos. It is significantly easier to use change
+code to use a lock service.</li>
+<li>Often, when Chubby is used for leader election, the elected leader has to
+advertise its address. Thus, it makes sense to add data serving
+functionality into the lock service.</li>
+<li>Locks are more familiar to programmers than state machines.</li>
+<li>To be fault tolerant and available, consensus algorithms require a minimum
+number of servers. By using a lock service, the need for multiple servers is
+centralized. Clients don't have to run their own clusters.</li>
+</ol>
+
+<p>Moreover, there are a number of other features that are useful to have in
+Chubby including event notification, consistent file caching, and security</p>
+
+<p>Also note that Chubby is designed for coarse, as opposed to fine, grained
+locking. That is to say, clients hold locks for minutes to hours instead of
+seconds or less. This reduces the load on Chubby and makes clients less
+susceptible to Chubby crashes. Finer grained locking can also be implemented on
+top of Chubby.</p>
+
+<p><strong>System Structure.</strong>
+Chubby consists of a client library linked into applications and a small
+cluster (typically 5) of servers called <em>replicas</em>. Replicas use consensus to
+elect a master for the duration of a master lease which can be renewed by the
+master. The master handles reads and writes which are copied to the replicas
+using consensus. DNS is used to find replicas, and replicas forward clients to
+the current master. If a replica is down for too long (e.g. multiple hours),
+then it is replaced, the DNS entries are updated to point at the new server,
+the new server receives data from backups and other replicas, and finally the
+master introduces it into the cluster.</p>
+
+<p><strong>Files, directories, and handles.</strong>
+Files in Chubby are identified by a path <code>ls/cell/dir1/dir2/.../dirn/filename</code>
+where <code>ls</code> (lock service) identifies a Chubby file, <code>cell</code> is the name of a
+cell, and the rest of the path is a usual path. This naming structure
+integrates well into Google's existing file libraries and tools. Chubby makes a
+couple of simplifying assumptions about files:</p>
+
+<ul>
+<li>Files cannot be moved between directories.</li>
+<li>Directories do not maintain last modified times.</li>
+<li>Permissions are per-file and do not depend on parents.</li>
+<li>There are no soft or hard links; everything in the file tree is a <em>node</em>.</li>
+</ul>
+
+<p>Files can act as advisory locks, and file ACLs are themselves stored as files.
+Moreover, files can be <em>permanent</em> or <em>ephemeral</em>. An ephemeral file is deleted
+when no clients have it open; an ephemeral directory is deleted when it is
+empty.</p>
+
+<p>Each node maintains four numbers which increase over time:</p>
+
+<ol>
+<li>An instance number which is incremented every time a file with a given name
+is created.</li>
+<li>A content generation number which is incremented every time a file changes.</li>
+<li>A lock generation number, which is incremented whenever a lock is acquired.</li>
+<li>An ACL generation number which is incremented whenever ACLs are written.</li>
+</ol>
+
+<p>Files also include 64 bit checksums.</p>
+
+<p><strong>Locks and sequencers.</strong>
+Using distributed locks can be tricky, especially when messages are delayed and
+locks are rapidly released and acquired. Each file in Chubby can act as an
+advisory reader-writer lock. Lock owners may request a sequencer which is an
+opaque byte-string with a name, mode, lock generation number etc. A client
+passes the sequencer to a server, like a file server, which can check the
+validity of the sequencer with Chubby. There is also a hackier way to prevent
+anomalies in which locks cannot be re-acquired since the last release until a
+<em>lock-delay</em> has passed.</p>
+
+<p><strong>Events.</strong>
+Chubby clients can subscribe to events including:</p>
+
+<ul>
+<li>file changes,</li>
+<li>children nodes are added, deleted, or changed,</li>
+<li>master fail-over, and</li>
+<li>a lock is acquired.</li>
+</ul>
+
+<p><strong>API.</strong>
+The Chubby API includes <code>Open</code>, <code>Close</code>, <code>Poison</code>, <code>GetContentsAndStat</code>,
+<code>GetStat</code>, <code>ReadDir</code>, <code>SetContents</code> (with compare-and-swap semantics if need
+be), <code>Delete</code>, <code>Acquire</code>, <code>TryAcquire</code>, <code>Release</code>, <code>GetSequencer</code>,
+<code>SetSequencer</code>, and <code>CheckSequencer</code> calls.</p>
+
+<p><strong>Caching.</strong>
+To reduce read load on Chubby, clients maintain a consistent write-through
+cache. The master tracks what each client has cached and issues leases and
+invalidations. Chubby uses a simple algorithm to keep caches consistent: when a
+client issues a write, the server sends invalidations to all clients who have
+the file cached. After all client caches have been invalidated, either by an
+acknowledgement or a lease expiration, the write is written.</p>
+
+<p><strong>Sessions and keep-alives.</strong>
+Chubby sessions between clients and servers are maintained by periodic
+KeepAlive RPCs. Each session has a lease timeout before which the session is
+guaranteed not to expire, and leases are periodically renewed in three
+situations:</p>
+
+<ol>
+<li>session creation,</li>
+<li>master failover, and</li>
+<li>KeepAlive delivery.</li>
+</ol>
+
+<p>Masters do not respond to KeepAlive RPCs immediately. Instead, they wait until
+just before the lease expires before responding. They also sent cache
+invalidations and event notifications as part of the RPC. Clients respond to
+KeepAlive RPCs immediately. Clients also conservatively estimate their lease
+timeouts with some assumptions on clock skew and packet delivery times. When a
+session expires, clients enter a 45 second grace period where they drop their
+cache. If they reconnect to a master, things continue as usual. Otherwise, they
+deliver an error to the user.</p>
+
+<p><strong>Fail-over.</strong>
+If a master fails over, the client may reconnect to the new master during its
+grace period. The new master follows the following procedure:</p>
+
+<ol>
+<li>Generates a new epoch number that is larger than all previous epoch numbers.</li>
+<li>Responds to master location requests.</li>
+<li>Builds its in-memory state from the database.</li>
+<li>Responds to KeepAlive RPCs.</li>
+<li>Delivers fail-over events to clients.</li>
+<li>Waits for all existing sessions to expire or for fail-over messages to be
+acked.</li>
+<li>Responds to all operations.</li>
+<li>Recreates old handles when necessary.</li>
+<li>Deletes ephemeral files after some delay.</li>
+</ol>
+
+<p><strong>DB.</strong>
+Originally, Chubby used BerkeleyDB (BDB), but BDB's replication support was
+young. Moreover, Chubby didn't need all of the functionality. Ultimately,
+Chubby threw out BDB and implemented a persistence layer itself.</p>
+
+<p><strong>Backup.</strong>
+Periodically, Chubby masters back up their state in another cell in GFS.</p>
+
+<p><strong>Mirroring.</strong>
+Chubby's event notifications make it easy to mirror directories.</p>
+  </div>
+</body>
+</html>

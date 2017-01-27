@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h2><a href="https://goo.gl/1TqQQM">Experience with Processes and Monitors in Mesa (1980)</a></h2>
+
+<p><strong>Summary.</strong>
+In 1980, synchronization primitives like semaphores, monitors, and condition
+variables had been well studied in the literature, but there weren't any large
+systems implementing them. Mesa was a programming language that was being
+developed to write the Pilot operating system at Xerox. Due to the inherent
+concurrency of an operating system, Mesa was designed to ease the development
+of concurrent programs. The Mesa designers considered implementing a message
+passing interface, but deemed it too complex. They considered semaphores, but
+found them too undisciplined. They considered cooperative multi-threading but
+came upon a number of serious disadvantages:</p>
+
+<ul>
+<li>Cooperative multithreading cannot take advantage of multiple cores.</li>
+<li>Preemption is already required to service time-sensitive I/O devices.</li>
+<li>Cooperation is at odds with modularity. Critical sections have no principled
+way of knowing if they are calling a function which yields control.</li>
+</ul>
+
+<p>Eventually, Mesa settled on implementing monitors and condition variables and
+exposed a number of previously undiscussed issues:</p>
+
+<ul>
+<li>What is the interface for dynamically spawning threads and waiting for them
+to terminate?</li>
+<li>What is the interface for dynamically constructing monitors?</li>
+<li>How are threads scheduled when waiting and notifying each other?</li>
+<li>What are the semantics of <code>wait</code> when one monitor calls into another monitor
+which also calls <code>wait</code>?</li>
+<li>How are exceptions and I/O devices handled?</li>
+</ul>
+
+<p>Mesa allowed an arbitrary function call to be forked and run by a separate
+thread and eventually joined:</p>
+
+<pre><code>p &lt;- fork ReadLine[terminal]
+...
+buffer &lt;- join p
+</code></pre>
+
+<p>Moreover, if a forked thread was not intended to be joined, it could instead be
+detached via <code>detach[p]</code>. This fork/join style process management had a number
+of advantages---(i) processes were first class values, (ii) thread forking was
+type checked, and (iii) any procedure could be forked---but also introduced
+lots of opportunities for dangling references.</p>
+
+<p>Monitors are objects that only allow a single thread to be executing one of its
+functions at any given time. They unify data, synchronization of the data, and
+access of the data into one lexical bundle. Mesa monitors included public
+<em>entry preocedures</em> and private <em>internal procedures</em> that operated with the
+monitor locked as well as public <em>external procedures</em> that operated without
+locking the monitor. Monitors, in conjunction with condition variables, were
+used to maintain an invariant about an object that was true upon entering and
+exiting any of the monitor's methods. Monitors also lead to potential deadlocks:</p>
+
+<ul>
+<li>Two monitor methods could wait for one another.</li>
+<li>Two different monitors could enter each other.</li>
+<li>A monitor <code>M</code> could enter a monitor <code>N</code>, then wait on a condition that could
+only be enabled by another thread entering <code>M</code> through <code>N</code>.</li>
+</ul>
+
+<p>Special care also had to be taken to avoid priority inversion.</p>
+
+<p>Mesa also introduced Mesa semantics, best explained with this code snippet:</p>
+
+<p>```python
+"""
+Condition variables typically obey one of two semantics:</p>
+
+<ol>
+<li>Under <em>Hoare semantics</em> [1], when a thread calls <code>notify</code> on a condition
+variable, the execution of one of the threads waiting on the condition
+variable is immediately resumed. Thus, a thread that calls <code>wait</code> can assume
+very strong invariants are held when it is awoken.</li>
+<li>Under <em>Mesa semantics</em> [2], a call to <code>notify</code> is nothing more than a hint.
+Threads calling <code>wait</code> can be woken up at any time for any reason.</li>
+</ol>
+
+<p>Understanding the distinction between Hoare and Mesa semantics can be
+solidified by way of example. This program implements a concurrent queue (aka
+pipe) to which data can be written and from which data can be read. It spawns a
+single thread which iteratively writes data into the pipe, and it spawns
+<code>NUM_CONSUMERS</code> threads that read from the pipe. The producer produces the same
+number of items that the consumers consume, so if all goes well, the program
+will run and terminate successfully.</p>
+
+<p>Run the program; not all goes well:</p>
+
+<pre><code>Exception in thread Thread-3:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 810, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.7/threading.py", line 763, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "hoare_mesa.py", line 66, in consume
+    pipe.pop()
+  File "hoare_mesa.py", line 52, in pop
+    return self.xs.pop(0)
+IndexError: pop from empty list
+</code></pre>
+
+<p>Why? The pipe is implemented assuming Python condition variables obey Hoare
+semantics. They do not. Modify the pipe's implementation assuming Mesa
+semantics and re-run the program. Everything should run smoothly!</p>
+
+<p>import threading</p>
+
+<h1>The number of objects read from and written to the pipe.</h1>
+
+<p>NUM_OBJECTS = 10000</p>
+
+<h1>The number of threads consuming from the pipe.</h1>
+
+<p>NUM_CONSUMERS = 2</p>
+
+<h1>An asynchronous queue (a.k.a. pipe) that assumes (erroneously) that Python</h1>
+
+<h1>condition variables follow Hoare semantics.</h1>
+
+<p>class HoarePipe(object):
+    def <strong>init</strong>(self):
+        self.xs = []
+        self.lock = threading.Lock()
+        self.data_available = threading.Condition(self.lock)</p>
+
+<pre><code># Pop the first element from the pipe, blocking if necessary until data is
+# available.
+def pop(self):
+    with self.lock:
+        # This code is incorrect beacuse Python condition variables follows
+        # Mesa, not Hoare, semantics. To correct the code, simply replace
+        # the `if` with a `while`.
+        if len(self.xs) == 0:
+            self.data_available.wait()
+        return self.xs.pop(0)
+
+# Push a value to the pipe.
+def push(self, x):
+    with self.lock:
+        self.xs.append(x)
+        self.data_available.notify()
+</code></pre>
+
+<p>def produce(pipe):
+    for i in range(NUM_OBJECTS):
+        pipe.push(i)</p>
+
+<p>def consume(pipe):
+    assert NUM<em>OBJECTS % NUM</em>CONSUMERS == 0
+    for i in range(NUM<em>OBJECTS / NUM</em>CONSUMERS):
+        pipe.pop()</p>
+
+<p>def main():
+    pipe = HoarePipe()
+    producer = threading.Thread(target=produce, args=(pipe,))
+    consumers = [threading.Thread(target=consume, args=(pipe,))
+                 for i in range(NUM_CONSUMERS)]</p>
+
+<pre><code>producer.start()
+for consumer in consumers:
+    consumer.start()
+
+producer.join()
+for consumer in consumers:
+    consumer.join()
+</code></pre>
+
+<p>if <strong>name</strong> == "<strong>main</strong>":
+    main()
+```</p>
+
+<p>Threads waiting on a condition variable could also be awoken by a timeout, an
+abort, or a broadcast (e.g. <code>notify_all</code>).</p>
+
+<p>Mesa's implementation was divided between the processor, a runtime, and the
+compiler. The processor was responsible for process management and scheduling.
+Each process was on a ready queue, monitor lock queue, condition variable
+queue, or fault queue. The runtime was responsible for providing the fork/join
+interface. The compiler performed code generation and a few static sanity
+checks.</p>
+
+<p>Mesa was evaluated by Pilot (an OS), Violet (a distributed calendar), and
+Gateway (a router).</p>
+  </div>
+</body>
+</html>
