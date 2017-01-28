@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h1 id="datalog-and-recursive-query-processing-2013"><a href="https://scholar.google.com/scholar?cluster=11160406363745186504&amp;hl=en&amp;as_sdt=0,5">Datalog and Recursive Query Processing (2013)</a></h1>
+<p>Datalog's popularity peaked in the 1980s and 1990s before its hype dwindled. Recently however, Datalog has been making a comeback, showing up in bigger and badder applications in both academia and industry. This book surveys the syntax, semantics, evaluation, extensions, and applications of Datalog.</p>
+<h2 id="a-first-example">A First Example</h2>
+<p>Let <code>link</code> be a binary relation where <code>(X, Y)</code> is in <code>link</code> (denoted <code>link(X, Y)</code>) if there is a <strong>link</strong> from <code>X</code> to <code>Y</code>. The following Datalog program computes a binary relation <code>reachable</code> where <code>reachable(X, Y)</code> if there is a <strong>path</strong> from <code>X</code> to <code>Y</code>.</p>
+<pre><code>r1: reachable(X, Y) :- link(X, Y)
+r2: reachable(X, Y) :- link(X, Z), reachable(Z, Y)</code></pre>
+<p>The program consists of two rules, <code>r1</code> and <code>r2</code>. Notably, <code>r2</code> is a <strong>recursive</strong> rule. In fact it is a <strong>linear recursive</strong> rules.</p>
+<p>To evaluate the program, we can begin with <code>reachable</code> empty. Then, we repeatedly use the rules in the program to compute new tuples that belong in <code>reachable</code>. We repeat these iterations to a fixpoint. This is known as <strong>naive evaluation</strong>.</p>
+<p>A slightly more sophisticated approach would not re-evaluate a rule like <code>link(X, Z), reachable(Z, Y)</code> if <code>X</code>, <code>Y</code>, and <code>Z</code> were already in <code>link</code> and <code>reachable</code> in a previous iteration. That is, we do not want to redundantly recompute facts we already know. This corresponds loosely to <strong>semi-naive evaluation</strong>.</p>
+<p>Both of these approaches are <strong>bottom-up</strong> (also known as <strong>forward chaining</strong>). Prolog, on the other hand, begins with a query and works backwards finding derivations. This <strong>top-down</strong> approach (also known as <strong>backwards chaining</strong>) does not compute irrelevant facts. Bottom-up approaches can be optimized so that they also do not compute irrelevant facts.</p>
+<h2 id="language">Language</h2>
+<p>A Datalog program is composed of a set of rules of the form <code>A :- B1, ..., Bn</code> where <code>A</code> is the <strong>head</strong> and <code>B1, ..., Bn</code> is the <strong>body</strong>. A couple of definitions:</p>
+<ul>
+<li>A <strong>term</strong> (e.g. <code>X</code>) is a constant or variable.</li>
+<li>Things like <code>link</code> or <code>reachable</code> are <strong>predicate symbols</strong> or <strong>functions</strong>.</li>
+<li>An <strong>atom</strong> (or <strong>goal</strong>) is a predicate symbol with terms as arguments (e.g. <code>link(X, Y)</code>).</li>
+<li>An atom with constant arguments is a <strong>ground atom</strong>.</li>
+<li>Predicate symbols are either <strong>extensional database</strong> (EDB) predicates if they belong to a base table or are <strong>intensional database</strong> (IDB) predicates if they are derived by a Datalog program.</li>
+<li>A <strong>database instance</strong> is a set of ground instances.</li>
+<li>A <strong>source database instance</strong> is a database instance in which all atoms are from EDB predicates.</li>
+<li>The <strong>active domain</strong> is the set of all constants in a database.</li>
+<li>The <strong>Herbrand base</strong> of a Datalog program <code>P</code>, denoted <code>B(P)</code>, is the set of all atoms (EDB or IDB) in computed by <code>P</code>.</li>
+<li>A <strong>fact rule</strong> is a rule with an empty body and with no free variables appearing in the head.</li>
+<li>A <strong>ground instance</strong> of a rule is the rule in which all variables are replaced with constants.</li>
+</ul>
+<p>Finally, the <strong>range restriction property</strong> says that all variables in the head of a rule must appear in the body of the rule.</p>
+<h2 id="model-theoretic-semantics">Model-Theoretic Semantics</h2>
+<p>There are three equivalent semantics for core Datalog. The first is the model-theoretic semantics. In the model theoretic semantics, rules like <code>reachable(X, Y) :- reachable(X, Z), link(Z, Y)</code> are viewed as constraints <code>forall X, forall Y, forall Z. reachable(X, Z) and link(Z, Y) ==&gt; reachable(X, Y)</code>. A <strong>model</strong> of a source database instance <code>I</code> and Datalog program <code>P</code> is a superset <code>I'</code> of <code>I</code> that satisfies all the constraints.</p>
+<p>There always exists a unique minimal model which we denote <code>P(I)</code> and the size of <code>P(I)</code> is polynomial with respect to the size of <code>I</code>. This result follows from the following two findings:</p>
+<ol style="list-style-type: decimal">
+<li>Consider the database instance <code>I'</code> that we get if we let <code>R(x1, ..., xn)</code> be in <code>I'</code> for every IDB predicate <code>R</code> and every constants <code>x1</code>, ..., <code>xn</code> in the active domain. <code>I'</code> is a model. The size of <code>I'</code> is polynomial with respect to the size of the active domain. The degree of the polynomial is the largest predicate arity in <code>I</code>.</li>
+<li>The intersection of any two models is a model.</li>
+</ol>
+<p>Assume for contradiction there did not exist a unique minimal model. 2 tells us that we can intersect any two minimal models to get a smaller model, violating our assumption that they were unique. Since there exists a unique minimal model, either <code>I'</code> from 1 is the unique minimal model, or the minimal model is smaller than it. This implies that the unique minimal model is at worst polynomial in the size of <code>I</code>.</p>
+<h2 id="fixpoint-theoretic-semantics">Fixpoint-Theoretic Semantics</h2>
+<h2 id="proof-theoretic-semantics">Proof-Theoretic Semantics</h2>
+  </div>
+</body>
+</html>
