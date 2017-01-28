@@ -8,52 +8,22 @@
 
 <body>
   <div id="container">
-<h2><a href="https://scholar.google.com/scholar?cluster=14277865292469814912&amp;hl=en&amp;as_sdt=0,5">Impala: A Modern, Open-Source SQL Engine for Hadoop (2015)</a></h2>
-
-<p><strong>Summary.</strong>
-Impala is a distributed query engine built on top of Hadoop. That is, it builds
-off of existing Hadoop tools and frameworks and reads data stored in Hadoop
-file formats from HDFS.</p>
-
-<p>Impala's <code>CREATE TABLE</code> commands specify the location and file format of data
-stored in Hadoop. This data can also be partitioned into different HDFS
-directories based on certain column values. Users can then issue typical SQL
-queries against the data. Impala supports batch INSERTs but doesn't support
-UPDATE or DELETE. Data can also be manipulated directly by going through HDFS.</p>
-
+<h2 id="impala-a-modern-open-source-sql-engine-for-hadoop-2015"><a href="https://scholar.google.com/scholar?cluster=14277865292469814912&amp;hl=en&amp;as_sdt=0,5">Impala: A Modern, Open-Source SQL Engine for Hadoop (2015)</a></h2>
+<p><strong>Summary.</strong> Impala is a distributed query engine built on top of Hadoop. That is, it builds off of existing Hadoop tools and frameworks and reads data stored in Hadoop file formats from HDFS.</p>
+<p>Impala's <code>CREATE TABLE</code> commands specify the location and file format of data stored in Hadoop. This data can also be partitioned into different HDFS directories based on certain column values. Users can then issue typical SQL queries against the data. Impala supports batch INSERTs but doesn't support UPDATE or DELETE. Data can also be manipulated directly by going through HDFS.</p>
 <p>Impala is divided into three components.</p>
-
-<ol>
-<li>An Impala daemon (impalad) runs on each machine and is responsible for
-receiving queries from users and for orchestrating the execution of queries.</li>
-<li>A single Statestore daemon (statestored) is a pub/sub system used to
-disseminate system metadata asynchronously to clients. The statestore has
-weak semantics and doesn't persist anything to disk.</li>
-<li>A single Catalog daemon (catalogd) publishes catalog information through the
-statestored. The catalogd pulls in metadata from external systems, puts it
-in Impala form, and pushes it through the statestored.</li>
+<ol style="list-style-type: decimal">
+<li>An Impala daemon (impalad) runs on each machine and is responsible for receiving queries from users and for orchestrating the execution of queries.</li>
+<li>A single Statestore daemon (statestored) is a pub/sub system used to disseminate system metadata asynchronously to clients. The statestore has weak semantics and doesn't persist anything to disk.</li>
+<li>A single Catalog daemon (catalogd) publishes catalog information through the statestored. The catalogd pulls in metadata from external systems, puts it in Impala form, and pushes it through the statestored.</li>
 </ol>
-
-<p>Impala has a Java frontend that performs the typical database frontend
-operations (e.g. parsing, semantic analysis, and query optimization). It uses a
-two phase query planner.</p>
-
-<ol>
-<li><em>Single node planning.</em> First, a single-node non-executable query plan tree
-is formed. Typical optimizations like join reordering are performed.</li>
-<li><em>Plan parallelization.</em> After a single node plan is formed, it is fragmented
-and divided between multiple nodes with the goal of minimizing data movement
-and maximizing scan locality.</li>
+<p>Impala has a Java frontend that performs the typical database frontend operations (e.g. parsing, semantic analysis, and query optimization). It uses a two phase query planner.</p>
+<ol style="list-style-type: decimal">
+<li><em>Single node planning.</em> First, a single-node non-executable query plan tree is formed. Typical optimizations like join reordering are performed.</li>
+<li><em>Plan parallelization.</em> After a single node plan is formed, it is fragmented and divided between multiple nodes with the goal of minimizing data movement and maximizing scan locality.</li>
 </ol>
-
-<p>Impala has a C++ backed that uses Volcano style iterators with exchange
-operators and runtime code generation using LLVM. To efficiently read data from
-disk, Impala bypasses the traditional HDFS protocols. The backend supports a
-lot of different file formats including Avro, RC, sequence, plain test, and
-Parquet.</p>
-
-<p>For cluster and resource management, Impala uses a home grown Llama system that
-sits over YARN.</p>
+<p>Impala has a C++ backed that uses Volcano style iterators with exchange operators and runtime code generation using LLVM. To efficiently read data from disk, Impala bypasses the traditional HDFS protocols. The backend supports a lot of different file formats including Avro, RC, sequence, plain test, and Parquet.</p>
+<p>For cluster and resource management, Impala uses a home grown Llama system that sits over YARN.</p>
   </div>
 </body>
 </html>

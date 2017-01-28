@@ -8,90 +8,28 @@
 
 <body>
   <div id="container">
-<h2><a href="https://scholar.google.com/scholar?cluster=7860241540823320465&amp;hl=en&amp;as_sdt=0,5">Linearizability: A Correctness Condition for Concurrent Objects (1990)</a></h2>
-
-<p>Imagine a distributed system implementing a single register. A client issues a
-read or write request to the system and then waits for a response. The
-distributed system receives multiple requests from multiple clients
-simultaneously. Ideally, the system executes these requests in parallel, but
-interleaving the request processing could return some weird and wonky responses
-to the clients. Intuitively, we'd like to make sure that our interleaved
-executions are equivalent to some simpler, sequential execution. This intuition
-is formalized as <em>linearizability</em>.</p>
-
-<p><strong>Histories.</strong>
-We model a distributed system as a collection of sequentially executing
-processes. The processes manipulate named, typed objects by calling their
-methods. A <em>history</em> is a finite sequence of <em>invocation</em> and <em>response</em> operations where</p>
-
+<h2 id="linearizability-a-correctness-condition-for-concurrent-objects-1990"><a href="https://scholar.google.com/scholar?cluster=7860241540823320465&amp;hl=en&amp;as_sdt=0,5">Linearizability: A Correctness Condition for Concurrent Objects (1990)</a></h2>
+<p>Imagine a distributed system implementing a single register. A client issues a read or write request to the system and then waits for a response. The distributed system receives multiple requests from multiple clients simultaneously. Ideally, the system executes these requests in parallel, but interleaving the request processing could return some weird and wonky responses to the clients. Intuitively, we'd like to make sure that our interleaved executions are equivalent to some simpler, sequential execution. This intuition is formalized as <em>linearizability</em>.</p>
+<p><strong>Histories.</strong> We model a distributed system as a collection of sequentially executing processes. The processes manipulate named, typed objects by calling their methods. A <em>history</em> is a finite sequence of <em>invocation</em> and <em>response</em> operations where</p>
 <ul>
 <li>an invocation is of the form <code>&lt;x op(args*) A&gt;</code> and</li>
 <li>a response is of the form <code>&lt;x term(res*) A&gt;</code>.</li>
 </ul>
-
-<p>Here, <code>x</code> is an object, <code>op</code> is an operation (e.g. <code>read</code>, <code>write</code>), <code>args*</code>
-are arguments, <code>A</code> is a process, <code>term</code> is a termination status <code>e.g. Ok</code>, and
-<code>res*</code> is the response. A <em>subhistory</em> of history <code>H</code> is a subsequence of <code>H</code>.</p>
-
-<p>A response matches an invocation if the two share the same object and process
-name. A pending invocation is one without a matching response following it.
-<code>complete(H)</code> is the maximal subhistory of <code>H</code> without pending operations.</p>
-
-<p>We say <code>H</code> is <em>sequential</em> if it begins with an invocation and then alternates
-between matching responses and invocations. The final invocation may be
-pending. If a history is not sequential, we say it's <em>concurrent</em>.</p>
-
-<p><code>H | P</code> is the restriction of <code>H</code> to operations with process <code>P</code>. Similarly, <code>H
-| x</code> is the restriction of <code>H</code> to operations with object <code>x</code>. We say two
-histories <code>H</code> and <code>H'</code> are equivalent if for all <code>P</code>, <code>H | P = H' | P</code>. We say
-<code>H</code> is <em>well-formed</em> if for all <code>P</code>, <code>H | P</code> is sequential. We assume all
-histories are well-formed.</p>
-
-<p>An <em>event</em> is an invocation and its matching response. One event <code>e</code> <em>lies
-within</em> another <code>f</code> if the invocation of <code>e</code> follows the invocation of <code>f</code> and
-the response of <code>e</code> precedes the response of <code>f</code>.</p>
-
-<p>A <em>sequential specification</em> of an object is a prefix-closed set of
-single-object sequential histories. A sequential history <code>H</code> is legal if for
-all <code>x</code>, <code>H | X</code> is in the sequential specification of <code>x</code>.</p>
-
-<p><strong>Linearizability.</strong>
-Let <code>e &lt;_H f</code> if e's response precedes f's invocation in <code>H</code>. A history <code>H</code> is
-<em>linearizable</em> if it can be extended with responses to a history <code>H'</code> such that</p>
-
+<p>Here, <code>x</code> is an object, <code>op</code> is an operation (e.g. <code>read</code>, <code>write</code>), <code>args*</code> are arguments, <code>A</code> is a process, <code>term</code> is a termination status <code>e.g. Ok</code>, and <code>res*</code> is the response. A <em>subhistory</em> of history <code>H</code> is a subsequence of <code>H</code>.</p>
+<p>A response matches an invocation if the two share the same object and process name. A pending invocation is one without a matching response following it. <code>complete(H)</code> is the maximal subhistory of <code>H</code> without pending operations.</p>
+<p>We say <code>H</code> is <em>sequential</em> if it begins with an invocation and then alternates between matching responses and invocations. The final invocation may be pending. If a history is not sequential, we say it's <em>concurrent</em>.</p>
+<p><code>H | P</code> is the restriction of <code>H</code> to operations with process <code>P</code>. Similarly, <code>H | x</code> is the restriction of <code>H</code> to operations with object <code>x</code>. We say two histories <code>H</code> and <code>H'</code> are equivalent if for all <code>P</code>, <code>H | P = H' | P</code>. We say <code>H</code> is <em>well-formed</em> if for all <code>P</code>, <code>H | P</code> is sequential. We assume all histories are well-formed.</p>
+<p>An <em>event</em> is an invocation and its matching response. One event <code>e</code> <em>lies within</em> another <code>f</code> if the invocation of <code>e</code> follows the invocation of <code>f</code> and the response of <code>e</code> precedes the response of <code>f</code>.</p>
+<p>A <em>sequential specification</em> of an object is a prefix-closed set of single-object sequential histories. A sequential history <code>H</code> is legal if for all <code>x</code>, <code>H | X</code> is in the sequential specification of <code>x</code>.</p>
+<p><strong>Linearizability.</strong> Let <code>e &lt;_H f</code> if e's response precedes f's invocation in <code>H</code>. A history <code>H</code> is <em>linearizable</em> if it can be extended with responses to a history <code>H'</code> such that</p>
 <ul>
 <li><em>L1:</em> <code>complete(H')</code> is equivalent to a legal sequential history <code>S</code> and</li>
 <li><em>L2:</em> <code>&lt;_H \subset &lt;_S</code>.</li>
 </ul>
-
-<p>In English, a history is linearizable if it is equivalent to a legal sequential
-history without reordering non-concurrent events.</p>
-
-<p><strong>Locality.</strong>
-Linearizability is <em>local</em> meaning that <code>H</code> is linearizable if and only if <code>H |
-x</code> is linearizable for all <code>x</code>. This means that linearizable is modular and
-composable.</p>
-
-<p><strong>Blocking vs Nonblocking.</strong>
-Linearizability is <em>non-blocking</em> meaning that pending operations do not have
-to wait for other pending operations to complete. More formally, if <code>e</code> is a
-pending total invocation in a linearizable history <code>H</code>, then there exists a
-response <code>r</code> such that <code>H + r</code> is linearizable. Certain implementations of
-linearizability may block, but fundamentally they need not to. Moreover,
-desired blocking (e.g. dequeue blocking on empty queues) can still be
-implemented.</p>
-
-<p><strong>Comparison to Other Correctness Conditions.</strong>
-Sequential consistency is equivalent to linearizability without condition L2.
-Serializability is analogous to sequential consistency with transactions, and
-strict serializability is analogous to linearizability with transactions.
-Sequential consistency, serializability, and strict serializability do not have
-the same locality and non-blocking properties as linearizability. Moreover,
-serializability and linearizability are for different domains. Serializability
-works well for databases because application developers should be able to
-easily express complex transactions. Linearizability is better for
-infrastructure in which the developer is willing to spend considerable effort
-to maximize concurrency.</p>
+<p>In English, a history is linearizable if it is equivalent to a legal sequential history without reordering non-concurrent events.</p>
+<p><strong>Locality.</strong> Linearizability is <em>local</em> meaning that <code>H</code> is linearizable if and only if <code>H | x</code> is linearizable for all <code>x</code>. This means that linearizable is modular and composable.</p>
+<p><strong>Blocking vs Nonblocking.</strong> Linearizability is <em>non-blocking</em> meaning that pending operations do not have to wait for other pending operations to complete. More formally, if <code>e</code> is a pending total invocation in a linearizable history <code>H</code>, then there exists a response <code>r</code> such that <code>H + r</code> is linearizable. Certain implementations of linearizability may block, but fundamentally they need not to. Moreover, desired blocking (e.g. dequeue blocking on empty queues) can still be implemented.</p>
+<p><strong>Comparison to Other Correctness Conditions.</strong> Sequential consistency is equivalent to linearizability without condition L2. Serializability is analogous to sequential consistency with transactions, and strict serializability is analogous to linearizability with transactions. Sequential consistency, serializability, and strict serializability do not have the same locality and non-blocking properties as linearizability. Moreover, serializability and linearizability are for different domains. Serializability works well for databases because application developers should be able to easily express complex transactions. Linearizability is better for infrastructure in which the developer is willing to spend considerable effort to maximize concurrency.</p>
   </div>
 </body>
 </html>

@@ -8,126 +8,45 @@
 
 <body>
   <div id="container">
-<h2><a href="https://scholar.google.com/scholar?cluster=3366172945601823602">Chain Replication for Supporting High Throughput and Availability (2004)</a></h2>
-
-<p>File systems and databases are two examples of <em>storage systems</em>. A <em>storage
-service</em> sits somewhere between a file system and database and is expected to</p>
-
+<h2 id="chain-replication-for-supporting-high-throughput-and-availability-2004"><a href="https://scholar.google.com/scholar?cluster=3366172945601823602">Chain Replication for Supporting High Throughput and Availability (2004)</a></h2>
+<p>File systems and databases are two examples of <em>storage systems</em>. A <em>storage service</em> sits somewhere between a file system and database and is expected to</p>
 <ul>
 <li><em>store</em> objects,</li>
 <li>run <em>queries</em> against single objects, and</li>
 <li>perform <em>atomic updates</em> of single objects.</li>
 </ul>
-
-<p>Chain replication is a simple algorithm to implement a distributed storage
-service with high throughput, high availability, and linearizability (yup,
-that's right; we've got a CA system on our hands) using fail-stop servers.</p>
-
-<p><strong>Storage Service Interface.</strong>
-A storage service supports two operations:</p>
-
+<p>Chain replication is a simple algorithm to implement a distributed storage service with high throughput, high availability, and linearizability (yup, that's right; we've got a CA system on our hands) using fail-stop servers.</p>
+<p><strong>Storage Service Interface.</strong> A storage service supports two operations:</p>
 <ul>
 <li><code>query(objId, opts)</code> and</li>
 <li><code>update(objId, newVal, opts)</code>.</li>
 </ul>
-
-<p><code>query(o, opts)</code> performs a query against the object with id <code>o</code> returning
-something specified by <code>opts</code>. A query is idempotent and does not modify the
-object. <code>update(o, n, opts)</code> performs a (possibly non-deterministic)
-computation on the old value of <code>o</code> and <code>n</code> to produce a value <code>v</code> that is
-assigned to the object. It is not idempotent.</p>
-
-<p>Storage services are allowed to ignore any request received from the user.
-Since this behavior is indistinguishable from a request being dropped by the
-network, clients must handle this behavior anyway.</p>
-
-<p><strong>Chain Replication Protocol.</strong>
-Servers are assumed to be <em>fail-stop</em>. That is, servers aren't Byzantine and
-servers an detect when other servers fail.</p>
-
-<p>A chain replicated service with <code>t + 1</code> nodes can tolerate <code>t</code> failures before
-sacrificing availability. The <code>t + 1</code> nodes arrange themselves into a linear
-chain with the first node called the head and the last node called the tail.
-There are three components to the algorithm:</p>
-
+<p><code>query(o, opts)</code> performs a query against the object with id <code>o</code> returning something specified by <code>opts</code>. A query is idempotent and does not modify the object. <code>update(o, n, opts)</code> performs a (possibly non-deterministic) computation on the old value of <code>o</code> and <code>n</code> to produce a value <code>v</code> that is assigned to the object. It is not idempotent.</p>
+<p>Storage services are allowed to ignore any request received from the user. Since this behavior is indistinguishable from a request being dropped by the network, clients must handle this behavior anyway.</p>
+<p><strong>Chain Replication Protocol.</strong> Servers are assumed to be <em>fail-stop</em>. That is, servers aren't Byzantine and servers an detect when other servers fail.</p>
+<p>A chain replicated service with <code>t + 1</code> nodes can tolerate <code>t</code> failures before sacrificing availability. The <code>t + 1</code> nodes arrange themselves into a linear chain with the first node called the head and the last node called the tail. There are three components to the algorithm:</p>
 <ul>
-<li><em>Reply Generation.</em> Replies sent to clients are generated and sent by the
-tail.</li>
+<li><em>Reply Generation.</em> Replies sent to clients are generated and sent by the tail.</li>
 <li><em>Query Processing.</em> Query operations are sent to and processed by the tail.</li>
-<li><em>Update Processing.</em> Updates are sent to the head. The head executes the
-update and then forwards the result of the update down the chain. Each node
-in the chain performs the update before forwarding it downstream.</li>
+<li><em>Update Processing.</em> Updates are sent to the head. The head executes the update and then forwards the result of the update down the chain. Each node in the chain performs the update before forwarding it downstream.</li>
 </ul>
-
-<p>Ignoring failures for the moment, note that this provides linearizability. All
-operations are totally ordered by the tail. Also note that reads are cheap
-(they touch only 1 node) and writes are expensive (they touch all nodes).</p>
-
-<p><strong>Coping with Server Failure.</strong>
-Failures are handled by a single master which is assumed to never fail. In
-practice, this can be achieved by replicating the master using something like
-Paxos. The master</p>
-
+<p>Ignoring failures for the moment, note that this provides linearizability. All operations are totally ordered by the tail. Also note that reads are cheap (they touch only 1 node) and writes are expensive (they touch all nodes).</p>
+<p><strong>Coping with Server Failure.</strong> Failures are handled by a single master which is assumed to never fail. In practice, this can be achieved by replicating the master using something like Paxos. The master</p>
 <ul>
-<li>detects the failures of the servers (which can be done because they are
-fail-stop),</li>
+<li>detects the failures of the servers (which can be done because they are fail-stop),</li>
 <li>informs each server of its new predecessor and successor, and</li>
 <li>informs servers which node is the head and which is the tail.</li>
 </ul>
-
-<p>Let <code>Hist_i</code> be the history of an object at node <code>i</code>. The history of an object
-is just the sequence of operations applied to the object since the beginning of
-time. Let <code>Hist_i &lt;= Hist_j</code> if the history at node <code>i</code> is a prefix of the
-history at node <code>j</code>. The <em>Update Propagation Invariant</em> says that if node <code>i</code>
-precedes node <code>j</code> in the chain then <code>Hist_j &lt;= Hist_i</code>. In words, each node has
-a prefix of its predecessor's history. Using this invariant, we analyze three
-failure scenarios.</p>
-
+<p>Let <code>Hist_i</code> be the history of an object at node <code>i</code>. The history of an object is just the sequence of operations applied to the object since the beginning of time. Let <code>Hist_i &lt;= Hist_j</code> if the history at node <code>i</code> is a prefix of the history at node <code>j</code>. The <em>Update Propagation Invariant</em> says that if node <code>i</code> precedes node <code>j</code> in the chain then <code>Hist_j &lt;= Hist_i</code>. In words, each node has a prefix of its predecessor's history. Using this invariant, we analyze three failure scenarios.</p>
 <ul>
-<li><em>Failure of the Head.</em> When the head fails, the master appoints the successor
-of the head as the new head. If the old head had pending updates, they are
-lost, but this is acceptable behavior. If the head didn't have any pending
-updates, then nothing is lost.</li>
-<li><em>Failure of the Tail.</em> The predecessor of the tail becomes the new tail. The
-Update Propagation Invariant tells us that the new tail has everything the
-old tail had and potentially then some.</li>
-<li><p><em>Failure of Other Servers.</em> When a node <code>S</code> in the middle of the chain fails,
-the master will notify the successor <code>S+</code> and predecessor <code>S-</code>, but it must
-be careful not to violate the Update Propagation Invariant. Imagine node <code>S</code>
-had pending updates it hadn't yet sent to <code>S+</code> when it failed. If new updates
-come and <code>S-</code> forwards them to <code>S+</code>, then the history at <code>S+</code> is not a prefix
-of the history of <code>S-</code>.</p>
-
-<p>To avoid this, each node <code>i</code> maintains a set <code>Sent_i</code> of pending updates that
-it has sent downstream that may not have been processed yet by the tail.
-Whenever a node sends an update downstream, it adds it to <code>Sent_i</code>. When the
-tail processes an update, it sends an acknowledgement to its predecessor. Upon
-receiving an acknowledgement for an update, node <code>i</code> removes the update from
-<code>Sent_i</code> and forwards the acknowledgement to its predecessor.</p>
-
-<p>When <code>S</code> fails, <code>S-</code> must sent <code>Send_S-</code> to <code>S+</code> before it begins forwarding
-new updates. Doing this preserves the Update Propagation Invariant.</p></li>
+<li><em>Failure of the Head.</em> When the head fails, the master appoints the successor of the head as the new head. If the old head had pending updates, they are lost, but this is acceptable behavior. If the head didn't have any pending updates, then nothing is lost.</li>
+<li><em>Failure of the Tail.</em> The predecessor of the tail becomes the new tail. The Update Propagation Invariant tells us that the new tail has everything the old tail had and potentially then some.</li>
+<li><em>Failure of Other Servers.</em> When a node <code>S</code> in the middle of the chain fails, the master will notify the successor <code>S+</code> and predecessor <code>S-</code>, but it must be careful not to violate the Update Propagation Invariant. Imagine node <code>S</code> had pending updates it hadn't yet sent to <code>S+</code> when it failed. If new updates come and <code>S-</code> forwards them to <code>S+</code>, then the history at <code>S+</code> is not a prefix of the history of <code>S-</code>.</li>
 </ul>
-
-<p>When a node fails, the number of non-crashed nodes in the chain decreases. The
-fewer the nodes, the more likely it is to lose availability. Thus, it is
-desirable to add nodes to the chain. A new node can be added anywhere in the
-chain, but it's easiest to do at the end. The new tail receives the history
-from the old tail. While this is happening, the old tail is free to process
-updates, so long as it records them in <code>Sent_i</code>. When the new tail is ready,
-the old tail forwards the pending operations and the master informs the servers
-and clients of the new node.</p>
-
-<p><strong>Primary/Backup Protocols.</strong>
-In a Primary/Backup system, a single master replicates operations to a set of
-backups in parallel. Chain replication is similar to primary/backup techniques,
-but there are a few differences. First, a query at a primary may need to stall
-waiting for a pending update to be acknowledged by a backup. With chain
-replication, queries never stall. On the other hand, chain replication has much
-higher update latency that primary/backup systems. Moreover, when nodes in a
-chain replicated system fail, there is typically fewer messages that have to be
-sent to resolve the failure compared to when a node fails in a primary/backup
-system.</p>
+<p>To avoid this, each node <code>i</code> maintains a set <code>Sent_i</code> of pending updates that it has sent downstream that may not have been processed yet by the tail. Whenever a node sends an update downstream, it adds it to <code>Sent_i</code>. When the tail processes an update, it sends an acknowledgement to its predecessor. Upon receiving an acknowledgement for an update, node <code>i</code> removes the update from <code>Sent_i</code> and forwards the acknowledgement to its predecessor.</p>
+<p>When <code>S</code> fails, <code>S-</code> must sent <code>Send_S-</code> to <code>S+</code> before it begins forwarding new updates. Doing this preserves the Update Propagation Invariant.</p>
+<p>When a node fails, the number of non-crashed nodes in the chain decreases. The fewer the nodes, the more likely it is to lose availability. Thus, it is desirable to add nodes to the chain. A new node can be added anywhere in the chain, but it's easiest to do at the end. The new tail receives the history from the old tail. While this is happening, the old tail is free to process updates, so long as it records them in <code>Sent_i</code>. When the new tail is ready, the old tail forwards the pending operations and the master informs the servers and clients of the new node.</p>
+<p><strong>Primary/Backup Protocols.</strong> In a Primary/Backup system, a single master replicates operations to a set of backups in parallel. Chain replication is similar to primary/backup techniques, but there are a few differences. First, a query at a primary may need to stall waiting for a pending update to be acknowledged by a backup. With chain replication, queries never stall. On the other hand, chain replication has much higher update latency that primary/backup systems. Moreover, when nodes in a chain replicated system fail, there is typically fewer messages that have to be sent to resolve the failure compared to when a node fails in a primary/backup system.</p>
   </div>
 </body>
 </html>

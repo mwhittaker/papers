@@ -8,72 +8,32 @@
 
 <body>
   <div id="container">
-<h2><a href="https://scholar.google.com/scholar?cluster=4636448334605780007&amp;hl=en&amp;as_sdt=0,5">Exokernel: An Operating System Architecture for Application-Level Resource Management (1995)</a></h2>
-
-<p><strong>Summary.</strong>
-Monolithic kernels provide a large number of abstractions (e.g. processes,
-files, virtual memory, interprocess communication) to applications.
-Microkernels push some of this functionality into user space but still provide
-a fixed set of abstractions and services. Providing these inextensible fixed
-abstractions is detrimental to applications.</p>
-
+<h2 id="exokernel-an-operating-system-architecture-for-application-level-resource-management-1995"><a href="https://scholar.google.com/scholar?cluster=4636448334605780007&amp;hl=en&amp;as_sdt=0,5">Exokernel: An Operating System Architecture for Application-Level Resource Management (1995)</a></h2>
+<p><strong>Summary.</strong> Monolithic kernels provide a large number of abstractions (e.g. processes, files, virtual memory, interprocess communication) to applications. Microkernels push some of this functionality into user space but still provide a fixed set of abstractions and services. Providing these inextensible fixed abstractions is detrimental to applications.</p>
 <ul>
-<li>An application cannot be best for all applications. Tradeoffs must be made
-which can impact performance for some applications.</li>
-<li>A rigid set of abstractions can make it difficult for an application to layer
-on its own set of abstractions. For example, a user level threads package may
-encounter some difficulties of not having access to page faults.</li>
-<li>Having a rigid set of abstractions means the abstractions are rarely updated.
-Innovative OS features are seldom integrated into real world OSes.</li>
+<li>An application cannot be best for all applications. Tradeoffs must be made which can impact performance for some applications.</li>
+<li>A rigid set of abstractions can make it difficult for an application to layer on its own set of abstractions. For example, a user level threads package may encounter some difficulties of not having access to page faults.</li>
+<li>Having a rigid set of abstractions means the abstractions are rarely updated. Innovative OS features are seldom integrated into real world OSes.</li>
 </ul>
-
-<p>The exokernel operating system architecture takes a different approach. It
-provides protected access to hardware and nothing else. All abstractions are
-implemented by library operating systems. The exokernel purely provides
-protected access to the unabstracted underlying hardware.</p>
-
-<p>The exokernel interface governs how library operating systems get, use, and
-release resources. Exokernels follow the following guidelines.</p>
-
+<p>The exokernel operating system architecture takes a different approach. It provides protected access to hardware and nothing else. All abstractions are implemented by library operating systems. The exokernel purely provides protected access to the unabstracted underlying hardware.</p>
+<p>The exokernel interface governs how library operating systems get, use, and release resources. Exokernels follow the following guidelines.</p>
 <ul>
-<li><em>Securely expose hardware.</em> All the details of the hardware (e.g. privileged
-instructions, DMA) should be exposed to libOSes.</li>
+<li><em>Securely expose hardware.</em> All the details of the hardware (e.g. privileged instructions, DMA) should be exposed to libOSes.</li>
 <li><em>Expose allocation.</em> LibOSes should be able to request physical resources.</li>
-<li><em>Expose physical names.</em> The physical names of resources (e.g. physical page
-5) should be exposed.</li>
+<li><em>Expose physical names.</em> The physical names of resources (e.g. physical page</li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li>should be exposed.</li>
+</ol>
+<ul>
 <li><em>Expose revocation.</em> LibOSes should be notified when resources are revoked.</li>
 </ul>
-
-<p>Exokernels use three main techniques to ensure protected access to the
-underlying hardware.</p>
-
-<ol>
-<li><p><em>Secure bindings.</em> A secure binding decouples authorization from use and is
-best explained through an example. A libOS can request that a certain entry
-be inserted into a TLB. The exokernel can check that the entry is valid.
-This is the authorization. Later, the CPU can use the TLB without any
-checking. This is use. The TLB entry can be used multiple times after being
-authorized only once.</p>
-
-<p>There are three forms of secure bindings. First are hardware mechanism like
-the TLB entries or screens in which each pixel is tagged with a process.
-Second are software mechanisms like TLB caching or packet filters. Third is
-downloading and executing code using type-safe languages, interpretation, or
-sandboxing. Exokernels can download Application-Specific Safe Handlers
-(ASHes).</p></li>
-<li><em>Visible resource revocation.</em> In traditional operating systems, resource
-revocation is made invisible to applications. For example, when an
-application's page is swapped to disk, it is not notified. The exokernel
-makes resource revocation visible by notifying the libOS. For example, each
-libOS is notified when its quantum is over. This allows it do things like
-only store the registers it needs.</li>
-<li><em>Abort protocol.</em> If a libOS is misbehaving and not responding to revocation
-requests, the exokernel can forcibly remove allocations. Naively, it could
-kill the libOS. Less naively, ti can simply remove all secure bindings.</li>
+<p>Exokernels use three main techniques to ensure protected access to the underlying hardware.</p>
+<ol style="list-style-type: decimal">
+<li><em>Secure bindings.</em> A secure binding decouples authorization from use and is best explained through an example. A libOS can request that a certain entry be inserted into a TLB. The exokernel can check that the entry is valid. This is the authorization. Later, the CPU can use the TLB without any checking. This is use. The TLB entry can be used multiple times after being authorized only once.</li>
 </ol>
-
-<p>The paper also presents the Aegis exokernel and the ExOS library operating
-system.</p>
+<p>There are three forms of secure bindings. First are hardware mechanism like the TLB entries or screens in which each pixel is tagged with a process. Second are software mechanisms like TLB caching or packet filters. Third is downloading and executing code using type-safe languages, interpretation, or sandboxing. Exokernels can download Application-Specific Safe Handlers (ASHes). 2. <em>Visible resource revocation.</em> In traditional operating systems, resource revocation is made invisible to applications. For example, when an application's page is swapped to disk, it is not notified. The exokernel makes resource revocation visible by notifying the libOS. For example, each libOS is notified when its quantum is over. This allows it do things like only store the registers it needs. 3. <em>Abort protocol.</em> If a libOS is misbehaving and not responding to revocation requests, the exokernel can forcibly remove allocations. Naively, it could kill the libOS. Less naively, ti can simply remove all secure bindings.</p>
+<p>The paper also presents the Aegis exokernel and the ExOS library operating system.</p>
   </div>
 </body>
 </html>

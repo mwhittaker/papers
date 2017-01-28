@@ -8,185 +8,86 @@
 
 <body>
   <div id="container">
-<h2><a href="http://dl.acm.org/citation.cfm?id=2904441">Realtime Data Processing at Facebook (2016)</a></h2>
-
-<p>There's an enormous number of stream (a.k.a. real-time, interactive) processing
-systems in the wild: Twitter Storm, Twitter Heron, Google Millwheel, LinkedIn
-Samza, Spark Streaming, Apache Flink, etc. While all similar, the stream
-processing systems differ in their ease of use, performance, fault-tolerance,
-scalability, correctness, etc. In this paper, Facebook discusses the design
-decisions that go into developing a stream processing system and discusses the
-decisions they made with three of their real-time processing systems: Puma,
-Swift, and Stylus.</p>
-
-<p><strong>Systems Overview.</strong>
-- <em>Scribe.</em> Scribe is a persistent messaging system for log data. Data is
-  organized into categories, and Scribe buckets are the basic unit of stream
-  processing. The data pushed into scribe is persisted in HDFS.
-- <em>Puma.</em> Puma is a real-time data processing system in which applications are
-  written in a SQL-like language with user defined functions written in Java.
-  The system is designed for compiled, rather than ad-hoc, queries. It used to
-  compute aggregates and to filter Scribe streams.
-- <em>Swift.</em> Swift is used to checkpoint Scribe streams. Checkpoints are made
-  every <code>N</code> strings or every <code>B</code> bytes. Swift is used for low-throughput
-  applications.
-- <em>Stylus.</em> Stylus is a low-level general purpose stream processing system
-  written in C++ and resembles Storm, Millwheel, etc. Stream processors are
-  organized into DAGs and the system provides estimated low watermarks.
-- <em>Laser.</em> Laser is a high throughput, low latency key-value store built on
-  RocksDB.
-- <em>Scuba.</em> Scuba supports ad-hoc queries for debugging.
-- <em>Hive.</em> Hive is a huge data warehouse which support SQL queries.</p>
-
-<p><strong>Example Application.</strong>
-Imagine a stream of events, where each event belongs to a single topic.
-Consider a streaming application which computes the top <code>k</code> events for each
-topic over 5 minute windows composed of four stages:</p>
-
-<ol>
-<li><em>Filterer.</em> The filterer filter events and shards events based on their
-dimension id.</li>
-<li><em>Joiner.</em> The joiner looks up dimension data by dimension id, infers the
-topic of the event, and shards output by (event, topic).</li>
-<li><em>Scorer.</em> The scorer maintains a recent history of event counts per topic as
-well as some long-term counts. It assigns a score for each event and shards
-output by topic.</li>
+<h2 id="realtime-data-processing-at-facebook-2016"><a href="http://dl.acm.org/citation.cfm?id=2904441">Realtime Data Processing at Facebook (2016)</a></h2>
+<p>There's an enormous number of stream (a.k.a. real-time, interactive) processing systems in the wild: Twitter Storm, Twitter Heron, Google Millwheel, LinkedIn Samza, Spark Streaming, Apache Flink, etc. While all similar, the stream processing systems differ in their ease of use, performance, fault-tolerance, scalability, correctness, etc. In this paper, Facebook discusses the design decisions that go into developing a stream processing system and discusses the decisions they made with three of their real-time processing systems: Puma, Swift, and Stylus.</p>
+<p><strong>Systems Overview.</strong> - <em>Scribe.</em> Scribe is a persistent messaging system for log data. Data is organized into categories, and Scribe buckets are the basic unit of stream processing. The data pushed into scribe is persisted in HDFS. - <em>Puma.</em> Puma is a real-time data processing system in which applications are written in a SQL-like language with user defined functions written in Java. The system is designed for compiled, rather than ad-hoc, queries. It used to compute aggregates and to filter Scribe streams. - <em>Swift.</em> Swift is used to checkpoint Scribe streams. Checkpoints are made every <code>N</code> strings or every <code>B</code> bytes. Swift is used for low-throughput applications. - <em>Stylus.</em> Stylus is a low-level general purpose stream processing system written in C++ and resembles Storm, Millwheel, etc. Stream processors are organized into DAGs and the system provides estimated low watermarks. - <em>Laser.</em> Laser is a high throughput, low latency key-value store built on RocksDB. - <em>Scuba.</em> Scuba supports ad-hoc queries for debugging. - <em>Hive.</em> Hive is a huge data warehouse which support SQL queries.</p>
+<p><strong>Example Application.</strong> Imagine a stream of events, where each event belongs to a single topic. Consider a streaming application which computes the top <code>k</code> events for each topic over 5 minute windows composed of four stages:</p>
+<ol style="list-style-type: decimal">
+<li><em>Filterer.</em> The filterer filter events and shards events based on their dimension id.</li>
+<li><em>Joiner.</em> The joiner looks up dimension data by dimension id, infers the topic of the event, and shards output by (event, topic).</li>
+<li><em>Scorer.</em> The scorer maintains a recent history of event counts per topic as well as some long-term counts. It assigns a score for each event and shards output by topic.</li>
 <li><em>Ranker.</em> The ranker computes the top <code>k</code> events per topic.</li>
 </ol>
-
-<p>The filterer and joiner are stateless; the scorer and ranker are stateful. The
-filterer and ranker can be implemented in Puma. All can be implemented in
-Stylus.</p>
-
-<p><strong>Language Paradigm.</strong>
-The choice of the language in which users write applications can greatly impact
-a system's ease of use:</p>
-
+<p>The filterer and joiner are stateless; the scorer and ranker are stateful. The filterer and ranker can be implemented in Puma. All can be implemented in Stylus.</p>
+<p><strong>Language Paradigm.</strong> The choice of the language in which users write applications can greatly impact a system's ease of use:</p>
 <ul>
-<li><em>Declarative.</em> SQL is declarative, expressive, and everyone knows it.
-However, not all computations can be expressed in SQL.</li>
-<li><em>Functional.</em> Frameworks like Dryad and Spark provide users with a set of
-built-in operators which they chain together. This is more flexible that SQL.</li>
-<li><em>Procedural.</em> Systems like Storm, Heron, and Samza allow users to form DAGs
-of arbitrary processing units.</li>
+<li><em>Declarative.</em> SQL is declarative, expressive, and everyone knows it. However, not all computations can be expressed in SQL.</li>
+<li><em>Functional.</em> Frameworks like Dryad and Spark provide users with a set of built-in operators which they chain together. This is more flexible that SQL.</li>
+<li><em>Procedural.</em> Systems like Storm, Heron, and Samza allow users to form DAGs of arbitrary processing units.</li>
 </ul>
-
 <p>Puma uses SQL, Swift uses Python, and Stylus uses C++.</p>
-
-<p><strong>Data Transfer.</strong>
-Data must be transferred between nodes in a DAG:</p>
-
+<p><strong>Data Transfer.</strong> Data must be transferred between nodes in a DAG:</p>
 <ul>
-<li><em>Direct message transfer.</em> Data can be transferred directly with something
-like RPCs or ZeroMQ. Millwheel, Flink, and Spark Streaming do this.</li>
-<li><em>Broker based message transfer.</em> Instead of direct communication, a message
-broker can be placed between nodes. This allows an output to be multiplexed
-to multiple outputs. Moreover, brokers can implement back pressure. Heron
-does this.</li>
-<li><em>Persistent message based transfer.</em> Storing messages to a persistent
-messaging layer allows data to be multiplexed, allows for different reader
-and writer speeds, allows data to be read again, and makes failures
-independent. Samza Puma, Swift, and Stylus do this.</li>
+<li><em>Direct message transfer.</em> Data can be transferred directly with something like RPCs or ZeroMQ. Millwheel, Flink, and Spark Streaming do this.</li>
+<li><em>Broker based message transfer.</em> Instead of direct communication, a message broker can be placed between nodes. This allows an output to be multiplexed to multiple outputs. Moreover, brokers can implement back pressure. Heron does this.</li>
+<li><em>Persistent message based transfer.</em> Storing messages to a persistent messaging layer allows data to be multiplexed, allows for different reader and writer speeds, allows data to be read again, and makes failures independent. Samza Puma, Swift, and Stylus do this.</li>
 </ul>
-
 <p>Facebook connects its systems with Scribe for the following benefits:</p>
-
 <ul>
-<li>Fault Tolerance: If the producer of a stream fails, the consumer is not
-affected. This failure independence becomes increasingly useful at scale.</li>
-<li>Fault Tolerance: Recovery can be faster because only nodes need to be
-replaced.</li>
-<li>Fault Tolerance: Multiple identical downstream nodes can be run to improve
-fault-tolerance.</li>
-<li>Performance: Different nodes can have different read and write latencies. The
-system doesn't propagate back pressure to slow down the system.</li>
+<li>Fault Tolerance: If the producer of a stream fails, the consumer is not affected. This failure independence becomes increasingly useful at scale.</li>
+<li>Fault Tolerance: Recovery can be faster because only nodes need to be replaced.</li>
+<li>Fault Tolerance: Multiple identical downstream nodes can be run to improve fault-tolerance.</li>
+<li>Performance: Different nodes can have different read and write latencies. The system doesn't propagate back pressure to slow down the system.</li>
 <li>Ease of Use: The ability to replay messages makes debugging easier.</li>
 <li>Ease of Use: Storing messages in Scribe makes monitoring and alerting easier.</li>
-<li>Ease of Use: Having Scribe as a common substrate lets different frameworks
-communicate with one another.</li>
-<li>Scalability: Changing the number of Scribe buckets makes it easy to change
-the number of partitions.</li>
+<li>Ease of Use: Having Scribe as a common substrate lets different frameworks communicate with one another.</li>
+<li>Scalability: Changing the number of Scribe buckets makes it easy to change the number of partitions.</li>
 </ul>
-
-<p><strong>Processing Semantics.</strong>
-Stream processors:</p>
-
-<ol>
+<p><strong>Processing Semantics.</strong> Stream processors:</p>
+<ol style="list-style-type: decimal">
 <li>Proccess inputs,</li>
 <li>Generate output, and</li>
 <li>checkpoint state, stream offsets, and outputs for recovery.</li>
 </ol>
-
 <p>Each node has</p>
-
 <ul>
-<li>state semantics: can each input affect state at least once, at most once, or
-exactly once.</li>
-<li>output semantics: can each output be produced at least once, at most once, or
-exactly once.</li>
+<li>state semantics: can each input affect state at least once, at most once, or exactly once.</li>
+<li>output semantics: can each output be produced at least once, at most once, or exactly once.</li>
 </ul>
-
 <p>For state semantics, we can achieve</p>
-
 <ul>
 <li>at least once by saving state before saving stream offsets,</li>
 <li>at most once by saving stream offsets before saving state, and</li>
 <li>exactly once by saving both state and stream offsets atomically.</li>
 </ul>
-
 <p>For output semantics, we can achieve</p>
-
 <ul>
 <li>at least once by saving output before offset/state,</li>
 <li>at most once by saving offset/state before output,</li>
 <li>exactly once by saving output and offset/state atomically.</li>
 </ul>
-
-<p>At-least-once semantics is useful when low latency is more important than
-duplicate records. At most once is useful when loss is preferred over
-duplication. Puma guarantees at least once state and output semantics, and
-Stylus supports a whole bunch of combinations.</p>
-
-<p><strong>State-saving Mechanisms.</strong>
-Node state can be saved in one of many ways:</p>
-
+<p>At-least-once semantics is useful when low latency is more important than duplicate records. At most once is useful when loss is preferred over duplication. Puma guarantees at least once state and output semantics, and Stylus supports a whole bunch of combinations.</p>
+<p><strong>State-saving Mechanisms.</strong> Node state can be saved in one of many ways:</p>
 <ul>
 <li><em>Replication.</em> Running multiple copies of a node provides fault tolerance.</li>
-<li><em>Local DB.</em> Nodes can save their state to a local database like LevelDB or
-RocksDB.</li>
-<li><em>Remote DB.</em> Nodes can save their state to remote databases. Millwheel does
-this.</li>
-<li><em>Upstream backup.</em> Output messages can be buffered upstream in case
-downstream nodes fail.</li>
+<li><em>Local DB.</em> Nodes can save their state to a local database like LevelDB or RocksDB.</li>
+<li><em>Remote DB.</em> Nodes can save their state to remote databases. Millwheel does this.</li>
+<li><em>Upstream backup.</em> Output messages can be buffered upstream in case downstream nodes fail.</li>
 <li><em>Global consistent snapshot.</em> Flink maintains globally consistent snapshots.</li>
 </ul>
-
-<p>Stylus can save to a local RocksDB instance with data asynchronously backed up
-to HDFS. Alternatively, it can store to a remote database. If a processing unit
-forms a monoid (identity element with associate operator), then input data can
-be processed and later merged into the remote DB.</p>
-
-<p><strong>Backfill Processing.</strong>
-Being able to re-run old jobs or run new jobs on old data is useful for a
-number of reasons:</p>
-
+<p>Stylus can save to a local RocksDB instance with data asynchronously backed up to HDFS. Alternatively, it can store to a remote database. If a processing unit forms a monoid (identity element with associate operator), then input data can be processed and later merged into the remote DB.</p>
+<p><strong>Backfill Processing.</strong> Being able to re-run old jobs or run new jobs on old data is useful for a number of reasons:</p>
 <ul>
 <li>Running new jobs on old data is great for debugging.</li>
-<li>Sometimes, we need to run a new metric on old data to generate historical
-metrics.</li>
+<li>Sometimes, we need to run a new metric on old data to generate historical metrics.</li>
 <li>If a node has a bug, we'd like to re-run the node on the data.</li>
 </ul>
-
 <p>To re-run processing on old data, we have three choices:</p>
-
 <ul>
 <li><em>Stream only.</em></li>
-<li><em>Separate batch and streaming systems.</em> This can be very annoying and hard to
-manage.</li>
-<li><em>Combined batch and streaming system.</em> This is what Spark streaming, Flink,
-and Facebook does.</li>
+<li><em>Separate batch and streaming systems.</em> This can be very annoying and hard to manage.</li>
+<li><em>Combined batch and streaming system.</em> This is what Spark streaming, Flink, and Facebook does.</li>
 </ul>
-
 <p>Puma and Stylus code can be run as either streaming or batch applications.</p>
   </div>
 </body>

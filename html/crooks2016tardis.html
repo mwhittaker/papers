@@ -8,129 +8,65 @@
 
 <body>
   <div id="container">
-<h2><a href="https://scholar.google.com/scholar?q=TARDiS%3A+A+Branch-and-Merge+Approach+To+Weak+Consistency&amp;btnG=&amp;hl=en&amp;as_sdt=0%2C5">TARDiS: A Branch-and-Merge Approach To Weak Consistency (2016)</a></h2>
-
-<p><strong>Overview.</strong>
-Strong consistency is expensive. The alternative, weak consistency, is hard to
-program against. The lack of distributed synchronization or consensus in a
-weakly consistent system means that replica state can diverge. Existing systems
-try to hide this divergence with <em>causal consistency</em> to deal with read-write
-conflicts and per-object <em>eventual convergence</em> to deal with write-write
-conflicts, but neither is sufficient to deal with complex multi-object
-write-write conflicts.</p>
-
-<p>As a motivating example, imagine a Wikipedia article for Donald Trump with
-three parts: some text, an image, and some references. In one partition,
-Hillary modifies the text to oppose Trump and subsequently, Tim changes the
-picture to a nastier image of Trump. In another picture, Trump modifies to the
-text to support Trump and subsequently, Mike changes the references to link to
-pro-Trump websites. Later, the partitions need to be merged. The write-write
-conflict on the text needs to be reconciled. Moreover, the modifications to the
-image and references do not produce conflicts but still need to be updated to
-match the text. Existing systems solve this in one of two ways:</p>
-
-<ol>
-<li><em>syntactic conflict resolution:</em> Some policy like last-writer-wins is
-chosen.</li>
-<li><em>lack of cross-object semantics:</em> Users are forced to merge individual
-objects.</li>
+<h2 id="tardis-a-branch-and-merge-approach-to-weak-consistency-2016"><a href="https://scholar.google.com/scholar?q=TARDiS%3A+A+Branch-and-Merge+Approach+To+Weak+Consistency&amp;btnG=&amp;hl=en&amp;as_sdt=0%2C5">TARDiS: A Branch-and-Merge Approach To Weak Consistency (2016)</a></h2>
+<p><strong>Overview.</strong> Strong consistency is expensive. The alternative, weak consistency, is hard to program against. The lack of distributed synchronization or consensus in a weakly consistent system means that replica state can diverge. Existing systems try to hide this divergence with <em>causal consistency</em> to deal with read-write conflicts and per-object <em>eventual convergence</em> to deal with write-write conflicts, but neither is sufficient to deal with complex multi-object write-write conflicts.</p>
+<p>As a motivating example, imagine a Wikipedia article for Donald Trump with three parts: some text, an image, and some references. In one partition, Hillary modifies the text to oppose Trump and subsequently, Tim changes the picture to a nastier image of Trump. In another picture, Trump modifies to the text to support Trump and subsequently, Mike changes the references to link to pro-Trump websites. Later, the partitions need to be merged. The write-write conflict on the text needs to be reconciled. Moreover, the modifications to the image and references do not produce conflicts but still need to be updated to match the text. Existing systems solve this in one of two ways:</p>
+<ol style="list-style-type: decimal">
+<li><em>syntactic conflict resolution:</em> Some policy like last-writer-wins is chosen.</li>
+<li><em>lack of cross-object semantics:</em> Users are forced to merge individual objects.</li>
 </ol>
-
-<p>TARDiS (<strong>T</strong>ransactional <strong>A</strong>synchronously <strong>R</strong>eplicated <strong>Di</strong>vergent
-<strong>S</strong>tore) is a distributed weakly-consistent transactional key-value store
-that supports branching computation as a core abstraction. When working off a
-single branch, applications are shielded from diverging computations.
-Conversely, applications can merge branches and reconcile conflicts.  By
-allowing applications to merge entire branches rather than single objects,
-users have the ability to perform semantically rich multi-object merges.</p>
-
+<p>TARDiS (<strong>T</strong>ransactional <strong>A</strong>synchronously <strong>R</strong>eplicated <strong>Di</strong>vergent <strong>S</strong>tore) is a distributed weakly-consistent transactional key-value store that supports branching computation as a core abstraction. When working off a single branch, applications are shielded from diverging computations. Conversely, applications can merge branches and reconcile conflicts. By allowing applications to merge entire branches rather than single objects, users have the ability to perform semantically rich multi-object merges.</p>
 <p>TARDiS employs three techniques:</p>
-
-<ol>
+<ol style="list-style-type: decimal">
 <li><em>branch-on-conflict</em></li>
 <li><em>inter-branch isolation</em></li>
 <li><em>application-driven cross-object merge</em></li>
 </ol>
-
 <p>and has the following properties:</p>
-
-<ol>
-<li><em>TARDiS knows history:</em> TARDiS maintains a DAG of branching execution and
-uses DAG compression to minimize memory overhead.</li>
-<li><em>TARDiS merges branches, not objects:</em> TARDiS allows applications to merge
-branches rather than single-objects.</li>
+<ol style="list-style-type: decimal">
+<li><em>TARDiS knows history:</em> TARDiS maintains a DAG of branching execution and uses DAG compression to minimize memory overhead.</li>
+<li><em>TARDiS merges branches, not objects:</em> TARDiS allows applications to merge branches rather than single-objects.</li>
 <li><em>TARDiS is expressive:</em> TARDiS supports various isolation levels.</li>
-<li><em>TARDiS improves performance of the local site:</em> Branching on conflict and
-deferring merge until later can improve performance in a local setting as
-well as in a distributed setting.</li>
+<li><em>TARDiS improves performance of the local site:</em> Branching on conflict and deferring merge until later can improve performance in a local setting as well as in a distributed setting.</li>
 </ol>
-
-<p><strong>Architecture.</strong>
-TARDiS is a distributed multi-master key value store with asynchronous
-replication. There are four main layers to TARDiS:</p>
-
-<ol>
+<p><strong>Architecture.</strong> TARDiS is a distributed multi-master key value store with asynchronous replication. There are four main layers to TARDiS:</p>
+<ol style="list-style-type: decimal">
 <li><em>Storage layer:</em> this layer implements a disk-backed multiversion B-tree.</li>
-<li><em>Consistency layer:</em> this layer maintains the DAG of execution branches
-where each vertex is a logical state.</li>
-<li><em>Garbage collection layer:</em> this layer performs DAG compression and record
-pruning.</li>
+<li><em>Consistency layer:</em> this layer maintains the DAG of execution branches where each vertex is a logical state.</li>
+<li><em>Garbage collection layer:</em> this layer performs DAG compression and record pruning.</li>
 <li><em>Replicator service layer:</em> this layer propagates transactions.</li>
 </ol>
-
-<p><strong>Interface.</strong>
-Applications use TARDiS in either</p>
-
+<p><strong>Interface.</strong> Applications use TARDiS in either</p>
 <ul>
 <li><em>single-mode</em>, where transaction execute on a single branch, or</li>
-<li><em>multi-mode</em>, where a transaction can read from multiple branches and create
-a new merged branch.</li>
+<li><em>multi-mode</em>, where a transaction can read from multiple branches and create a new merged branch.</li>
 </ul>
-
-<p>TARDiS provides an API to find the set of conflicting writes for a set of
-branches, the find the fork points for a set of branches, and to get the
-versioned values of objects. It also supports varying levels of begin and end
-constraints including serializability, snapshot isolation, read committed, etc.</p>
-
+<p>TARDiS provides an API to find the set of conflicting writes for a set of branches, the find the fork points for a set of branches, and to get the versioned values of objects. It also supports varying levels of begin and end constraints including serializability, snapshot isolation, read committed, etc.</p>
 <p>Here's an example TARDiS application that implements a counter.</p>
-
-<p>```
-func increment(counter)
+<pre><code>func increment(counter)
     Tx t = begin(AncestorConstraint)
     int value = t.get(counter)
     t.put(counter, value + 1)
-    t.commit(SerializabilityConstraint)</p>
+    t.commit(SerializabilityConstraint)
 
-<p>func decrement(counter)
+func decrement(counter)
     Tx t = begin(AncestorConstraint)
     int value = t.get(counter)
     t.put(counter, value - 1)
-    t.commit(SerializabilityConstraint)</p>
+    t.commit(SerializabilityConstraint)
 
-<p>func merge()
+func merge()
     Tx t = beginMerge(AnyConstraint)
     forkPoint forkPt = t.findForkPoints(t.parents).first
     int forkVal = t.getForId(counter, forkPt)
-    list<int> currentVals = t.getForId(counter, t.parents)
+    list&lt;int&gt; currentVals = t.getForId(counter, t.parents)
     int result = forkVal
     foreach c in currentVals
         result += (c - forkVal)
     t.put(counter, result)
-    t.commit(SerializabilityConstraint)
-```</p>
-
-<p><strong>Design and Implementation.</strong>
-When a transaction begins, TARDiS performs a BFS from the leaves of the state
-DAG to find the first state satisfying the begin constraint. When a transaction
-is committed, TARDiS walks down the state DAG as far as possible until a state
-is reached that doesn't satisfy the end constraint, branching if necessary.
-Branches are represented as a set of (b, i) pairs to indicate the bth child of
-the ith node. Keys are mapped to a topologically sorted list of versions used
-during reading.</p>
-
-<p>The garbage collector performs DAG compression, eliminating unneeded states in
-the state DAG. It also prunes record unneeded record versions after DAG
-compression.</p>
+    t.commit(SerializabilityConstraint)</code></pre>
+<p><strong>Design and Implementation.</strong> When a transaction begins, TARDiS performs a BFS from the leaves of the state DAG to find the first state satisfying the begin constraint. When a transaction is committed, TARDiS walks down the state DAG as far as possible until a state is reached that doesn't satisfy the end constraint, branching if necessary. Branches are represented as a set of (b, i) pairs to indicate the bth child of the ith node. Keys are mapped to a topologically sorted list of versions used during reading.</p>
+<p>The garbage collector performs DAG compression, eliminating unneeded states in the state DAG. It also prunes record unneeded record versions after DAG compression.</p>
   </div>
 </body>
 </html>

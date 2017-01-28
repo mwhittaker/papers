@@ -8,37 +8,11 @@
 
 <body>
   <div id="container">
-<h2><a href="TODO">Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)</a></h2>
-
-<p><strong>Summary.</strong>
-Frameworks like MapReduce made processing large amounts of data easier, but
-they did not leverage distributed memory. If a MapReduce was run iteratively,
-it would write all of its intermediate state to disk: something that was
-prohibitively slow. This limitation made batch processing systems like
-MapReduce ill-suited to <em>iterative</em> (e.g. k-means clustering) and <em>interactive</em>
-(e.g. ad-hoc queries) workflows. Other systems like Pregel did take advantage
-of distributed memory and reused the in-memory data across computations, but
-the systems were not general-purpose.</p>
-
-<p><em>Spark</em> uses <em>Resilient Distributed Datasets</em> (RDDs) to perform general
-computations in memory. RDDs are immutable partitioned collections of records.
-Unlike pure distributed shared memory abstractions which allow for arbitrary
-fine-grained writes, RDDs can only be constructed using coarse-grained
-transformations from on-disk data or other RDDs. This weaker abstraction can be
-implemented efficiently. Spark also uses RDD lineage to implement low-overhead
-fault tolerance. Rather than persist intermediate datasets, the lineage of an
-RDD can be persisted and efficiently recomputed. RDDs could also be
-checkpointed to avoid the recomputation of a long lineage graph.</p>
-
-<p>Spark has a Scala-integrated API and comes with a modified interactive
-interpreter. It also includes a large number of useful <em>transformations</em> (which
-construct RDDs) and <em>actions</em> (which derive data from RDDs). Users can also
-manually specify RDD persistence and partitioning to further improve
-performance.</p>
-
-<p>Spark subsumed a huge number of existing data processing frameworks like
-MapReduce and Pregel in a small amount of code. It was also much, much faster
-than everything else on a large number of applications.</p>
+<h2 id="resilient-distributed-datasets-a-fault-tolerant-abstraction-for-in-memory-cluster-computing-2012"><a href="TODO">Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)</a></h2>
+<p><strong>Summary.</strong> Frameworks like MapReduce made processing large amounts of data easier, but they did not leverage distributed memory. If a MapReduce was run iteratively, it would write all of its intermediate state to disk: something that was prohibitively slow. This limitation made batch processing systems like MapReduce ill-suited to <em>iterative</em> (e.g. k-means clustering) and <em>interactive</em> (e.g. ad-hoc queries) workflows. Other systems like Pregel did take advantage of distributed memory and reused the in-memory data across computations, but the systems were not general-purpose.</p>
+<p><em>Spark</em> uses <em>Resilient Distributed Datasets</em> (RDDs) to perform general computations in memory. RDDs are immutable partitioned collections of records. Unlike pure distributed shared memory abstractions which allow for arbitrary fine-grained writes, RDDs can only be constructed using coarse-grained transformations from on-disk data or other RDDs. This weaker abstraction can be implemented efficiently. Spark also uses RDD lineage to implement low-overhead fault tolerance. Rather than persist intermediate datasets, the lineage of an RDD can be persisted and efficiently recomputed. RDDs could also be checkpointed to avoid the recomputation of a long lineage graph.</p>
+<p>Spark has a Scala-integrated API and comes with a modified interactive interpreter. It also includes a large number of useful <em>transformations</em> (which construct RDDs) and <em>actions</em> (which derive data from RDDs). Users can also manually specify RDD persistence and partitioning to further improve performance.</p>
+<p>Spark subsumed a huge number of existing data processing frameworks like MapReduce and Pregel in a small amount of code. It was also much, much faster than everything else on a large number of applications.</p>
   </div>
 </body>
 </html>

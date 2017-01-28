@@ -8,105 +8,29 @@
 
 <body>
   <div id="container">
-<h2><a href="https://scholar.google.com/scholar?cluster=5432858092023181552&amp;hl=en&amp;as_sdt=0,5">Dynamo: Amazon's Highly Available Key-value Store (2007)</a></h2>
-
-<p><strong>Overview.</strong>
-Amazon has a service-oriented infrastructure which consists of a large number
-of networked services, each with a strict <em>SLA</em>: a formal contract between the
-clients and server which guarantees the server meet certain performance
-benchmarks (e.g. 99.9% of responses are within 500 milliseconds). Amazon's
-user-facing business model makes it more important to meet the SLAs by
-providing availability, scalability, and low-latency than it is to provide
-strong consistency. Dynamo is Amazon's distributed higly-available eventually
-consistent zero-hop distributed hash table (a.k.a. key-value store) that uses
-consistent hashing, vector clocks, quorums, gossip, and more.</p>
-
-<p><strong>System Interface.</strong>
-Dynamo is a key-value store where the values are arbitrary blobs of data. Users
-can issue <code>get(key)</code> requests which returns either an object or a list of
-conflicting objects and a context. If multiple objects are returned, the user
-is responsible for merging them. Moreover, users can issue <code>put(key, context,
-value)</code> requests where <code>context</code> is used to maintain version clocks.</p>
-
-<p><strong>Partitioning Algorithm.</strong>
-Dynamo uses consistent hashing to partition data very similarly to Chord. Data
-is hashed into a circular space. Nodes are broken down into virtual nodes, each
-of which is randomly provided a point in the circular key space. Each node is
-responsible for all the keys between it and its predecessor. The number of
-virtual nodes at each physical node can be tuned according to the capacity of
-the node.</p>
-
-<p><strong>Replication.</strong>
-Data is sent to a <em>coordinator</em> which writes the data locally and also sends
-the data to N-1 other nodes. Moreover, each data item has a <em>preference list</em>
-of nodes where it should be written, and each node in the system knows the
-preference list for all data items.</p>
-
-<p><strong>Data Versioning.</strong>
-Data in Dynamo is timestamped with a vector clock. If a write <code>a</code> happens
-before a write <code>b</code>, then the two writes can be reconciled trivially; this is
-known as <em>syntactic reconciliation</em>. However, if <code>a</code> and <code>b</code> are concurrent,
-then the system or the user has to perform <em>semantic reconciliation</em>. To avoid
-vector clocks of unbounded size, vector clocks are given a maximum size, and
-each entry in a vector clock is timestamped with a physical time. When the
-vector clock exceeds its maximum size, the oldest entry is evicted.</p>
-
-<p><strong>Execution of <code>get()</code> and <code>put()</code>.</strong>
-To execute a <code>get()</code> or <code>put()</code>, a Dynamo client can</p>
-
-<ol>
+<h2 id="dynamo-amazons-highly-available-key-value-store-2007"><a href="https://scholar.google.com/scholar?cluster=5432858092023181552&amp;hl=en&amp;as_sdt=0,5">Dynamo: Amazon's Highly Available Key-value Store (2007)</a></h2>
+<p><strong>Overview.</strong> Amazon has a service-oriented infrastructure which consists of a large number of networked services, each with a strict <em>SLA</em>: a formal contract between the clients and server which guarantees the server meet certain performance benchmarks (e.g. 99.9% of responses are within 500 milliseconds). Amazon's user-facing business model makes it more important to meet the SLAs by providing availability, scalability, and low-latency than it is to provide strong consistency. Dynamo is Amazon's distributed higly-available eventually consistent zero-hop distributed hash table (a.k.a. key-value store) that uses consistent hashing, vector clocks, quorums, gossip, and more.</p>
+<p><strong>System Interface.</strong> Dynamo is a key-value store where the values are arbitrary blobs of data. Users can issue <code>get(key)</code> requests which returns either an object or a list of conflicting objects and a context. If multiple objects are returned, the user is responsible for merging them. Moreover, users can issue <code>put(key, context, value)</code> requests where <code>context</code> is used to maintain version clocks.</p>
+<p><strong>Partitioning Algorithm.</strong> Dynamo uses consistent hashing to partition data very similarly to Chord. Data is hashed into a circular space. Nodes are broken down into virtual nodes, each of which is randomly provided a point in the circular key space. Each node is responsible for all the keys between it and its predecessor. The number of virtual nodes at each physical node can be tuned according to the capacity of the node.</p>
+<p><strong>Replication.</strong> Data is sent to a <em>coordinator</em> which writes the data locally and also sends the data to N-1 other nodes. Moreover, each data item has a <em>preference list</em> of nodes where it should be written, and each node in the system knows the preference list for all data items.</p>
+<p><strong>Data Versioning.</strong> Data in Dynamo is timestamped with a vector clock. If a write <code>a</code> happens before a write <code>b</code>, then the two writes can be reconciled trivially; this is known as <em>syntactic reconciliation</em>. However, if <code>a</code> and <code>b</code> are concurrent, then the system or the user has to perform <em>semantic reconciliation</em>. To avoid vector clocks of unbounded size, vector clocks are given a maximum size, and each entry in a vector clock is timestamped with a physical time. When the vector clock exceeds its maximum size, the oldest entry is evicted.</p>
+<p><strong>Execution of <code>get()</code> and <code>put()</code>.</strong> To execute a <code>get()</code> or <code>put()</code>, a Dynamo client can</p>
+<ol style="list-style-type: decimal">
 <li>Issue a request to a load balancer, or</li>
 <li>issue it itself if it is a partition aware client (more on this later).</li>
 </ol>
-
-<p>Dynamo uses quorums to write data. A read must be acknowledged by <code>R</code> servers,
-a write must be acknowledged by <code>W</code> servers, and <code>R + W &gt; N</code>.</p>
-
-<p><strong>Handling Failures.</strong>
-Dynamo uses a <em>sloppy quorum</em> where data can be stored at a node outside its
-preference list. The data is tagged with the node where the data should be, and
-the node transfers it there eventually. Moreover, preference lists span
-multiple data centers.</p>
-
-<p><strong>Handling Permanent Failures.</strong>
-Nodes user Merkle trees to determine what state has diverged from one another.</p>
-
-<p><strong>Membership and Failure Detection.</strong>
-Membership changes are initiated manually by a human. Nodes gossip membership
-information and use it transfer data to the newly joined and removed nodes.
-There are also seed nodes in the ring which nodes always gossip with to avoid
-a split ring.</p>
-
-<p><strong>Implementation.</strong>
-Dynamo is implemented with a pluggable storage engine and uses a SEDA
-architecture implemented in Java.</p>
-
-<p><strong>Experiences and Lessons Learned.</strong>
-Amazon has learned a lot from its experience with Dynamo:</p>
-
+<p>Dynamo uses quorums to write data. A read must be acknowledged by <code>R</code> servers, a write must be acknowledged by <code>W</code> servers, and <code>R + W &gt; N</code>.</p>
+<p><strong>Handling Failures.</strong> Dynamo uses a <em>sloppy quorum</em> where data can be stored at a node outside its preference list. The data is tagged with the node where the data should be, and the node transfers it there eventually. Moreover, preference lists span multiple data centers.</p>
+<p><strong>Handling Permanent Failures.</strong> Nodes user Merkle trees to determine what state has diverged from one another.</p>
+<p><strong>Membership and Failure Detection.</strong> Membership changes are initiated manually by a human. Nodes gossip membership information and use it transfer data to the newly joined and removed nodes. There are also seed nodes in the ring which nodes always gossip with to avoid a split ring.</p>
+<p><strong>Implementation.</strong> Dynamo is implemented with a pluggable storage engine and uses a SEDA architecture implemented in Java.</p>
+<p><strong>Experiences and Lessons Learned.</strong> Amazon has learned a lot from its experience with Dynamo:</p>
 <ul>
-<li><em>Balancing performance and durability.</em> Improving durability can decrease
-performance. For example, if we want to write to <code>W</code> nodes, then increasing
-<code>W</code> decreases the availability of the system. Dynamo allows writes to be
-buffered by nodes, rather than written to their disks to increase
-availability at the cost of durability.</li>
-<li><em>Ensuring uniform load.</em> Assuming there are enough hot keys, hashing data
-into a circular key space should ensure uniform load. However, the
-partitioning scheme described above where each node is divided into some
-number of virtual nodes, the virtual nodes are placed randomly on the ring,
-and the node placement determines data partitioning has some downsides. Two
-alternatives are to divide the key space into equal sized partitions and give
-each node a random number of virtual nodes. Or, to divide the key space into
-equal sized partitions and adjust the total number of tokens as nodes join
-and leave the system.</li>
-<li><em>How many divergent versions.</em> Evaluation showed that there were not many
-divergent data items.</li>
-<li><em>Client or server coordination.</em> Instead of communicating with a load
-balancer, clients can periodically request membership information and route
-requests themselves.</li>
-<li><em>Balancing foreground and background.</em> Dynamo uses a resource controller to
-implement admission control for background tasks, preventing them from
-interfering with important foreground tasks.</li>
+<li><em>Balancing performance and durability.</em> Improving durability can decrease performance. For example, if we want to write to <code>W</code> nodes, then increasing <code>W</code> decreases the availability of the system. Dynamo allows writes to be buffered by nodes, rather than written to their disks to increase availability at the cost of durability.</li>
+<li><em>Ensuring uniform load.</em> Assuming there are enough hot keys, hashing data into a circular key space should ensure uniform load. However, the partitioning scheme described above where each node is divided into some number of virtual nodes, the virtual nodes are placed randomly on the ring, and the node placement determines data partitioning has some downsides. Two alternatives are to divide the key space into equal sized partitions and give each node a random number of virtual nodes. Or, to divide the key space into equal sized partitions and adjust the total number of tokens as nodes join and leave the system.</li>
+<li><em>How many divergent versions.</em> Evaluation showed that there were not many divergent data items.</li>
+<li><em>Client or server coordination.</em> Instead of communicating with a load balancer, clients can periodically request membership information and route requests themselves.</li>
+<li><em>Balancing foreground and background.</em> Dynamo uses a resource controller to implement admission control for background tasks, preventing them from interfering with important foreground tasks.</li>
 </ul>
   </div>
 </body>

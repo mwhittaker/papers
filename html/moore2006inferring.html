@@ -8,34 +8,15 @@
 
 <body>
   <div id="container">
-<h2><a href="TODO">Inferring Internet Denial-of-Service Activity (2001)</a></h2>
-
-<p><strong>Summary.</strong>
-This paper uses <em>backscatter analysis</em> to quantitatively analyze
-denial-of-service attacks on the Internet. Most flooding denial-of-service
-attacks involve IP spoofing, where each packet in an attack is given a faux IP
-address drawn uniformly at random from the space of all IP addresses. If the
-packet elicits the victim to issue a reply packet, then victims of
-denial-of-service attacks end up sending unsolicited messages to servers
-uniformly at random. By monitoring this <em>backscatter</em> at enough hosts, one can
-infer the number, intensity, and type of denial-of-service attacks.</p>
-
+<h2 id="inferring-internet-denial-of-service-activity-2001"><a href="TODO">Inferring Internet Denial-of-Service Activity (2001)</a></h2>
+<p><strong>Summary.</strong> This paper uses <em>backscatter analysis</em> to quantitatively analyze denial-of-service attacks on the Internet. Most flooding denial-of-service attacks involve IP spoofing, where each packet in an attack is given a faux IP address drawn uniformly at random from the space of all IP addresses. If the packet elicits the victim to issue a reply packet, then victims of denial-of-service attacks end up sending unsolicited messages to servers uniformly at random. By monitoring this <em>backscatter</em> at enough hosts, one can infer the number, intensity, and type of denial-of-service attacks.</p>
 <p>There are of course a number of assumptions upon which backscatter depends.</p>
-
-<ol>
-<li><em>Address uniformity</em>. It is assumed that DOS attackers spoof IP addresses
-uniformally at random.</li>
-<li><em>Reliable delivery</em>. It is assumed that packets, as part of the attack and
-response, are delivered reliably.</li>
-<li><em>Backscatter hypothesis</em>. It is assumed that unsolicited packets arriving at
-a host are actually part of backscatter.</li>
+<ol style="list-style-type: decimal">
+<li><em>Address uniformity</em>. It is assumed that DOS attackers spoof IP addresses uniformally at random.</li>
+<li><em>Reliable delivery</em>. It is assumed that packets, as part of the attack and response, are delivered reliably.</li>
+<li><em>Backscatter hypothesis</em>. It is assumed that unsolicited packets arriving at a host are actually part of backscatter.</li>
 </ol>
-
-<p>The paper performs a backscatter analysis on 1/256 of the IPv4 address space.
-They cluster the backscatter data using a <em>flow-based classification</em> to
-measure individual attacks and using an <em>event-based classification</em> to measure
-the intensity of attacks. The findings of the analysis are best summarized by
-the paper.</p>
+<p>The paper performs a backscatter analysis on 1/256 of the IPv4 address space. They cluster the backscatter data using a <em>flow-based classification</em> to measure individual attacks and using an <em>event-based classification</em> to measure the intensity of attacks. The findings of the analysis are best summarized by the paper.</p>
   </div>
 </body>
 </html>

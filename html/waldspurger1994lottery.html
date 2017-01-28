@@ -8,95 +8,31 @@
 
 <body>
   <div id="container">
-<h2><a href="https://scholar.google.com/scholar?cluster=15431493885859350148&amp;hl=en&amp;as_sdt=0,5">Lottery and Stride Scheduling: Flexible Proportional-Share Resource Management (1994)</a></h2>
-
-<p>Schedulers multiplex scarce resources and can greatly impact the throughput and
-response times of a system. Ideally, schedulers service clients with <em>relative
-computation rates</em>. Existing priority schedulers do this to some degree but are
-ad-hoc. Similarly, fair-share and microeconomic schedulers are too coarse. This
-paper introduces <em>lottery scheduling</em> which implements proportional-share
-resource management: consumption rates are proportional to relative shares
-allocated.</p>
-
-<p><strong>Lottery Scheduling.</strong>
-Lottery schedulers allocate resource rights to clients in the form of
-<em>tickets</em>. Lotteries are held, and the client with the winning ticket is
-granted the resource.</p>
-
+<h2 id="lottery-and-stride-scheduling-flexible-proportional-share-resource-management-1994"><a href="https://scholar.google.com/scholar?cluster=15431493885859350148&amp;hl=en&amp;as_sdt=0,5">Lottery and Stride Scheduling: Flexible Proportional-Share Resource Management (1994)</a></h2>
+<p>Schedulers multiplex scarce resources and can greatly impact the throughput and response times of a system. Ideally, schedulers service clients with <em>relative computation rates</em>. Existing priority schedulers do this to some degree but are ad-hoc. Similarly, fair-share and microeconomic schedulers are too coarse. This paper introduces <em>lottery scheduling</em> which implements proportional-share resource management: consumption rates are proportional to relative shares allocated.</p>
+<p><strong>Lottery Scheduling.</strong> Lottery schedulers allocate resource rights to clients in the form of <em>tickets</em>. Lotteries are held, and the client with the winning ticket is granted the resource.</p>
 <p>Tickets are</p>
-
 <ul>
-<li><em>abstract</em>: tickets are a logical entity independent of underlying machine
-details.</li>
+<li><em>abstract</em>: tickets are a logical entity independent of underlying machine details.</li>
 <li><em>relative</em>: the value of a ticket varies with the total number of tickets.</li>
 <li><em>uniform</em>: heterogeneous resources can be managed homogeneously with tickets.</li>
 </ul>
-
-<p>Lottery scheduling is a probabilistic scheduling algorithm, but when quanta are
-small, fairness can be achieved rapidly. Moreover, there is no fear of
-starvation. As long as a client has tickets, it will eventually be scheduled.</p>
-
-<p><strong>Modular Resource Management.</strong>
-- <em>Ticket transfers.</em> Clients can transfer tickets to others. For example, a
-  client blocking on a server can transfer tickets to the server. This
-  effectively avoids priority inversion.
-- <em>Ticket inflation.</em> Mutually trusting applications can inflate or deflate
-  tickets in order to change resource allocation without communication.
-- <em>Currencies.</em> Logically distinct groups of mutually trusting applications can
-  establish their own currencies backed by the same base currency. This allows
-  for finer grained ticket allocation.
-- <em>Compensation tickets.</em> If a client runs for only <code>f</code> of its quanta, its
-  number of tickets is boosted by <code>1/f</code> to ensure fairness.</p>
-
-<p><strong>Implementation.</strong>
-The authors implemented a lottery scheduling prototype in the Mach 3.0
-microkernel with all of the features listed above and with a 100 ms quantum.</p>
-
+<p>Lottery scheduling is a probabilistic scheduling algorithm, but when quanta are small, fairness can be achieved rapidly. Moreover, there is no fear of starvation. As long as a client has tickets, it will eventually be scheduled.</p>
+<p><strong>Modular Resource Management.</strong> - <em>Ticket transfers.</em> Clients can transfer tickets to others. For example, a client blocking on a server can transfer tickets to the server. This effectively avoids priority inversion. - <em>Ticket inflation.</em> Mutually trusting applications can inflate or deflate tickets in order to change resource allocation without communication. - <em>Currencies.</em> Logically distinct groups of mutually trusting applications can establish their own currencies backed by the same base currency. This allows for finer grained ticket allocation. - <em>Compensation tickets.</em> If a client runs for only <code>f</code> of its quanta, its number of tickets is boosted by <code>1/f</code> to ensure fairness.</p>
+<p><strong>Implementation.</strong> The authors implemented a lottery scheduling prototype in the Mach 3.0 microkernel with all of the features listed above and with a 100 ms quantum.</p>
 <ul>
 <li><em>Random numbers.</em> Random numbers are generated using a 10 instruction pseudo-random number generator.</li>
-<li><em>Lotteries.</em> Clients can be stored in a list where each list entry includes
-the number of tickets assigned to the client. Given a ticket number drawn for
-a lottery, the client with that ticket can be found by linearly searching
-through the clients maintaining a partial sum along the way. Sorting clients
-in descending order starting with those with the most tickets decreases the
-number of clients that need to be searched. This can be implemented also with
-a move-to-front policy. Moreover, one could also use a tree or a binary
-search.</li>
-<li><em>Mach kernel interface.</em> Mach provides a minimal interface to create and
-destroy tickets ad currencies, fund currencies, unfund currencies, etc. A
-ticket includes its name and amount. A currency includes a list of backing
-tickets, its name, the amount of tickets allocated, and a list of the
-allocated tickets.</li>
-<li><em>Ticket currencies.</em> Currencies are subdivided into other currencies forming
-a currency graph which makes it easy to translate all currency amounts into a
-base currency amount. The prototype uses a move-to-front linear search with
-partial sums computed in the base currency.</li>
-<li><em>Compensation tickets.</em> Compensation tickets ensure that two clients with the
-same number of tickets execute for the same amount of time even if one of
-them does not use its full quantum. This is good for I/O bound tasks.</li>
-<li><em>Ticket transfer.</em> The prototype instrumented synchronous IPC calls to
-automatically transfer tickets from clients to servers.</li>
+<li><em>Lotteries.</em> Clients can be stored in a list where each list entry includes the number of tickets assigned to the client. Given a ticket number drawn for a lottery, the client with that ticket can be found by linearly searching through the clients maintaining a partial sum along the way. Sorting clients in descending order starting with those with the most tickets decreases the number of clients that need to be searched. This can be implemented also with a move-to-front policy. Moreover, one could also use a tree or a binary search.</li>
+<li><em>Mach kernel interface.</em> Mach provides a minimal interface to create and destroy tickets ad currencies, fund currencies, unfund currencies, etc. A ticket includes its name and amount. A currency includes a list of backing tickets, its name, the amount of tickets allocated, and a list of the allocated tickets.</li>
+<li><em>Ticket currencies.</em> Currencies are subdivided into other currencies forming a currency graph which makes it easy to translate all currency amounts into a base currency amount. The prototype uses a move-to-front linear search with partial sums computed in the base currency.</li>
+<li><em>Compensation tickets.</em> Compensation tickets ensure that two clients with the same number of tickets execute for the same amount of time even if one of them does not use its full quantum. This is good for I/O bound tasks.</li>
+<li><em>Ticket transfer.</em> The prototype instrumented synchronous IPC calls to automatically transfer tickets from clients to servers.</li>
 <li><em>User interface.</em> Users can manage tickets through the command line.</li>
 </ul>
-
-<p><strong>Managing Diverse Resources.</strong>
-Lottery scheduling can be used to manage more than CPU quanta.</p>
-
+<p><strong>Managing Diverse Resources.</strong> Lottery scheduling can be used to manage more than CPU quanta.</p>
 <ul>
-<li><em>Synchronization resources.</em> The prototype implements lottery scheduled
-mutexes in which all threads blocked on the mutex transfer tickets to the
-thread who holds the mutex. When the mutex is released, a lottery is held to
-hand it off to one of the waiting threads. This type of mutex does not suffer
-from priority inversion.</li>
-<li><em>Space-shared resources.</em> Lottery scheduling can also be used to multiplex
-space. We run an inverse-lottery in which a loser, as opposed to a winner, is
-chosen. For example, if we need to allocate a physical page to back a virtual
-page, but all the virtual pages are taken, we run an inverse lottery to
-select a loser and flush the page to disk. Each transaction is chosen with
-probability <code>(1/(n-1))(1 - t/T)</code> where <code>n</code> is the number of clients, <code>t</code> is
-the number of tickets for a client, and <code>T</code> is the total number of tickets.
-The multiplier is a normalizing factor and the multiplicand is the inverse
-probability.</li>
+<li><em>Synchronization resources.</em> The prototype implements lottery scheduled mutexes in which all threads blocked on the mutex transfer tickets to the thread who holds the mutex. When the mutex is released, a lottery is held to hand it off to one of the waiting threads. This type of mutex does not suffer from priority inversion.</li>
+<li><em>Space-shared resources.</em> Lottery scheduling can also be used to multiplex space. We run an inverse-lottery in which a loser, as opposed to a winner, is chosen. For example, if we need to allocate a physical page to back a virtual page, but all the virtual pages are taken, we run an inverse lottery to select a loser and flush the page to disk. Each transaction is chosen with probability <code>(1/(n-1))(1 - t/T)</code> where <code>n</code> is the number of clients, <code>t</code> is the number of tickets for a client, and <code>T</code> is the total number of tickets. The multiplier is a normalizing factor and the multiplicand is the inverse probability.</li>
 </ul>
   </div>
 </body>

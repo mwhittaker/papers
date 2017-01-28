@@ -5,5 +5,5 @@ default: $(HTMLS)
 
 html/%.html: papers/%.md header.html footer.html
 	cat header.html > $@
-	markdown $< >> $@
+	pandoc --from markdown --to html $< >> $@
 	cat footer.html >> $@

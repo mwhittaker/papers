@@ -8,117 +8,30 @@
 
 <body>
   <div id="container">
-<h2><a href="https://scholar.google.com/scholar?cluster=12926058981780664697&amp;hl=en&amp;as_sdt=0,5">Putting Consistency Back into Eventual Consistency (2015)</a></h2>
-
-<p>Many distributed databases geo-replicate data for (i) lower read latency and
-(ii) higher fault tolerance in the face of an extreme failure (e.g. <a href="https://status.cloud.google.com/incident/compute/15056">lightning
-striking a data
-center</a>). Implementing
-strong consistency over a geo-replicated system can incur tremendous write
-latency, as updates have to coordinate between geographically distant data
-centers. On the other hand, weak consistency is a real brain buster. This paper
-introduces a new consistency model between weak and strong consistency,
-<em>explicit consistency</em>, which takes into account user specified invariants. It
-also presents an explicitly consistent system which</p>
-
-<ol>
-<li>performs static analysis to determine which operations can be executed
-without coordination,</li>
-<li>uses <em>invariant-repair</em> or <em>violation-avoidance</em> to resolve or avoid
-conflicts, and</li>
+<h2 id="putting-consistency-back-into-eventual-consistency-2015"><a href="https://scholar.google.com/scholar?cluster=12926058981780664697&amp;hl=en&amp;as_sdt=0,5">Putting Consistency Back into Eventual Consistency (2015)</a></h2>
+<p>Many distributed databases geo-replicate data for (i) lower read latency and (ii) higher fault tolerance in the face of an extreme failure (e.g. <a href="https://status.cloud.google.com/incident/compute/15056">lightning striking a data center</a>). Implementing strong consistency over a geo-replicated system can incur tremendous write latency, as updates have to coordinate between geographically distant data centers. On the other hand, weak consistency is a real brain buster. This paper introduces a new consistency model between weak and strong consistency, <em>explicit consistency</em>, which takes into account user specified invariants. It also presents an explicitly consistent system which</p>
+<ol style="list-style-type: decimal">
+<li>performs static analysis to determine which operations can be executed without coordination,</li>
+<li>uses <em>invariant-repair</em> or <em>violation-avoidance</em> to resolve or avoid conflicts, and</li>
 <li>instruments user code with calls to middleware.</li>
 </ol>
-
-<p>The system is called <em>Indigo</em> and is built on an existing causally consistent
-key-value store with various properties.</p>
-
-<p><strong>Explicit Consistency.</strong>
-A database is a collection of objects replicated across data centers. Users
-issue reads and writes as part of transactions, and these transactions are
-asynchronously replicated between data centers. We denote by <code>t(S)</code> the
-database state achieved by applying transaction <code>t</code> to database state <code>S</code>.
-<code>S_n</code> is the database state achieved after the <code>n</code>th transaction. That is, <code>S_n
-= t_n(...(t_1(t_init))...)</code>. <code>T(S_n) = {t_1, ..., t_n}</code> is the set of
-transactions used to create <code>S_n</code>. We say a transaction <code>t_a</code> happens before a
-transaction <code>t_b</code>, denoted <code>t_a --&gt; t_b</code>, if <code>t_a</code> is in <code>T(S_b)</code>. <code>O = (T,
---&gt;)</code> is a partial order. <code>O' = (T, &lt;)</code> is a serialization of <code>O</code> if <code>&lt;</code> is
-total and respects <code>--&gt;</code>.</p>
-
-<p>Given an invariant <code>I</code>, we say <code>S</code> is <code>I</code>-valid if <code>I(S) = true</code>. <code>(T, &lt;)</code> is
-an <code>I</code>-valid serialization if <code>I</code> holds on all prefixes of the serialization.
-If a system ensures that all serializations are <code>I</code>-valid, it provides explicit
-consistency. In other words, an explicitly consistent database ensures
-invariants always hold. This builds off of Bailis et al.'s notion of
-invariant-confluence.</p>
-
-<p><strong>Determining I-offender Sets.</strong>
-An <em>invariant</em> is a universally quantified first order logic formula in prenex
-normal form. The invariant can include uninterpreted functions like <code>Player(P)</code>
-and <code>enrolled(P, T)</code>.</p>
-
-<p>A <em>postcondition</em> states how operations affect the truth values of the
-uninterpreted functions in invariants. Every operation is annotated with
-postconditions. A <em>predicate clause</em> directly alters the truth assignments of a
-predicate (e.g. not <code>Player(P)</code>). A <em>function clause</em> relates old and new
-database states (e.g. <code>nrPlayers(T) = nrPlayers(T) + 1</code>).</p>
-
-<p>This language is rather expressive, as evidenced by multiple examples in the
-paper.</p>
-
-<p>A set of transactions is an I-offender if it is not invariant-confluent. First,
-pairs of operations are checked to see if a contradictory truth assignment is
-formed (e.g. <code>Player(P) and not Player(P)</code>). Then, every pair of transactions
-is considered. Given the weakest liberal precondition of the transactions, we
-substitute the effects of the transactions into the invariant to get a formula.
-We then check for the validity of the formula using Z3. If the formula is
-valid, the transactions are invariant-confluent.</p>
-
-<p><strong>Handling I-offender Sets.</strong>
-There are two ways to handle I-offenders: invariant-repair and
-violation-avoidance. Invariant-repair involves CRDTs; the bulk of this paper
-focuses on violation-avoidance which leverages existing reservation and escrow
-transaction techniques.</p>
-
+<p>The system is called <em>Indigo</em> and is built on an existing causally consistent key-value store with various properties.</p>
+<p><strong>Explicit Consistency.</strong> A database is a collection of objects replicated across data centers. Users issue reads and writes as part of transactions, and these transactions are asynchronously replicated between data centers. We denote by <code>t(S)</code> the database state achieved by applying transaction <code>t</code> to database state <code>S</code>. <code>S_n</code> is the database state achieved after the <code>n</code>th transaction. That is, <code>S_n = t_n(...(t_1(t_init))...)</code>. <code>T(S_n) = {t_1, ..., t_n}</code> is the set of transactions used to create <code>S_n</code>. We say a transaction <code>t_a</code> happens before a transaction <code>t_b</code>, denoted <code>t_a --&gt; t_b</code>, if <code>t_a</code> is in <code>T(S_b)</code>. <code>O = (T, --&gt;)</code> is a partial order. <code>O' = (T, &lt;)</code> is a serialization of <code>O</code> if <code>&lt;</code> is total and respects <code>--&gt;</code>.</p>
+<p>Given an invariant <code>I</code>, we say <code>S</code> is <code>I</code>-valid if <code>I(S) = true</code>. <code>(T, &lt;)</code> is an <code>I</code>-valid serialization if <code>I</code> holds on all prefixes of the serialization. If a system ensures that all serializations are <code>I</code>-valid, it provides explicit consistency. In other words, an explicitly consistent database ensures invariants always hold. This builds off of Bailis et al.'s notion of invariant-confluence.</p>
+<p><strong>Determining I-offender Sets.</strong> An <em>invariant</em> is a universally quantified first order logic formula in prenex normal form. The invariant can include uninterpreted functions like <code>Player(P)</code> and <code>enrolled(P, T)</code>.</p>
+<p>A <em>postcondition</em> states how operations affect the truth values of the uninterpreted functions in invariants. Every operation is annotated with postconditions. A <em>predicate clause</em> directly alters the truth assignments of a predicate (e.g. not <code>Player(P)</code>). A <em>function clause</em> relates old and new database states (e.g. <code>nrPlayers(T) = nrPlayers(T) + 1</code>).</p>
+<p>This language is rather expressive, as evidenced by multiple examples in the paper.</p>
+<p>A set of transactions is an I-offender if it is not invariant-confluent. First, pairs of operations are checked to see if a contradictory truth assignment is formed (e.g. <code>Player(P) and not Player(P)</code>). Then, every pair of transactions is considered. Given the weakest liberal precondition of the transactions, we substitute the effects of the transactions into the invariant to get a formula. We then check for the validity of the formula using Z3. If the formula is valid, the transactions are invariant-confluent.</p>
+<p><strong>Handling I-offender Sets.</strong> There are two ways to handle I-offenders: invariant-repair and violation-avoidance. Invariant-repair involves CRDTs; the bulk of this paper focuses on violation-avoidance which leverages existing reservation and escrow transaction techniques.</p>
 <ul>
-<li><em>UID generation.</em> Unique identifiers can easily be generated without
-coordination. For example, a node can concatenate an incrementing counter
-with its MAC address.</li>
-<li><em>Multi-level lock reservation.</em> Locking is the most general form of
-reservation. Locks come in three flavors: (i) shared forbid, (ii) shared
-allow, and (iii) exclusive allow. Transactions acquire locks to avoid
-invariant violation. For example, an <code>enrollTournament</code> could acquire a
-<code>sharedForbid</code> lock on removing players, and <code>removePlayer</code> could acquire a
-<code>sharedAllow</code> lock. Exclusive allow are used for self-conflicting operations.</li>
-<li><em>Multi-level mask reservation.</em> If our invariant is a disjunction <code>P1 or ...
-or Pn</code>, then to preserve the invariant, we only need to guarantee that at
-least one of the disjuncts remains true. A mask reservation is a vector of
-locks where an operation can falsify one of the disjuncts only after
-acquiring a lock on another true disjunct preventing it from being
-falsified.</li>
-<li><em>Escrow reservation.</em> Imagine our invariant is <code>x &gt;= k</code> and <code>x</code> has initial
-value <code>x0</code>. Escrow transactions allocate <code>x0 - k</code> <em>rights</em>. A transaction can
-decrement <code>x</code> only after acquiring and spending a right. When <code>x</code> is
-incremented, a right is generated. This gets tricker for invariants like <code>|A|
-&gt;= k</code> where concurrent additions could generate too many rights leading to an
-invariant violation. Here, we use <em>escrow transactions for conditions</em>, where
-a primary is allocated for each reservation. Rights are not immediately
-generated; instead, the primary is responsible for generating rights.</li>
-<li><em>Partition lock reservation.</em> Partition locks allow operations to lock a
-small part of an object. For example, an operation could lock part of a
-timeline to ensure there are no overlapping timespans.</li>
+<li><em>UID generation.</em> Unique identifiers can easily be generated without coordination. For example, a node can concatenate an incrementing counter with its MAC address.</li>
+<li><em>Multi-level lock reservation.</em> Locking is the most general form of reservation. Locks come in three flavors: (i) shared forbid, (ii) shared allow, and (iii) exclusive allow. Transactions acquire locks to avoid invariant violation. For example, an <code>enrollTournament</code> could acquire a <code>sharedForbid</code> lock on removing players, and <code>removePlayer</code> could acquire a <code>sharedAllow</code> lock. Exclusive allow are used for self-conflicting operations.</li>
+<li><em>Multi-level mask reservation.</em> If our invariant is a disjunction <code>P1 or ...   or Pn</code>, then to preserve the invariant, we only need to guarantee that at least one of the disjuncts remains true. A mask reservation is a vector of locks where an operation can falsify one of the disjuncts only after acquiring a lock on another true disjunct preventing it from being falsified.</li>
+<li><em>Escrow reservation.</em> Imagine our invariant is <code>x &gt;= k</code> and <code>x</code> has initial value <code>x0</code>. Escrow transactions allocate <code>x0 - k</code> <em>rights</em>. A transaction can decrement <code>x</code> only after acquiring and spending a right. When <code>x</code> is incremented, a right is generated. This gets tricker for invariants like <code>|A|   &gt;= k</code> where concurrent additions could generate too many rights leading to an invariant violation. Here, we use <em>escrow transactions for conditions</em>, where a primary is allocated for each reservation. Rights are not immediately generated; instead, the primary is responsible for generating rights.</li>
+<li><em>Partition lock reservation.</em> Partition locks allow operations to lock a small part of an object. For example, an operation could lock part of a timeline to ensure there are no overlapping timespans.</li>
 </ul>
-
-<p>There are many ways to use reservations to avoid invariant violations. Indigo
-uses heuristics and estimated operation frequencies to try and minimize
-reservation acquisitions.</p>
-
-<p><strong>Implementation.</strong>
-Indigo can run over any key-value store that offers (i) causally consistency,
-(ii) snapshot transactions with CRDTs, and (iii) linearizability within a data
-center. Currently, it uses Swiftcloud. Its fault tolerance leverages the
-underlying fault tolerance of the key-value store. Each reservation is stored
-as an object in the key-value store, where operations are structured as
-transfers to avoid some concurrency oddities.</p>
+<p>There are many ways to use reservations to avoid invariant violations. Indigo uses heuristics and estimated operation frequencies to try and minimize reservation acquisitions.</p>
+<p><strong>Implementation.</strong> Indigo can run over any key-value store that offers (i) causally consistency, (ii) snapshot transactions with CRDTs, and (iii) linearizability within a data center. Currently, it uses Swiftcloud. Its fault tolerance leverages the underlying fault tolerance of the key-value store. Each reservation is stored as an object in the key-value store, where operations are structured as transfers to avoid some concurrency oddities.</p>
   </div>
 </body>
 </html>

@@ -8,83 +8,25 @@
 
 <body>
   <div id="container">
-<h2><a href="https://goo.gl/AOCTas">Chord: A Scalable Peer-to-peer Lookup Service for Internet Applications (2001)</a></h2>
-
-<p><strong>Summary.</strong>
-Chord is a peer-to-peer lookup service---today, we'd call it a distributed hash
-table---mapping keys to servers that provides load balancing, decentralization,
-scalability, availability, and flexible key naming. In a Chord cluster with <code>N</code>
-nodes, each server stores O(log <code>N</code>) data, lookup takes O(log <code>N</code>) messages,
-and node joining requires O(log <code>N</code> * log <code>N</code>) messages. Note that Chord maps
-keys to <em>servers</em>, not <em>values</em>, but a key-value interface can easily be built
-on top of Chord. In fact, Chord leaves all higher level functionality, like
-caching and replication, to the user.</p>
-
-<p>Chord hashes keys and servers (represented by their IP address) into the space
-of <code>m</code>-bit bitstrings modulo <code>2^m</code>. The key <code>k</code> is managed by the first server
-<code>n</code> greater than or equal to <code>k</code>. This server is known as the successor of <code>k</code>.
-Intuitively, keys and servers are assigned to points on a circle of values
-ranging from <code>0</code> to <code>2^m</code>. The successor of a point <code>k</code> is the first server
-reached by rotating clockwise starting at <code>k</code>.</p>
-
-<p>Each node <code>n</code> maintains <code>m</code> fingers. The <code>i</code>th finger is the successor of <code>n +
-2^{i-1}</code>. For example, the first finger is the successor of <code>n + 1</code>, the second
-finger is the successor of <code>n + 2</code>, the third finger is the successor of <code>n +
-4</code>, etc. Note that the first finger is the successor of <code>n</code>. Under this scheme,
-nodes only know about a small fraction of the nodes and cannot identify the
-successor of an arbitrary key. In order to find the server assigned to a key
-<code>k</code>, we follow fingers to the latest node that precedes <code>k</code>. Once <code>k</code> falls
-between a node and its immediate successor, that successor is the successor of
-<code>k</code>.</p>
-
-<p>In order to handle the joining of a node, servers also maintain a pointer to
-their predecessor. When a node <code>n</code> joins, it contacts an arbitrary Chord node
-<code>n'</code> and performs the following procedure:</p>
-
-<ol>
-<li><em>Update the predecessor and fingers of <code>n</code>.</em> <code>n</code> computes its predecessor
-and fingers by simply asking <code>n'</code> to look them up. Naively, this requires
-<code>O(m * log N)</code> messages. As a small optimization, a node can avoid looking
-up the successor of <code>n + 2^i</code> if the successor of <code>n + 2^{i - 1}</code> is greater
-than <code>n + 2^i</code>. In this case the <code>i</code>th finger is the same as the <code>i-1</code>th
-finger. This requires <code>O(log N * log N)</code> operations. Other optimizations can
-reduce the message complexity to <code>O(log N)</code>.</li>
-<li><em>Update the predecessor and fingers of other nodes.</em> <code>n</code> is the <code>i</code>th finger
-of a node <code>p</code> if <code>p</code> precedes <code>n</code> by at least <code>2^i</code> and <code>n</code> precedes the
-<code>i</code>th finger of <code>p</code>. For <code>i = 1</code> to <code>i = m</code>, the predecessor <code>p</code> of <code>n -
-2^i</code> is found. If <code>n</code> precedes <code>p</code>'s <code>i</code>th finger, then its fingers are
-updated. If the fingers are updated, <code>p</code> is set to the predecessor of <code>p</code>
-and the process repeats.</li>
-<li><em>Notify the application to migrate data to <code>n</code>.</em> Applications are
-responsible for migrating data and therefore must be notified when a new
-node joins the system. Typically a node <code>n</code> will take data only from its
-successor.</li>
+<h2 id="chord-a-scalable-peer-to-peer-lookup-service-for-internet-applications-2001"><a href="https://goo.gl/AOCTas">Chord: A Scalable Peer-to-peer Lookup Service for Internet Applications (2001)</a></h2>
+<p><strong>Summary.</strong> Chord is a peer-to-peer lookup service---today, we'd call it a distributed hash table---mapping keys to servers that provides load balancing, decentralization, scalability, availability, and flexible key naming. In a Chord cluster with <code>N</code> nodes, each server stores O(log <code>N</code>) data, lookup takes O(log <code>N</code>) messages, and node joining requires O(log <code>N</code> * log <code>N</code>) messages. Note that Chord maps keys to <em>servers</em>, not <em>values</em>, but a key-value interface can easily be built on top of Chord. In fact, Chord leaves all higher level functionality, like caching and replication, to the user.</p>
+<p>Chord hashes keys and servers (represented by their IP address) into the space of <code>m</code>-bit bitstrings modulo <code>2^m</code>. The key <code>k</code> is managed by the first server <code>n</code> greater than or equal to <code>k</code>. This server is known as the successor of <code>k</code>. Intuitively, keys and servers are assigned to points on a circle of values ranging from <code>0</code> to <code>2^m</code>. The successor of a point <code>k</code> is the first server reached by rotating clockwise starting at <code>k</code>.</p>
+<p>Each node <code>n</code> maintains <code>m</code> fingers. The <code>i</code>th finger is the successor of <code>n + 2^{i-1}</code>. For example, the first finger is the successor of <code>n + 1</code>, the second finger is the successor of <code>n + 2</code>, the third finger is the successor of <code>n + 4</code>, etc. Note that the first finger is the successor of <code>n</code>. Under this scheme, nodes only know about a small fraction of the nodes and cannot identify the successor of an arbitrary key. In order to find the server assigned to a key <code>k</code>, we follow fingers to the latest node that precedes <code>k</code>. Once <code>k</code> falls between a node and its immediate successor, that successor is the successor of <code>k</code>.</p>
+<p>In order to handle the joining of a node, servers also maintain a pointer to their predecessor. When a node <code>n</code> joins, it contacts an arbitrary Chord node <code>n'</code> and performs the following procedure:</p>
+<ol style="list-style-type: decimal">
+<li><em>Update the predecessor and fingers of <code>n</code>.</em> <code>n</code> computes its predecessor and fingers by simply asking <code>n'</code> to look them up. Naively, this requires <code>O(m * log N)</code> messages. As a small optimization, a node can avoid looking up the successor of <code>n + 2^i</code> if the successor of <code>n + 2^{i - 1}</code> is greater than <code>n + 2^i</code>. In this case the <code>i</code>th finger is the same as the <code>i-1</code>th finger. This requires <code>O(log N * log N)</code> operations. Other optimizations can reduce the message complexity to <code>O(log N)</code>.</li>
+<li><em>Update the predecessor and fingers of other nodes.</em> <code>n</code> is the <code>i</code>th finger of a node <code>p</code> if <code>p</code> precedes <code>n</code> by at least <code>2^i</code> and <code>n</code> precedes the <code>i</code>th finger of <code>p</code>. For <code>i = 1</code> to <code>i = m</code>, the predecessor <code>p</code> of <code>n -    2^i</code> is found. If <code>n</code> precedes <code>p</code>'s <code>i</code>th finger, then its fingers are updated. If the fingers are updated, <code>p</code> is set to the predecessor of <code>p</code> and the process repeats.</li>
+<li><em>Notify the application to migrate data to <code>n</code>.</em> Applications are responsible for migrating data and therefore must be notified when a new node joins the system. Typically a node <code>n</code> will take data only from its successor.</li>
 </ol>
-
-<p>In order to handle the concurrent joining and leaving of nodes, Chord
-periodically runs a stabilization procedure that aims to maintain the
-correctness of successor pointers. If a lookup is performed during
-stabilization, one of three things can happen:</p>
-
-<ol>
+<p>In order to handle the concurrent joining and leaving of nodes, Chord periodically runs a stabilization procedure that aims to maintain the correctness of successor pointers. If a lookup is performed during stabilization, one of three things can happen:</p>
+<ol style="list-style-type: decimal">
 <li>If the successors and fingers are correct, the lookup succeeds as usual.</li>
-<li>If the successors are correct but the fingers are incorrect, the lookup
-succeeds but may take longer than usual.</li>
-<li>If the successors are incorrect, the lookup may fail. In this case, the
-application may issue a retry.</li>
+<li>If the successors are correct but the fingers are incorrect, the lookup succeeds but may take longer than usual.</li>
+<li>If the successors are incorrect, the lookup may fail. In this case, the application may issue a retry.</li>
 </ol>
-
-<p>When a node <code>n</code> joins, it contacts an existing Chord node <code>n'</code>. It asks <code>n'</code> to
-find its successor. Periodically, servers check to see if their successor's
-predecessor should be their successor, and they inform their successor about
-their existence. They also periodically refresh fingers.</p>
-
-<p>Note that the stabilization cannot handle certain perverse scenarios. For
-example, if two disjoint rings form, stabilization will not merge the two
-rings.</p>
-
-<p>To handle node failures, nodes maintain <code>r</code> successors. When a successors node
-fails, lookup is routed to the next of the <code>r</code> successors.</p>
+<p>When a node <code>n</code> joins, it contacts an existing Chord node <code>n'</code>. It asks <code>n'</code> to find its successor. Periodically, servers check to see if their successor's predecessor should be their successor, and they inform their successor about their existence. They also periodically refresh fingers.</p>
+<p>Note that the stabilization cannot handle certain perverse scenarios. For example, if two disjoint rings form, stabilization will not merge the two rings.</p>
+<p>To handle node failures, nodes maintain <code>r</code> successors. When a successors node fails, lookup is routed to the next of the <code>r</code> successors.</p>
   </div>
 </body>
 </html>

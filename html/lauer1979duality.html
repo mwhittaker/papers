@@ -8,62 +8,129 @@
 
 <body>
   <div id="container">
-<h2><a href="https://scholar.google.com/scholar?cluster=12379045883699292297&amp;hl=en&amp;as_sdt=0,5">On the Duality of Operating System Structures (1979)</a></h2>
-
-<p><strong>Summary.</strong>
-Lauer and Needham explain the duality in expressiveness and performance between</p>
-
+<h2 id="on-the-duality-of-operating-system-structures-1979"><a href="https://scholar.google.com/scholar?cluster=12379045883699292297&amp;hl=en&amp;as_sdt=0,5">On the Duality of Operating System Structures (1979)</a></h2>
+<p><strong>Summary.</strong> Lauer and Needham explain the duality in expressiveness and performance between</p>
 <ul>
-<li><em>message-oriented</em> concurrency models in which there are a small number of
-fixed tasks that communicate explicitly, and</li>
-<li><em>process-oriented</em> concurrency models in which there are a larger number of
-dynamic processes that share memory.</li>
+<li><em>message-oriented</em> concurrency models in which there are a small number of fixed tasks that communicate explicitly, and</li>
+<li><em>process-oriented</em> concurrency models in which there are a larger number of dynamic processes that share memory.</li>
 </ul>
-
-<p>Message-oriented systems can be characterized by the following hallmarks,
-consequences, and provided facilities.</p>
-
-<p>| Hallmark                                                                                 | Consequences                                                                                            | Facilities                                                                                                      |
-|------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| Long standing communication channels are typically created during program initialization | Synchronization is implicitly performed in the queues connecting processes                              | Messages and message ids                                                                                        |
-| There are a fewer number of long lasting processes                                       | Shared structures are passed by reference; only processes with a reference to a structure can act on it | Message channels and ports that provide the ability to <code>Send</code>, <code>WaitForReply</code>, <code>WaitForMessage</code>, or <code>SendReply</code> |
-| Processes don't share memory                                                             | Peripheral devices are treated like processes and communicated with                                     | Process creation (but no deletion)                                                                              |
-|                                                                                          | Processes read a small number of messages at a time                                                     |                                                                                                                 |</p>
-
+<p>Message-oriented systems can be characterized by the following hallmarks, consequences, and provided facilities.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Hallmark</th>
+<th align="left">Consequences</th>
+<th align="left">Facilities</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Long standing communication channels are typically created during program initialization</td>
+<td align="left">Synchronization is implicitly performed in the queues connecting processes</td>
+<td align="left">Messages and message ids</td>
+</tr>
+<tr class="even">
+<td align="left">There are a fewer number of long lasting processes</td>
+<td align="left">Shared structures are passed by reference; only processes with a reference to a structure can act on it</td>
+<td align="left">Message channels and ports that provide the ability to <code>Send</code>, <code>WaitForReply</code>, <code>WaitForMessage</code>, or <code>SendReply</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Processes don't share memory</td>
+<td align="left">Peripheral devices are treated like processes and communicated with</td>
+<td align="left">Process creation (but no deletion)</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Processes read a small number of messages at a time</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
 <p>Process-oriented systems can be similarly characterized:</p>
-
-<p>| Hallmark                                                 | Consequences                                                         | Facilities                         |
-|----------------------------------------------------------|----------------------------------------------------------------------|------------------------------------|
-| Global data can be protected and accessed via interfaces | Synchronization is performed in locks                                | Procedures                         |
-| Process creation and deletion is a lightweight task      | Data is shared directly, with small portions being locked            | <code>fork</code>/<code>join</code> procedure invocation |
-| Processes typically have a single job                    | Peripheral interaction typically involves locking and sharing memory | Modules and monitors               |
-|                                                          |                                                                      | Module instantiation               |
-|                                                          |                                                                      | Condition variables                |</p>
-
-<p>There is a duality between the two concurrency models. Any program in one has a
-corresponding program written in the other. Lauer and Needham demonstrate the
-duality not by simulating  model's primitives using the other, but by drawing
-similarities between the two's components:</p>
-
-<p>| Message-oriented                            | Process-oriented                      |
-| ------------------------------------------- | ------------------------------------- |
-| Processes, <code>CreateProcess</code>                  | Monitors, <code>NEW</code>/<code>START</code>               |
-| Message Channels                            | External Procedure identifiers        |
-| Message Ports                               | <code>ENTRY</code> procedure identifiers         |
-| <code>SendMessage; AwaitReply</code>                   | simple procedure call                 |
-| <code>SendMessage; ... AwaitReply</code>               | <code>FORK; ... JOIN</code>                      |
-| <code>SendReply</code>                                 | <code>RETURN</code>                              |
-| <code>WaitForMessage</code> loop with <code>case</code> statement | monitor lock, <code>ENTRY</code> attribute       |
-| arms of <code>case</code> statement                    | <code>ENTRY</code> procedure declarations        |
-| selective waiting for messages              | condition variables, <code>WAIT</code>, <code>SIGNAL</code> |</p>
-
-<p>This correspondence can be used to directly rewrite a canonical program between
-the two models. In fact, the differences between the two models becomes simply
-a matter of keyword choice. Moreover, if both models are implemented with
-identical blocking and scheduling mechanism, then the two models lead to
-identical performance as well. Since the choice of model does not affect the
-user or implementor, the decision of which model to use should be based on the
-architecture of the underlying hardware.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Hallmark</th>
+<th align="left">Consequences</th>
+<th align="left">Facilities</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Global data can be protected and accessed via interfaces</td>
+<td align="left">Synchronization is performed in locks</td>
+<td align="left">Procedures</td>
+</tr>
+<tr class="even">
+<td align="left">Process creation and deletion is a lightweight task</td>
+<td align="left">Data is shared directly, with small portions being locked</td>
+<td align="left"><code>fork</code>/<code>join</code> procedure invocation</td>
+</tr>
+<tr class="odd">
+<td align="left">Processes typically have a single job</td>
+<td align="left">Peripheral interaction typically involves locking and sharing memory</td>
+<td align="left">Modules and monitors</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">Module instantiation</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">Condition variables</td>
+</tr>
+</tbody>
+</table>
+<p>There is a duality between the two concurrency models. Any program in one has a corresponding program written in the other. Lauer and Needham demonstrate the duality not by simulating model's primitives using the other, but by drawing similarities between the two's components:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Message-oriented</th>
+<th align="left">Process-oriented</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Processes, <code>CreateProcess</code></td>
+<td align="left">Monitors, <code>NEW</code>/<code>START</code></td>
+</tr>
+<tr class="even">
+<td align="left">Message Channels</td>
+<td align="left">External Procedure identifiers</td>
+</tr>
+<tr class="odd">
+<td align="left">Message Ports</td>
+<td align="left"><code>ENTRY</code> procedure identifiers</td>
+</tr>
+<tr class="even">
+<td align="left"><code>SendMessage; AwaitReply</code></td>
+<td align="left">simple procedure call</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>SendMessage; ... AwaitReply</code></td>
+<td align="left"><code>FORK; ... JOIN</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code>SendReply</code></td>
+<td align="left"><code>RETURN</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>WaitForMessage</code> loop with <code>case</code> statement</td>
+<td align="left">monitor lock, <code>ENTRY</code> attribute</td>
+</tr>
+<tr class="even">
+<td align="left">arms of <code>case</code> statement</td>
+<td align="left"><code>ENTRY</code> procedure declarations</td>
+</tr>
+<tr class="odd">
+<td align="left">selective waiting for messages</td>
+<td align="left">condition variables, <code>WAIT</code>, <code>SIGNAL</code></td>
+</tr>
+</tbody>
+</table>
+<p>This correspondence can be used to directly rewrite a canonical program between the two models. In fact, the differences between the two models becomes simply a matter of keyword choice. Moreover, if both models are implemented with identical blocking and scheduling mechanism, then the two models lead to identical performance as well. Since the choice of model does not affect the user or implementor, the decision of which model to use should be based on the architecture of the underlying hardware.</p>
   </div>
 </body>
 </html>
