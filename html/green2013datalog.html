@@ -11,7 +11,7 @@
 <h1 id="datalog-and-recursive-query-processing-2013"><a href="https://scholar.google.com/scholar?cluster=11160406363745186504&amp;hl=en&amp;as_sdt=0,5">Datalog and Recursive Query Processing (2013)</a></h1>
 <p>Datalog's popularity peaked in the 1980s and 1990s before its hype dwindled. Recently however, Datalog has been making a comeback, showing up in bigger and badder applications in both academia and industry. This book surveys the syntax, semantics, evaluation, extensions, and applications of Datalog.</p>
 <h2 id="a-first-example">A First Example</h2>
-<p>Let <code>link</code> be a binary relation where <code>(X, Y)</code> is in <code>link</code> (denoted <code>link(X, Y)</code>) if there is a <strong>link</strong> from <code>X</code> to <code>Y</code>. The following Datalog program computes a binary relation <code>reachable</code> where <code>reachable(X, Y)</code> if there is a <strong>path</strong> from <code>X</code> to <code>Y</code>.</p>
+<p>Let <code>link</code> be a binary relation where <code>(X, Y)</code> is in <code>link</code> (denoted <code>link(X, Y)</code>) if there is a <em>link</em> from <code>X</code> to <code>Y</code>. The following Datalog program computes a binary relation <code>reachable</code> where <code>reachable(X, Y)</code> if there is a <em>path</em> from <code>X</code> to <code>Y</code>.</p>
 <pre><code>r1: reachable(X, Y) :- link(X, Y)
 r2: reachable(X, Y) :- link(X, Z), reachable(Z, Y)</code></pre>
 <p>The program consists of two rules, <code>r1</code> and <code>r2</code>. Notably, <code>r2</code> is a <strong>recursive</strong> rule. In fact it is a <strong>linear recursive</strong> rules.</p>
@@ -43,7 +43,71 @@ r2: reachable(X, Y) :- link(X, Z), reachable(Z, Y)</code></pre>
 </ol>
 <p>Assume for contradiction there did not exist a unique minimal model. 2 tells us that we can intersect any two minimal models to get a smaller model, violating our assumption that they were unique. Since there exists a unique minimal model, either <code>I'</code> from 1 is the unique minimal model, or the minimal model is smaller than it. This implies that the unique minimal model is at worst polynomial in the size of <code>I</code>.</p>
 <h2 id="fixpoint-theoretic-semantics">Fixpoint-Theoretic Semantics</h2>
+<p>An atom <code>A</code> is an <strong>immediate consequence</strong> of program <code>P</code> and database instance <code>I</code> if either</p>
+<ol style="list-style-type: decimal">
+<li><code>A</code> is a ground atom in an EDB predicate of <code>I</code> or</li>
+<li><code>A :- B1, ..., Bn</code> is a ground instance of a rule in <code>P</code>.</li>
+</ol>
+<p>The <strong>immediate consequence operator</strong> <code>T_P</code> maps database instance <code>I</code> to the set of all atoms <code>A</code> such that <code>A</code> is an immediate consequence of <code>P</code> and <code>I</code>. For any <code>P</code> and any <code>I</code>, there exists a unique least fixpoint <code>I</code> (i.e. <code>T_P(I) = I</code>) and <code>I = P(I)</code>. That is, the least fixpoint of <code>T_P</code> is equivalent to the unique minimal model.</p>
+<p>Repeatedly applying the immediate consequence operator produces the least fixpoint it a polynomial number of steps. Each application of the operator takes a polynomial amount of time. Thus, computing the least fixpoint takes a polynomial amount of time.</p>
 <h2 id="proof-theoretic-semantics">Proof-Theoretic Semantics</h2>
+<p>We can also view the meaning of a Datalog program <code>P</code> and source database instance <code>I</code> as the set of all ground atoms provable using the ground atoms in <code>I</code> as axioms and the rules in <code>P</code> as inference rules.</p>
+<h2 id="negation">Negation</h2>
+<p>All core Datalog programs are monotone (this is best understood with the proof-theoretic semantics). That is, for any Datalog program <code>P</code> and pair of source database instances <code>I</code> and <code>J</code>, if <code>I</code> is a subset of <code>J</code>, then <code>P(I)</code> is a subset of <code>P(J)</code>. This means that core Datalog programs cannot compute non-monotone queries. For example, we cannot compute a predicate <code>unreachable(X, Y)</code> showing when a node <code>Y</code> is unreachable from a node <code>X</code>. We can compute such a predicate if we have negation</p>
+<pre><code>reachable(X, Y) :- link(X, Y)
+reachable(X, Y) :- link(X, Z), reachable(Z, Y)
+node(X) :- link(X, _)
+node(Y) :- link(_, Y)
+unreachable(X, Y) :- node(X), node(Y), not reachable(X, Y)</code></pre>
+<p>but unfettered negation can lead to some nonsensical programs:</p>
+<pre><code>p :- not q
+q :- not p</code></pre>
+<p>Here, both <code>{p}</code> and <code>{q}</code> are minimal models and minimal fixpoints of <code>P</code>, but neither is unique. Moreover, using the proof-theoretic semantics, neither <code>p</code> nor <code>q</code> can be proved. To avoid these nonsensical programs, we have to restrict the use of negation in Datalog programs. We first look at <strong>semipositive Datalog with negation</strong> and then <strong>stratified Datalog with negation</strong>.</p>
+<h2 id="semipositive-datalog-with-negation">Semipositive Datalog with Negation</h2>
+<p>In semipositive Datalog with negation, negation can only appear on an EDB atom. For example, we can negate <code>link(X, Y)</code> but not <code>reachable(X, Y)</code>. Moreover, any variable that appears in the head of a rule must appear in a non-negated atom in the body of the rule. If we had a rule like this <code>p(X) :- not q(X)</code> then a minimal model could be infinite and depend on values outside of the source database instance.</p>
+<p>The semantics of semipositive Datalog with negation are straightforward. Both the model-theoretic and fixpoint-theoretic semantics carry over nicely, though the proof-theoretic semantics do not. As with core Datalog, a least fixpoint of a semipositive Datalog program can be always be found in polynomial time.</p>
+<h2 id="stratified-datalog-with-negation">Stratified Datalog with Negation</h2>
+<p>A <strong>stratification</strong> of Datalog program <code>P</code> is an ordered partition <code>P1, ..., Pn</code> of the IDB predicates in <code>P</code> where</p>
+<ol style="list-style-type: decimal">
+<li>If <code>A :- ..., B, ...</code> appears in <code>P</code>, <code>A</code> belongs to <code>Pi</code>, and <code>B</code> belongs to <code>Pj</code>, then <code>i &gt;= j</code>. Intuitively, <code>A</code> can belong to the same strata as <code>B</code> or a future one.</li>
+<li>If <code>A :- ..., not B, ...</code> appears in <code>P</code>, <code>A</code> belongs to <code>Pi</code>, and <code>B</code> belongs to <code>Pj</code>, then <code>i &gt; j</code>. Intuitively, <code>A</code> must belong to a future strata than <code>B</code>.</li>
+</ol>
+<p>A Datalog program <code>P</code> is <strong>stratifiable</strong> if there exists a stratification of <code>P</code>. Given a stratification of <code>P</code>, we can run each strata in turn as a semipositive Datalog with negation program. After each strata is run, its IDB predicates become EDB predicates for the next strata. It turns out that all stratifications produce the same result.</p>
+<p>We can determine if a program is stratifiable and find a stratification using a precedence graph. Each IDB predicate becomes a vertex and</p>
+<ol style="list-style-type: decimal">
+<li>If <code>A :- ..., B, ...</code> appears in the program, then there is an edge from <code>B</code> to <code>A</code>.</li>
+<li>If <code>A :- ..., not B, ...</code> appears in the program, then there is an edge from <code>B</code> to <code>A</code> labelled with a negation.</li>
+</ol>
+<p>If the precedence graph is free of cycles in which one edge of the cycle is labelled with a negation, then the program is stratifiable. Each strongly connected component of the graph becomes a strata and a topological sort of the strata orders them. Using a neat algorithm, all of this can be done in linear time with respect to the number of IDB predicates. Stratifiable Datalog programs with negation can be run in polynomial time.</p>
+<p>The <strong>Immerman-Vardi theorem</strong> says that any query that can be computed in polynomial time can be expressed by a stratifiable Datalog program with negation. We've also seen that every stratifiable Datalog program with negation can be run in polynomial time. This means that stratifiable Datalog with negation programs capture exactly the queries that can be computed in polynomial time. Note however that the term &quot;query&quot; is very technical and also assumes that the active domain is ordered.</p>
+<h2 id="aggregation">Aggregation</h2>
+<p>Stratifiable Datalog programs with negation cannot compute aggregates (e.g. <code>count</code>, <code>sum</code>, <code>max</code>, <code>min</code>, <code>average</code>) which might come in handy. For example, we cannot compute the number of nodes reachable from a node <code>X</code>:</p>
+<pre><code>reachable(X, Y) :- link(X, Y)
+reachable(X, Y) :- link(X, Z), reachable(Z, Y)
+summary(X, count&lt;Y&gt;) :- reachable(X, Y)</code></pre>
+<p>An <strong>aggregate function</strong> maps bags of values to a single value. An <strong>aggregate term</strong> is an expression <code>f&lt;t1, ..., tk&gt;</code> where <code>f</code> is an <strong>aggregate function sumbol</strong> of arity <code>k</code> and <code>t1</code> to <code>tk</code> are ordinary terms. We also augment the range restriction property with a new clause:</p>
+<ul>
+<li>If a variable <code>X</code> appears in an aggregate term in the head of a rule, it cannot appear in the head of a rule outside an aggregate term.</li>
+</ul>
+<p>The head variables that do not appear in an aggregate term are known as <strong>grouping variables</strong>. The meaning of a aggregate in Datalog is pretty much the same as a GROUP BY in SQL. For example, the Datalog</p>
+<pre><code>sales_by_product(Product, sum&lt;Sales&gt;) :- sales(Product, City, Sales)</code></pre>
+<p>is equivalent to the SQL</p>
+<pre><code>SELECT   S.Product, SUM(S.Sales)
+FROM     Sales S
+GROUP BY S.Product;</code></pre>
+<p>Like with negation, unfettered aggregation can lead to some wonky programs:</p>
+<pre><code>p(X) :- q(X)
+p(sum&lt;X&gt;) :- p(X)</code></pre>
+<p>Here, if <code>q(1)</code> and <code>q(2)</code>, then we use the first two rules to derive <code>p(1)</code> and <code>p(2)</code>. Then, we use the third rule to deduce <code>p(3)</code>. But then we have to deduce <code>p(6)</code> and <code>p(12)</code> and so on <em>ad infinitum</em>.</p>
+<p>Like with negation, we can avoid this nonsense with stratification. A stratification of a Datalog program <code>P</code> with both aggregation and negation is an ordered partition of the IDB predicates in <code>P</code> such that:</p>
+<ol style="list-style-type: decimal">
+<li>If <code>A :- ..., B, ...</code> appears in <code>P</code>, <code>A</code> belongs to <code>Pi</code>, and <code>B</code> belongs to <code>Pj</code>, then <code>i &gt;= j</code>. Intuitively, <code>A</code> can belong to the same strata as <code>B</code> or a future one.</li>
+<li>If <code>A :- ..., not B, ...</code> appears in <code>P</code>, <code>A</code> belongs to <code>Pi</code>, and <code>B</code> belongs to <code>Pj</code>, then <code>i &gt; j</code>. Intuitively, <code>A</code> must belong to a future strata than <code>B</code>.</li>
+<li>If <code>A :- ..., B, ...</code> appears in <code>P</code>, <code>A</code> includes an aggregate term and belongs to <code>Pi</code>, and <code>B</code> belongs to <code>Pj</code>, then <code>i &gt; j</code>.</li>
+</ol>
+<p>We can modify the precedence graph algorithm from before. We introduce an edge from <code>B</code> to <code>A</code> labelled with an aggregation if <code>A :- ..., B, ...</code> and <code>A</code> includes an aggregate. There exists a stratification if there does not exist any cycles with either an aggregate or negation edge.</p>
+<p>We can update the immediate consequence operator to handle aggregation and then the fixpoint-theoretic semantics carry over. Model-theoretic semantics also carry over nicely.</p>
+<p>Finally, there are a number of optimizations we can do to avoid computing unnecessary parts of an aggregation. See the paper for an example with computing shortest paths.</p>
   </div>
 </body>
 </html>
