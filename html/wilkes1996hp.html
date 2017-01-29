@@ -27,6 +27,15 @@
 <li><em>Workload Logging</em>. To create disk traces, I/O requests are logged.</li>
 </ul>
 <p><strong>Commentary.</strong> - There are a lot of RAID levels and each one has different capacity, performance, and reliability. Moreover, performance depends heavily on workload. This paper presents the AutoRAID system without much explanation for when or why it's expected to perform better than alternatives. For example, is AutoRAID only better for random-write workloads? The microbenchmarks show that it performs well under sequential writes as well, but isn't RAID-1 supposed to perform poorly with sequential writes? - The AutoRAID system is supposed to be easier to configure than traditional RAID devices. The authors argue that typical RAID configuration requires detailed knowledge of the expected workloads which can be difficult to come by. However, the AutoRAID system also depends on expected workload knowledge. The paper admits that the working write set has to be small and slowly changing. Later in the paper, the authors also say &quot;it is fairly easy to predict or detect the environments that have a large write working-set and to avoid them if necessary&quot;; a bit contradictory from earlier. Finally, the summary says &quot;there are workloads that do not suit its algorithms well&quot;. - I think the evaluation of the system makes it unclear whether the hierarchical storage or the NVRAM caching is responsible for the performance improvements. - The AutoRAID system logs all I/O operations made to it in order to form disk traces. Implementing this functionality in the disk device is arguably a violation of the end-to-end principle and could have been implemented in the OS. However, they argue that the performance overhead is negligible.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

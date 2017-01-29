@@ -29,6 +29,15 @@
 <li><em>Experiment 6: Modeling Restarts.</em> Some analyses model a transaction restart as the spawning of a completely new transaction. These fake restarts lead to higher throughput because they avoid repeated transaction conflict.</li>
 <li><em>Experiment 7: Write-Lock Acquisition.</em> Some analyses have transactions acquire read-locks and then upgrade them to write-locks. Others have transactions immediately acquire write-locks if the object will ever be written to. Upgrading locks can lead to deadlock if two transactions concurrently write to the same object. The effect of lock upgrading varies with the amount of available resources.</li>
 </ul>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

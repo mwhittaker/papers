@@ -134,6 +134,15 @@ CP BS MR RMW
 <li><em>Stat watcher.</em> Stat watchers read the stats every day or so. Eventual consistency suffices.</li>
 </ul>
 <p><strong>Lessons.</strong> - All of the six presented consistency guarantees are useful. - Different clients may want different consistencies even when accessing the same data. - Even simple databases may have diverse users with different consistency needs. - Clients should be able to choose their desired consistency.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

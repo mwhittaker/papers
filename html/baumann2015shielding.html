@@ -15,6 +15,15 @@
 <p>Second, Haven aims to run <em>unmodified</em> binaries which were not written with knowledge of SGX. Real world applications allocate memory, load and run code dynamically, etc. Many of these things are not supported by SGX, so Haven (a) emulated them and (b) got the SGX specification revised to address them.</p>
 <p>Haven also implements an in-enclave encrypted file system in which only the root and leaf pages need to be written to stable storage. As of publication, however, Haven did not fully implement this feature. Haven is susceptible to replay attacks.</p>
 <p>Haven was evaluated by running Microsoft SQL Server and Apache HTTP Server.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

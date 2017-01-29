@@ -62,6 +62,15 @@ BreakEvenIntervalinSeconds = ------------------------------------------
 <p><strong>Page Sizes.</strong> The size of nodes in a B+-tree is a tunable parameter. If the nodes are small, then there's not a lot of overhead to reading a node. If the nodes are big, then the tree is short. The optimal B+-tree node size is not too big and not too small.</p>
 <p>The optimal node size for modern disks is rather large. Most of the overhead of reading a node from the disk is seek time, not transfer time. Thus, increasing the block size comes mostly for free. On the other hand, the optimal node size for modern flash memory is much smaller because the seek time is much lower. Some B+-tree designs allow for different block sizes, allowing a B+-tree to optimally use both disk and flash.</p>
 <p><strong>Database Query Processing.</strong> Some algorithms used in database systems are carefully designed to take advantage of memory and disk. For example, external sort takes advantage of memory and disk. These algorithms can be redesigned to take advantage of flash as well. Query planning may also have to change. For example, reading from an unclustered index in flash may be less expensive than doing a full table scan, even though the full table scan may be less efficient that reading the unclustered index from disk.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

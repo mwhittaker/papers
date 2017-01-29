@@ -30,6 +30,15 @@
 <p><strong>Locality.</strong> Linearizability is <em>local</em> meaning that <code>H</code> is linearizable if and only if <code>H | x</code> is linearizable for all <code>x</code>. This means that linearizable is modular and composable.</p>
 <p><strong>Blocking vs Nonblocking.</strong> Linearizability is <em>non-blocking</em> meaning that pending operations do not have to wait for other pending operations to complete. More formally, if <code>e</code> is a pending total invocation in a linearizable history <code>H</code>, then there exists a response <code>r</code> such that <code>H + r</code> is linearizable. Certain implementations of linearizability may block, but fundamentally they need not to. Moreover, desired blocking (e.g. dequeue blocking on empty queues) can still be implemented.</p>
 <p><strong>Comparison to Other Correctness Conditions.</strong> Sequential consistency is equivalent to linearizability without condition L2. Serializability is analogous to sequential consistency with transactions, and strict serializability is analogous to linearizability with transactions. Sequential consistency, serializability, and strict serializability do not have the same locality and non-blocking properties as linearizability. Moreover, serializability and linearizability are for different domains. Serializability works well for databases because application developers should be able to easily express complex transactions. Linearizability is better for infrastructure in which the developer is willing to spend considerable effort to maximize concurrency.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

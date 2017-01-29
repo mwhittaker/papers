@@ -16,6 +16,15 @@
 <p>Click routers are specified using a simple declarative configuration language. The language allows users to group elements into <em>compound elements</em> that behave as a single element.</p>
 <p>The Click kernel driver is a single kernel thread that processes elements on a task queue. When an element is processed, it may in turn push data to or pull data from other elements forcing them to be processed. To avoid interrupt and device management overheads, the driver uses polling. Every input and output device polls for data whenever it is run by the driver. Router configurations are loaded and element methods are called via the <code>/proc</code> file system. The driver also supports hot-swapping in new router configurations which take over the state of the previous router.</p>
 <p>The authors implement a fully compliant IP router using Click and explore various extensions to it including scheduling and dropping packets. The performance of the IP router is measured and analyzed.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

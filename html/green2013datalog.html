@@ -128,16 +128,41 @@ p(sum&lt;X&gt;) :- p(X)</code></pre>
                  (a^{[i]}, \delta(b)^{[i-1]})
 \end{align}
 $$</code></pre>
-<p>In general, we can rewrite a rule <code>p :- p1, ..., pn</code> into the following: <span class="math"><em>a</em></span></p>
+<p>In general, we can rewrite a rule <code>p :- p1, ..., pn</code> into the following:</p>
 <pre><code>$$
 \begin{array}{lllllll}
-\Delta(p)^{[i]} &amp; \ud{} &amp; \delta(p_1)^{[i-1]}, &amp; p_2^{[i-1]},         &amp; p_3^{[i-1]},         &amp; \ldots  &amp; p_n^{[i-1]} \\
-\Delta(p)^{[i]} &amp; \ud{} &amp; p_1^{[i]},           &amp; \delta(p_2)^{[i-1]}, &amp; p_3^{[i-1]},         &amp; \ldots, &amp; p_n^{[i-1]} \\
-\Delta(p)^{[i]} &amp; \ud{} &amp; p_1^{[i]},           &amp; p_2^{[i]},           &amp; \delta(p_3)^{[i-1]}, &amp; \ldots, &amp; p_n^{[i-1]} \\
-\ldots          &amp;       &amp;                      &amp;                      &amp;                      &amp;         &amp; \\
-\Delta(p)^{[i]} &amp; \ud{} &amp; p_1^{[i]},           &amp; p_2^{[i]},           &amp; p_3^{[i]},           &amp; \ldots, &amp; \delta(p_n)^{[i-1]} \\
+\Delta(p)^{[i]}
+  &amp; \ud{}
+  &amp; \delta(p_1)^{[i-1]},
+  &amp; p_2^{[i-1]},
+  &amp; p_3^{[i-1]},
+  &amp; \ldots
+  &amp; p_n^{[i-1]} \\
+\Delta(p)^{[i]}
+  &amp; \ud{}
+  &amp; p_1^{[i]},
+  &amp; \delta(p_2)^{[i-1]},
+  &amp; p_3^{[i-1]},
+  &amp; \ldots,
+  &amp; p_n^{[i-1]} \\
+\Delta(p)^{[i]}
+  &amp; \ud{}
+  &amp; p_1^{[i]},
+  &amp; p_2^{[i]},
+  &amp; \delta(p_3)^{[i-1]},
+  &amp; \ldots,
+  &amp; p_n^{[i-1]} \\
+\ldots &amp; &amp; &amp; &amp; &amp; &amp; \\
+\Delta(p)^{[i]}
+  &amp; \ud{}
+  &amp; p_1^{[i]},
+  &amp; p_2^{[i]},
+  &amp; p_3^{[i]},
+  &amp; \ldots,
+  &amp; \delta(p_n)^{[i-1]} \\
 \end{array}
 $$</code></pre>
+<p>Using this rewrite rule, we iteratively use $p^{[i]}$, $\delta(p)^{[i-1]}$, and $p^{[i-1]}$ to compute $\Delta(p)^{[i]}$. Then, we compute $\delta(p)^{[i]} = \Delta(p)^{[i]} - p^{[i]}$. We repeat this process until we reach a fixpoint. When we evaluate stratified Datalog programs with negation, we simply treat each negated predicate as if it were in the EDB. Moreover, if a rule is linear recursive, we can simplify the algorithm even further (see book for details).</p>
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>

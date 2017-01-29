@@ -112,6 +112,15 @@
 </ul>
 <p>This proof rule is proven sound. The event based rule and its soundness is derived from this.</p>
 <p><strong>Examples and Automation.</strong> The authors have built a banking, auction, and courseware application in this style. They have also built a prototype that you give <code>TS</code>, <code>F</code>, and <code>I</code> and it determines if <code>Exec(T, f) \subset eval_F^-1(I)</code>. Their prototype modifies the state-based proof rule eliminating the transitive closure and introducing intermediate predicates.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

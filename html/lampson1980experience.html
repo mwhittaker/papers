@@ -137,6 +137,15 @@ NUM_CONSUMERS = <span class="dv">2</span>
 <p>Threads waiting on a condition variable could also be awoken by a timeout, an abort, or a broadcast (e.g. <code>notify_all</code>).</p>
 <p>Mesa's implementation was divided between the processor, a runtime, and the compiler. The processor was responsible for process management and scheduling. Each process was on a ready queue, monitor lock queue, condition variable queue, or fault queue. The runtime was responsible for providing the fork/join interface. The compiler performed code generation and a few static sanity checks.</p>
 <p>Mesa was evaluated by Pilot (an OS), Violet (a distributed calendar), and Gateway (a router).</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

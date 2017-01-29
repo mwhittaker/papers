@@ -27,6 +27,15 @@
 <p>When a node <code>n</code> joins, it contacts an existing Chord node <code>n'</code>. It asks <code>n'</code> to find its successor. Periodically, servers check to see if their successor's predecessor should be their successor, and they inform their successor about their existence. They also periodically refresh fingers.</p>
 <p>Note that the stabilization cannot handle certain perverse scenarios. For example, if two disjoint rings form, stabilization will not merge the two rings.</p>
 <p>To handle node failures, nodes maintain <code>r</code> successors. When a successors node fails, lookup is routed to the next of the <code>r</code> successors.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

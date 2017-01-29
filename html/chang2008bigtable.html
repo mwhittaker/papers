@@ -23,6 +23,15 @@
 <p>When a master joins Bigtable, it acquires an exclusive lock on a master file. It then scans the <code>servers</code> directory, contacts the servers to see what tablets they own, and compares it to the METADATA table. It can then start assigning unassigned tablets. It also manages the creation, deletion, and merging of tablets. Tablet servers manage the splitting of tablets. - <em>Tablet serving.</em> Tablet servers commit updates to a log and also buffer the most recent updates in a sorted <em>memtable</em>. The rest of the data is stored in a series of SSTables in GFS. Each SSTable is a persistent immutable ordered mapping from strings to strings. If a tablet server crashes, its state can be recovered from its log. When a tablet server services a read or write, it performs access checks and whatnot and then resolves the read using the memtable and SSTables. - <em>Compactions.</em> Periodically, the memtable is written as an SSTable to GFS; this is called a <em>minor compaction</em>. Also periodically, the memtable and multiple SSTables are merged into a single SSTable; this is called a <em>merging compaction</em>. If all data is compacted into a single SSTable, it's called a <em>major compaction</em>.</p>
 <p><strong>Refinements.</strong> - <em>Locality groups.</em> Bigtable column families can be grouped together into a <em>locality group</em> for individual storage. Locality groups can also be designated in-memory. - <em>Compression.</em> Users can specify that data should be compressed. Bigtable uses a two-pass compression scheme that favors compression speed or space, but in practice, the compression is pretty good. - <em>Caching.</em> Tablet servers have a <em>scan cache</em> for temporal locality and a <em>block cache</em> for spatial locality. - <em>Bloom filters.</em> When a tablet server services a read, it may have to read through every SSTable which can be expensive. To avoid this, tablet servers can use Bloom filters to probabilistically determine that an SSTable doesn't have a certain key. - <em>Commit log.</em> Having a commit log per tablet leads to lots of random writes and smaller batches, so tablet servers merge updates for multiple tablets into a single commit log. This can complicate tablet recovery when multiple servers read a commit log applying a small fraction of the updates. To avoid this, the commit log can be sorted before being scanned. - <em>Immutability.</em> The immutability of SSTables allows for concurrent reads without synchronization.</p>
 <p><strong>Lessons.</strong> - Failures happen all the time, and the failures can be strange and exotic. - <a href="https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it">YAGNI</a>. - System monitoring is essential. - Be simple.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

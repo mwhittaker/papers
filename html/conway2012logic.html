@@ -13,6 +13,15 @@
 <p>Bloom and CALM, on the other hand, allow for mechanized program analysis to guarantee that a program can avoid coordination. However, Bloom suffers from a <em>type problem</em>: it only operates on sets which procludes the use of other useful structures such as integers.</p>
 <p>This paper merges CRDTs and Bloom together by introducing <em>bounded join semilattices</em> into Bloom to form a new language: Bloom^L. Bloom^L operates over semilattices, applying semilattice methods. These methods can be designated as non-monotonic, monotonic, or homomorphic (which implies monotonic). So long as the program avoids non-monotonic methods, it can be realized without coordination. Moreover, morphisms can be implemented more efficiently than non-homomorphic monotonic methods. Bloom^L comes built in with a family of useful semilattices like booleans ordered by implication, integers ordered by less than and greater than, sets, and maps. Users can also define their own semilattices, and Bloom^L allows smooth interoperability between Bloom collections and Bloom^L lattices. Bloom^L's semi-naive implementation is comparable to Bloom's semi-naive implementation.</p>
 <p>The paper also presents two case-studies. First, they implement a key-value store as a map from keys to values annotated with vector clocks: a design inspired from Dynamo. They also implement a purely monotonic shopping cart using custom lattices.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

@@ -31,6 +31,15 @@
 <p>Define <em>processor utilization</em> to be the fraction of time the processor spends running tasks. We say a set of tasks <em>fully utilize</em> the processor if there exists a feasible schedule for them, but increasing the running time of any of the tasks implies there is no feasible schedule. The least upper bound on processor utilization is the minimum processor utilization for tasks that fully utilize the processor. For <code>m</code> tasks, the least upper bound is <code>m(2^(1/m) - 1)</code> which approaches <code>ln(2)</code> for large <code>m</code>.</p>
 <p><strong>Deadline Driven Scheduling Algorithm.</strong> The <em>deadline driven scheduling algorithm</em> (or earliest deadline first scheduling algorithm) dynamically assigns the highest priority to the task with the most imminent deadline. This scheduling algorithm has a least upper bound of 100% processor utilization. Moreover, if any feasible schedule exists for a set of tasks, a feasible deadline driven schedule exists.</p>
 <p><strong>Mixed Scheduling Algorithm.</strong> Scheduling hardware (at the time) resembled a fixed priority scheduler, but a dynamic scheduler could be implemented for less frequent tasks. A hybrid scheduling algorithm scheduled the <code>k</code> most frequent tasks using the rate-monotonic scheduling algorithm and scheduled the rest using the deadline driven algorithm.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

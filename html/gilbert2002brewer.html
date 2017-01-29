@@ -50,6 +50,15 @@
 <li>When a write arrives at the master, it assigns the write an increasing sequence number. Periodically, it broadcasts the latest value and sequence number.</li>
 </ul>
 <p>Let P be the partial order where writes are ordered according to their sequence number and reads follow the write that produced its value. Letting t be enough time for a write to commit and a broadcast to happen, this system is t-Connected Consistent.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

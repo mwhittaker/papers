@@ -36,6 +36,15 @@
 <li>The current merging strategy seems inconvenient, if not inconsistent. Imagine a table <code>R(key, a, b)</code> with the invariant that <code>a + b &lt; 10</code>. Imagine branch <code>b1</code> updates a tuple <code>(0, 0, 0)</code> to <code>(0, 9, 0)</code> and branch <code>b2</code> updates it to <code>(0, 0, 9)</code>. If these tuples are merged, the tuple becomes <code>(0, 9, 9)</code> violating the invariant. In systems like git, users can manually inspect and verify the correctness of the merge, but if a large dataset is being merged, this becomes infeasible. I think more research is needed to determine if this strategy is good enough and won't cause problems in practice. Or if it is insufficient, what merging strategies can be applied on large datasets. Perhaps ideas could be borrowed from CRDT literature; if all columns were semilattices, the columns could be merged in a sane way.</li>
 <li>How useful is diffing when dealing with large datasets? When working with git, even a modestly sized diff can become confusing. Would a non-trivial diff of a large dataset be incomprehensible?</li>
 </ol>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

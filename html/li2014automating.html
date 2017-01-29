@@ -17,6 +17,15 @@
 <p>We model each program as a regular expression over statements. We then unroll the regular expression to get the set of all execution traces. Using these traces we can construct a map from traces, or templates, to weakest preconditions that ensure invariant confluence.</p>
 <p>At runtime, we need only look up the weakest precondition given an execution trace and check that it is true.</p>
 <p><strong>Implementation.</strong> The system is implemented as 15K lines of Java and 533 lines of OCaml. It builds off of MySQL, an existing Java parser, and Gemini.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

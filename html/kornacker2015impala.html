@@ -24,6 +24,15 @@
 </ol>
 <p>Impala has a C++ backed that uses Volcano style iterators with exchange operators and runtime code generation using LLVM. To efficiently read data from disk, Impala bypasses the traditional HDFS protocols. The backend supports a lot of different file formats including Avro, RC, sequence, plain test, and Parquet.</p>
 <p>For cluster and resource management, Impala uses a home grown Llama system that sits over YARN.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

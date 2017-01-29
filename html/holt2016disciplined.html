@@ -30,6 +30,15 @@ Interval[T] Rushed[T] ...
 <li><em>Error bounds.</em> Error bounds are enforced using a reservation scheme similar to the one used by bounded CRDTs. For example, imagine a counter with value 10 should be concurrently decremented but never drop below 0. We can allocate 10 decrement tokens and distribute them to nodes. A node can decrement so long as it has enough tokens. IPA involves reservation servers which are assigned tokens. A node can return an approximate read by knowing the number of outstanding tokens. For example, given a value of 100 and knowing there are 10 outstanding increment tokens, the true value is somewhere in the range [100, 110]. The more outstanding tokens there are, the weaker the error bounds. To avoid unnecessarily granting tokens, IPA uses an <em>allocation table</em> which maps reservation servers to tokens. Tokens are only allocated when necessary.</li>
 </ul>
 <p><strong>Implementaton.</strong> IPA is implemented in Scala on top of Cassandra with some middleware for the reservation servers. Type checking is done by leveraging Scala's type system.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

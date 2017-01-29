@@ -19,6 +19,15 @@
 <p>where atoms are ordered by their corresponding ID. Concretely, Treedoc is represented as a tree, and IDs are paths in the tree ordered by an infix traversal. Nodes in the tree can be <em>major nodes</em> and contain multiple <em>mini-nodes</em> where each mini-node is annotated with a totally ordered <em>disambiguator</em> unique to each node.</p>
 <p>Deletes simply tombstone a node. Inserts work like a typical binary tree insertion. To avoid the tree and IDs from getting too large, the tree can periodically be <em>flattened</em>: the tree is restructured into an array of nodes. This operation does not commute nicely with others, so a coordination protocol like 2PC is required.</p>
 <p><strong>Treedoc in the Large Scale.</strong> Requiring a coordination protocol for flattening doesn't scale and runs against the spirit of CRDTs. It also doesn't handle churn well. Instead, nodes can be partitioned into a set of core nodes and a set of nodes in the nebula. The core nodes coordinate while the nebula nodes lag behind. There are protocols for nebula nodes to catch up to the core nodes.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

@@ -40,6 +40,15 @@
 <li>All other operations can be blue.</li>
 </ul>
 <p><strong>Gemini.</strong> Gemini is a 10K line Java prototype implemented on top of MySQL. Each node in Gemini consists of a storage engine, proxy server, concurrency coordinator, and data writer. Users contact the proxy which executes the generator operations and delivers shadow operations to the concurrency coordinator. It uses optimistic concurrency control and vector clocks to ensure causal consistency. It is not fault tolerant.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

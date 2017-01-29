@@ -54,6 +54,15 @@
 <p>For fault tolerance, stateful vertices implement <code>Checkpoint</code> and <code>Restore</code> methods. Naiad uses these to orchestrate global checkpoints and restorations.</p>
 <p>Micro-stragglers---nodes with unusually high latency---are the main obstacle for a low-latency system. Micro-stragglers can come about from TCP overheads, data structure contention, garbage collection etc. Naiad has mechanisms to mitigate these micro-stragglers.</p>
 <p><strong>Writing Naiad Programs.</strong> Naiad provides lower-level interfaces for constructing timely dataflow graphs. Higher-level libraries and interfaces (e.g. SQL, LINQ) can be built on top of this lower-level interface. This separation of library code from system code allows for greater flexibility.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

@@ -35,6 +35,15 @@
 <li>The <em>client</em> injects data into the system.</li>
 </ol>
 <p>Data is either periodically read from a data store like HDFS or is sent into the system by a client. Workers run an LRU block store to manage RDD partitions and coordinate with the master which tracks which nodes have which blocks. The system employs traditional data processing optimizations and also introduces optimizations to I/O, pipelining, scheduling, etc. Moreover, since streaming computations run 24/7, Spark Streaming had to introduce master recovery. Master periodically write their state to HDFS which can be recovered by another master.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

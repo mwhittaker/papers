@@ -24,6 +24,15 @@
 <li><em>Copy-on-write disks.</em> Disco can map physical addresses in different guest operating systems to a read-only page in hardware memory. This lowers the memory footprint of running multiple guest operating systems. The shared pages are copy-on-write.</li>
 <li><em>Virtual network interfaces.</em> Disco runs a virtual subnet over which guests can communicate using standard communication protocols like NFS and TCP. Disco uses a similar copy-on-write trick as above to avoid copying data between guests.</li>
 </ul>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

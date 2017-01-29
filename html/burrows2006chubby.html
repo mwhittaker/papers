@@ -68,6 +68,15 @@
 <p><strong>DB.</strong> Originally, Chubby used BerkeleyDB (BDB), but BDB's replication support was young. Moreover, Chubby didn't need all of the functionality. Ultimately, Chubby threw out BDB and implemented a persistence layer itself.</p>
 <p><strong>Backup.</strong> Periodically, Chubby masters back up their state in another cell in GFS.</p>
 <p><strong>Mirroring.</strong> Chubby's event notifications make it easy to mirror directories.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

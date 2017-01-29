@@ -32,6 +32,15 @@
 </ul>
 <p>There are many ways to use reservations to avoid invariant violations. Indigo uses heuristics and estimated operation frequencies to try and minimize reservation acquisitions.</p>
 <p><strong>Implementation.</strong> Indigo can run over any key-value store that offers (i) causally consistency, (ii) snapshot transactions with CRDTs, and (iii) linearizability within a data center. Currently, it uses Swiftcloud. Its fault tolerance leverages the underlying fault tolerance of the key-value store. Each reservation is stored as an object in the key-value store, where operations are structured as transfers to avoid some concurrency oddities.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

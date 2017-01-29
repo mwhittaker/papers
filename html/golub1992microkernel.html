@@ -38,6 +38,15 @@
 <li>The operating system can be shoved into a single multithreaded Mach task. This architecture can be very memory efficient, and is easy to implement since the guest operating system can be ported with very little code modification.</li>
 <li>The operating system can be decomposed into a larger number of smaller processes that communicate with one another using IPC. This architecture encourages modularity, and allows certain operating system components to be reused between operating systems. This approach can lead to inefficiency, especially if IPC is not lighting fast!</li>
 </ol>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

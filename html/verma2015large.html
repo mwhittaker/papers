@@ -29,6 +29,15 @@
 </ul>
 <p>To measure cluster utilization, Google uses a <em>cell compaction</em> metric: the smallest a cell can be to run a given workload. Better utilization leads directly to savings in money, so Borg is very focused on improving utilization. For example, it allows non-production jobs to reclaim unused resources from production jobs.</p>
 <p>Borg uses containers for isolation. It also makes sure to throttle or kill jobs appropriately to ensure performance isolation.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

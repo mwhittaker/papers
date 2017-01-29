@@ -52,6 +52,15 @@
 <p>We create a relation <code>X_keys</code> which contains the keys of any element that has appeared in <code>X</code>. When a tuple <code>t</code> arrives, it is not inserted back into <code>X</code> if its key appears in <code>X_keys</code>. By doing this, we can reclaim tuples from <code>X</code> and <code>Y</code> simultaneously resting assured that the tuple will never again appear in <code>X</code>.</p>
 <h2 id="applications.">Applications.</h2>
 <p>Using these optimizations, we can apply them to simple unicast protocols, broadcast protocols, key-value stores, causally consistent key-value stores, and single-node registers.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>

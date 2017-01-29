@@ -25,6 +25,15 @@
 <p>To avoid zombie writers from corrupting state, each write is associated with a sequencer token that is invalidated when a new writer becomes active.</p>
 <p>MillWheel is implemented using a replicated master that manages key-range assignments and a single central authority for computing low watermarks.</p>
 <p><strong>Commentary.</strong> - Spark Streaming claims that using replication for recovery reduces the latency of the system. MillWheel frequently checkpoints data. This leads me to wonder if MillWheel experiences a latency hit, but the evaluation only considers single stage pipelines! - The evaluation does not evaluate the recovery time of the system, something that Spark Streaming would say is very slow. - The paper also says the Spark Streaming model is limiting and depends heavily on the RDD API. I wish there were a concrete example demonstrating Spark Streaming's inexpressiveness. - I'm having trouble understanding how the per-key API allows for things like joins.</p>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>
