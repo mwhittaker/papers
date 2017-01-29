@@ -108,6 +108,50 @@ p(sum&lt;X&gt;) :- p(X)</code></pre>
 <p>We can modify the precedence graph algorithm from before. We introduce an edge from <code>B</code> to <code>A</code> labelled with an aggregation if <code>A :- ..., B, ...</code> and <code>A</code> includes an aggregate. There exists a stratification if there does not exist any cycles with either an aggregate or negation edge.</p>
 <p>We can update the immediate consequence operator to handle aggregation and then the fixpoint-theoretic semantics carry over. Model-theoretic semantics also carry over nicely.</p>
 <p>Finally, there are a number of optimizations we can do to avoid computing unnecessary parts of an aggregation. See the paper for an example with computing shortest paths.</p>
+<h2 id="bottom-up-evaluation">Bottom-up Evaluation</h2>
+<p>We can evaluate a Datalog program using the <strong>naive method</strong>. We repeatedly apply the immediate consequence operator in a series of iterations until we reach a fixpoint. As we noted earlier, the naive method redundantly derives tuples.</p>
+<p>The <strong>seminaive method</strong> avoids re-deriving tuples by only performing derivations with freshly derived tuples (called <strong>deltas</strong>). We assume each rule is of the form</p>
+<pre><code>p :- p_1, ..., pn, q1, ..., qm</code></pre>
+<p>where the <code>p</code>s are mutually recursive and the <code>q</code>s are EDB predicates. Let <code>p[i]</code> denote the tuples at the beginning of the <code>i</code>th round (note <code>p[0] = {}</code>). Let <code>d(p)[i]</code> be the fresh tuples generated in round <code>i</code>. Note that <code>p[i+1] = p[i] + d(p)[i]</code>. Using this notation, we can rewrite rules of the form above into a new set of rules which will compute <code>D(p)[i]</code>: an over-approximation of <code>d(p)[i]</code>. For simplicity, we illustrate using a simple rule:</p>
+<pre><code>$$
+\newcommand{\ud}{\texttt{:-}}
+\begin{align}
+    p^{[i+1]} &amp;\ud{}\ a^{[i]}, b^{[i]} \\
+              &amp;= (a^{[i-1]} + \delta(a)^{[i-1]}),
+                 (b^{[i-1]} + \delta(b)^{[i-1]}) \\
+              &amp;= (a^{[i-1]}, b^{[i-1]}) +
+                 (\delta(a)^{[i-1]}, b^{[i-1]}) +
+                 (a^{[i-1]}, \delta(b)^{[i-1]}) +
+                 (\delta(a)^{[i-1]}, \delta(b)^{[i-1]}) \\
+              &amp;= (a^{[i-1]}, b^{[i-1]}) +
+                 (\delta(a)^{[i-1]}, b^{[i-1]}) +
+                 (a^{[i]}, \delta(b)^{[i-1]})
+\end{align}
+$$</code></pre>
+<p>In general, we can rewrite a rule <code>p :- p1, ..., pn</code> into the following: <span class="math"><em>a</em></span></p>
+<pre><code>$$
+\begin{array}{lllllll}
+\Delta(p)^{[i]} &amp; \ud{} &amp; \delta(p_1)^{[i-1]}, &amp; p_2^{[i-1]},         &amp; p_3^{[i-1]},         &amp; \ldots  &amp; p_n^{[i-1]} \\
+\Delta(p)^{[i]} &amp; \ud{} &amp; p_1^{[i]},           &amp; \delta(p_2)^{[i-1]}, &amp; p_3^{[i-1]},         &amp; \ldots, &amp; p_n^{[i-1]} \\
+\Delta(p)^{[i]} &amp; \ud{} &amp; p_1^{[i]},           &amp; p_2^{[i]},           &amp; \delta(p_3)^{[i-1]}, &amp; \ldots, &amp; p_n^{[i-1]} \\
+\ldots          &amp;       &amp;                      &amp;                      &amp;                      &amp;         &amp; \\
+\Delta(p)^{[i]} &amp; \ud{} &amp; p_1^{[i]},           &amp; p_2^{[i]},           &amp; p_3^{[i]},           &amp; \ldots, &amp; \delta(p_n)^{[i-1]} \\
+\end{array}
+$$</code></pre>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
   </div>
 </body>
 </html>
