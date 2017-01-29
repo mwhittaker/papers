@@ -266,3 +266,93 @@ carry over nicely.
 Finally, there are a number of optimizations we can do to avoid computing
 unnecessary parts of an aggregation. See the paper for an example with
 computing shortest paths.
+
+## Bottom-up Evaluation
+We can evaluate a Datalog program using the **naive method**. We repeatedly
+apply the immediate consequence operator in a series of iterations until we
+reach a fixpoint. As we noted earlier, the naive method redundantly derives
+tuples.
+
+The **seminaive method** avoids re-deriving tuples by only performing
+derivations with freshly derived tuples (called **deltas**). We assume each
+rule is of the form
+
+```
+p :- p_1, ..., pn, q1, ..., qm
+```
+
+where the `p`s are mutually recursive and the `q`s are EDB predicates. Let
+`p[i]` denote the tuples at the beginning of the `i`th round (note `p[0] =
+{}`). Let `d(p)[i]` be the fresh tuples generated in round `i`. Note that
+`p[i+1] = p[i] + d(p)[i]`. Using this notation, we can rewrite rules of the
+form above into a new set of rules which will compute `D(p)[i]`: an
+over-approximation of `d(p)[i]`. For simplicity, we illustrate using a simple
+rule:
+
+```
+$$
+\newcommand{\ud}{\texttt{:-}}
+\begin{align}
+    p^{[i+1]} &\ud{}\ a^{[i]}, b^{[i]} \\
+              &= (a^{[i-1]} + \delta(a)^{[i-1]}),
+                 (b^{[i-1]} + \delta(b)^{[i-1]}) \\
+              &= (a^{[i-1]}, b^{[i-1]}) +
+                 (\delta(a)^{[i-1]}, b^{[i-1]}) +
+                 (a^{[i-1]}, \delta(b)^{[i-1]}) +
+                 (\delta(a)^{[i-1]}, \delta(b)^{[i-1]}) \\
+              &= (a^{[i-1]}, b^{[i-1]}) +
+                 (\delta(a)^{[i-1]}, b^{[i-1]}) +
+                 (a^{[i]}, \delta(b)^{[i-1]})
+\end{align}
+$$
+```
+
+In general, we can rewrite a rule `p :- p1, ..., pn` into the following:
+
+```
+$$
+\begin{array}{lllllll}
+\Delta(p)^{[i]}
+  & \ud{}
+  & \delta(p_1)^{[i-1]},
+  & p_2^{[i-1]},
+  & p_3^{[i-1]},
+  & \ldots
+  & p_n^{[i-1]} \\
+\Delta(p)^{[i]}
+  & \ud{}
+  & p_1^{[i]},
+  & \delta(p_2)^{[i-1]},
+  & p_3^{[i-1]},
+  & \ldots,
+  & p_n^{[i-1]} \\
+\Delta(p)^{[i]}
+  & \ud{}
+  & p_1^{[i]},
+  & p_2^{[i]},
+  & \delta(p_3)^{[i-1]},
+  & \ldots,
+  & p_n^{[i-1]} \\
+\ldots & & & & & & \\
+\Delta(p)^{[i]}
+  & \ud{}
+  & p_1^{[i]},
+  & p_2^{[i]},
+  & p_3^{[i]},
+  & \ldots,
+  & \delta(p_n)^{[i-1]} \\
+\end{array}
+$$
+```
+
+Using this rewrite rule, we iteratively use $p^{[i]}$, $\\delta(p)^{[i-1]}$,
+and $p^{[i-1]}$ to compute $\\Delta(p)^{[i]}$. Then, we compute
+$\\delta(p)^{[i]} = \\Delta(p)^{[i]} - p^{[i]}$. We repeat this process until
+we reach a fixpoint. When we evaluate stratified Datalog programs with
+negation, we simply treat each negated predicate as if it were in the EDB.
+Moreover, if a rule is linear recursive, we can simplify the algorithm even
+further (see book for details).
+
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
