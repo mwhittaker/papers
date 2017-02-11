@@ -40,6 +40,7 @@ a:link, a:visited {color: #222; text-decoration: none; }
 a:active, a:hover {color: #444; text-decoration: none; }
 
 h1 {
+  line-height: 1;
   margin-top: 1em;
   margin-bottom: 0.55em;
 }
