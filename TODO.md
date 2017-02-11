@@ -1,81 +1,81 @@
-- `codd1970relational.md`
-- `liu1973scheduling.md`
-- `ritchie1978unix.md`
-- `gray1976granularity.md`
-- `lauer1979duality.md`
-- `lampson1980experience.md`
-- `chamberlin1981history.md`
-- `mckusick1984fast.md`
-- `saltzer1984end.md`
-- `agrawal1987concurrency.md`
-- `stonebraker1987design.md`
-- `herlihy1990linearizability.md`
-- `stonebraker1991postgres.md`
-- `golub1992microkernel.md`
-- `carriero1994linda.md`
-- `waldspurger1994lottery.md`
-- `berenson1995critique.md`
-- `engler1995exokernel.md`
-- `bershad1995spin.md`
-- `wilkes1996hp.md`
-- `bugnion1997disco.md`
-- `lehman1999t.md`
-- `adya2000generalized.md`
-- `kohler2000click.md`
-- `stoica2001chord.md`
-- `moore2006inferring.md`
-- `welsh2001seda.md`
-- `gilbert2002brewer.md`
-- `ghemawat2003google.md`
-- `barham2003xen.md`
-- `van2004chain.md`
-- `dean2008mapreduce.md`
-- `prabhakaran2005analysis.md`
-- `clark2005live.md`
-- `burrows2006chubby.md`
-- `hellerstein2007architecture.md`
-- `isard2007dryad.md`
-- `decandia2007dynamo.md`
-- `chang2008bigtable.md`
-- `yu2008dryadlinq.md`
-- `letia2009crdts.md`
-- `graefe2009five.md`
-- `lagar2009snowflock.md`
-- `alvaro2010boom.md`
-- `hellerstein2010declarative.md`
-- `shapiro2011conflict.md`
-- `alvaro2011consistency.md`
-- `alvaro2011dedalus.md`
-- `ghodsi2011dominant.md`
-- `hindman2011mesos.md`
-- `lloyd2011don.md`
-- `conway2012logic.md`
-- `li2012making.md`
-- `zaharia2012resilient.md`
-- `vavilapalli2013apache.md`
-- `zaharia2013discretized.md`
-- `elphinstone2013l3.md`
-- `mckeen2013innovative.md`
-- `akidau2013millwheel.md`
-- `murray2013naiad.md`
-- `terry2013replicated.md`
-- `li2014automating.md`
-- `bailis2014coordination.md`
-- `conway2014edelweiss.md`
-- `bailis2013highly.md`
-- `ongaro2014search.md`
-- `baumann2015shielding.md`
-- `toshniwal2014storm.md`
-- `roy2015homeostasis.md`
-- `kornacker2015impala.md`
-- `verma2015large.md`
-- `balegas2015putting.md`
-- `armbrust2015spark.md`
-- `kulkarni2015twitter.md`
-- `burns2016borg.md`
-- `gotsman2016cause.md`
-- `maddox2016decibel.md`
-- `holt2016disciplined.md`
-- `halevy2016goods.md`
-- `chen2016realtime.md`
-- `crooks2016tardis.md`
+- [ ] `codd1970relational.md`
+- [ ] `liu1973scheduling.md`
+- [ ] `ritchie1978unix.md`
+- [ ] `gray1976granularity.md`
+- [ ] `lauer1979duality.md`
+- [ ] `lampson1980experience.md`
+- [ ] `chamberlin1981history.md`
+- [ ] `mckusick1984fast.md`
+- [ ] `saltzer1984end.md`
+- [ ] `agrawal1987concurrency.md`
+- [ ] `stonebraker1987design.md`
+- [ ] `herlihy1990linearizability.md`
+- [ ] `stonebraker1991postgres.md`
+- [ ] `golub1992microkernel.md`
+- [ ] `carriero1994linda.md`
+- [ ] `waldspurger1994lottery.md`
+- [ ] `berenson1995critique.md`
+- [ ] `engler1995exokernel.md`
+- [ ] `bershad1995spin.md`
+- [ ] `wilkes1996hp.md`
+- [ ] `bugnion1997disco.md`
+- [ ] `lehman1999t.md`
+- [ ] `adya2000generalized.md`
+- [ ] `kohler2000click.md`
+- [ ] `stoica2001chord.md`
+- [ ] `moore2006inferring.md`
+- [ ] `welsh2001seda.md`
+- [ ] `gilbert2002brewer.md`
+- [ ] `ghemawat2003google.md`
+- [ ] `barham2003xen.md`
+- [ ] `van2004chain.md`
+- [ ] `dean2008mapreduce.md`
+- [ ] `prabhakaran2005analysis.md`
+- [ ] `clark2005live.md`
+- [ ] `burrows2006chubby.md`
+- [ ] `hellerstein2007architecture.md`
+- [ ] `isard2007dryad.md`
+- [ ] `decandia2007dynamo.md`
+- [ ] `chang2008bigtable.md`
+- [ ] `yu2008dryadlinq.md`
+- [ ] `letia2009crdts.md`
+- [ ] `graefe2009five.md`
+- [ ] `lagar2009snowflock.md`
+- [ ] `alvaro2010boom.md`
+- [ ] `hellerstein2010declarative.md`
+- [ ] `shapiro2011conflict.md`
+- [ ] `alvaro2011consistency.md`
+- [ ] `alvaro2011dedalus.md`
+- [ ] `ghodsi2011dominant.md`
+- [ ] `hindman2011mesos.md`
+- [ ] `lloyd2011don.md`
+- [ ] `conway2012logic.md`
+- [ ] `li2012making.md`
+- [ ] `zaharia2012resilient.md`
+- [ ] `vavilapalli2013apache.md`
+- [ ] `zaharia2013discretized.md`
+- [ ] `elphinstone2013l3.md`
+- [ ] `mckeen2013innovative.md`
+- [ ] `akidau2013millwheel.md`
+- [ ] `murray2013naiad.md`
+- [ ] `terry2013replicated.md`
+- [ ] `li2014automating.md`
+- [ ] `bailis2014coordination.md`
+- [ ] `conway2014edelweiss.md`
+- [ ] `bailis2013highly.md`
+- [ ] `ongaro2014search.md`
+- [ ] `baumann2015shielding.md`
+- [ ] `toshniwal2014storm.md`
+- [ ] `roy2015homeostasis.md`
+- [ ] `kornacker2015impala.md`
+- [ ] `verma2015large.md`
+- [ ] `balegas2015putting.md`
+- [ ] `armbrust2015spark.md`
+- [ ] `kulkarni2015twitter.md`
+- [ ] `burns2016borg.md`
+- [ ] `gotsman2016cause.md`
+- [ ] `maddox2016decibel.md`
+- [ ] `holt2016disciplined.md`
+- [ ] `halevy2016goods.md`
+- [ ] `chen2016realtime.md`
+- [ ] `crooks2016tardis.md`
