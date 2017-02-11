@@ -39,6 +39,26 @@ body {
 a:link, a:visited {color: #222; text-decoration: none; }
 a:active, a:hover {color: #444; text-decoration: none; }
 
+h1 {
+  margin-top: 1em;
+  margin-bottom: 0.55em;
+}
+
+h2 {
+  margin-top: 0.9em;
+  margin-bottom: 0.45em;
+}
+
+h3 {
+  margin-top: 0.8em;
+  margin-bottom: 0.35em;
+}
+
+h4 {
+  margin-top: 0.7em;
+  margin-bottom: 0.25em;
+}
+
 p {
   margin-top: 0em;
   margin-bottom: 1.15em;
