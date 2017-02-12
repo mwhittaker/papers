@@ -8,20 +8,22 @@
 
 <body>
   <div id="container">
-<h2 id="granularity-of-locks-and-degrees-of-consistency-in-a-shared-database-1976"><a href="https://scholar.google.com/scholar?cluster=15730220590995320737&amp;hl=en&amp;as_sdt=0,5">Granularity of Locks and Degrees of Consistency in a Shared Database (1976)</a></h2>
-<p><strong>Granularity of Locks Summary.</strong> Locks are needed in a database system to ensure that transactions are isolated from one another. But what exactly should be locked?</p>
+<h1 id="granularity-of-locks-and-degrees-of-consistency-in-a-shared-database-1976"><a href="https://scholar.google.com/scholar?cluster=15730220590995320737&amp;hl=en&amp;as_sdt=0,5">Granularity of Locks and Degrees of Consistency in a Shared Database (1976)</a></h1>
+<h2 id="granularity-of-locks">Granularity of Locks</h2>
+<p>Locks are needed in a database system to ensure that transactions are isolated from one another. But what exactly should be locked?</p>
 <p>At one extreme, we could lock the entire database using a single lock. This <em>coarse-grained</em> approach has incredibly low locking overhead; only one lock is ever acquired. However, it limits the amount of concurrency in the system. Even if two transactions operate on disjoint data, they cannot run concurrently using a single global lock.</p>
 <p>At the other extreme, we could lock individual fields inside of records. This <em>fine-grained</em> approach has incredibly high concurrency. Two transactions could execute concurrently on the same record, so long as they access disjoint fields! However, this approach has very high locking overhead. If the transaction needs to read a lot of fields from a lot of records, it will spend a lot of time acquiring a lot of locks.</p>
-<p>A compromise between these to extremes is to use <em>multiple granularity locking</em>, where a transaction can choose the granularity of its locks. For example, one transaction may lock a table, another may lock a page, and another may lock a record. Note, however, that unlike with single granularity locking, care must be taken to ensure that locks at different granularities do not conflict. For example, imagine one transaction has an exclusive lock on a page; another transaction must be prohibited from acquiring an exclusive lock on the table that the page belongs to.</p>
+<p>A compromise between these to extremes is to use <strong>multiple granularity locking</strong>, where a transaction can choose the granularity of its locks. For example, one transaction may lock a table, another may lock a page, and another may lock a record. Note, however, that unlike with single granularity locking, care must be taken to ensure that locks at different granularities do not conflict. For example, imagine one transaction has an exclusive lock on a page; another transaction must be prohibited from acquiring an exclusive lock on the table that the page belongs to.</p>
 <p>In this paper, Gray et al. present an implementation of multiple granularity locking that exploits the hierarchical nature of databases. Imagine a database's resources are organized into a hierarchy. For example, a database has tables, each table has pages, and each page has records. A transaction can acquire a lock on any node in this hierarchy of one of the following types:</p>
 <ul>
-<li>IS: An <em>intention shared lock</em> on a node indicates that a transaction plans on acquiring a shared lock on one of the descendants of the node.</li>
-<li>IX: An <em>intention exclusive lock</em> on a node indicates that a transaction plans on acquiring an exclusive lock on one of the descendants of the node.</li>
-<li>S: A <em>shared lock</em> on a node implicitly grants the transaction shared read access to the subtree rooted at the node.</li>
-<li>SIX: A <em>SIX lock</em> on a node implicitly grants the transaction shared read access to the subtree rooted at the node and simultaneously indicates that the same transaction may acquire an exclusive lock on one of the descendants of the node.</li>
-<li>X: An <em>exclusive lock</em> on a node implicitly grants the transaction exclusive read and write access to the subtree rooted at the node.</li>
+<li>IS: An <strong>intention shared lock</strong> on a node indicates that a transaction plans on acquiring a shared lock on one of the descendants of the node.</li>
+<li>IX: An <strong>intention exclusive lock</strong> on a node indicates that a transaction plans on acquiring an exclusive lock on one of the descendants of the node.</li>
+<li>S: A <strong>shared lock</strong> on a node implicitly grants the transaction shared read access to the subtree rooted at the node.</li>
+<li>SIX: A <strong>SIX lock</strong> on a node implicitly grants the transaction shared read access to the subtree rooted at the node and simultaneously indicates that the same transaction may acquire an exclusive lock on one of the descendants of the node.</li>
+<li>X: An <strong>exclusive lock</strong> on a node implicitly grants the transaction exclusive read and write access to the subtree rooted at the node.</li>
 </ul>
 <p>Transactions acquire locks starting at the root and obey the following compatibility matrix:</p>
+<center>
 <table>
 <thead>
 <tr class="header">
@@ -76,6 +78,8 @@
 </tr>
 </tbody>
 </table>
+</center>
+
 <p>More specifically, these are the rules for acquiring locks:</p>
 <ol style="list-style-type: decimal">
 <li>If a transaction wants an S or IS lock on a node, it must acquire an IX or IS lock on its parent.</li>
@@ -84,8 +88,9 @@
 </ol>
 <p>This locking protocol can easily be extended to directed acyclic graphs (DAGs) as well. Now, a node is implicitly shared locked if one of its parents is implicitly or explicitly shared locked. A node is implicitly exclusive locked if all of its parents are implicitly or exclusive exclusive locked. Thus when a shared lock is acquired on a node, it implicitly locks all nodes reachable from it. When an exclusive lock is acquired on a node, it implicitly locks all nodes <a href="https://en.wikipedia.org/wiki/Dominator_(graph_theory)">dominated</a> by it.</p>
 <p>The paper proves that if two lock graphs are compatible, then the implicit locks on the leaves are compatible. Intuitively this means that the locking protocol is equivalent to the naive scheme of explicitly locking the leaves, but it does so without the locking overhead.</p>
-<p>The protocol can again be extended to <em>dyamic lock graphs</em> where the set of resources changes over time. For example, we can introduce <em>index interval locks</em> that lock an interval of the index. To migrate a node between parents, we simply acquire X locks on the old and new location.</p>
-<p><strong>Degrees of Consistency Summary.</strong> Ensuring serializability is expensive, and some applications can get away with weaker consistency models. In this paper, Grey et al. present three definitions of four degrees of consistency.</p>
+<p>The protocol can again be extended to <strong>dyamic lock graphs</strong> where the set of resources changes over time. For example, we can introduce <strong>index interval locks</strong> that lock an interval of the index. To migrate a node between parents, we simply acquire X locks on the old and new location.</p>
+<h2 id="degrees-of-consistency">Degrees of Consistency</h2>
+<p>Ensuring serializability is expensive, and some applications can get away with weaker consistency models. In this paper, Grey et al. present three definitions of four degrees of consistency.</p>
 <p>First, we can informal define what it means for a transaction to observe degree i consistency.</p>
 <ul>
 <li>Degree 0: no dirty writes.</li>
@@ -102,16 +107,21 @@
 </ul>
 <p>Finally, we can define what it means for schedule to have degree i consistency. A transaction is a sequence of begin, end, S, X, unlock, read, and write actions beginning with a begin and ending with an end. A schedule is a shuffling of multiple transactions. A schedule is serial if every transaction is run one after another. A schedule is legal if obeys a locking protocol. A schedule is degree i consistent if every transaction observes degree i consistency according to the first definition.</p>
 <ul>
-<li><em>Assertion 1</em>. Definition 2 implies definition 3. That is, using the locking protocol for degree i ensures degree i consistent schedules.</li>
-<li><em>Assertion 2</em>. Transactions can pick their consistency.</li>
+<li><strong>Assertion 1</strong>. Definition 2 implies definition 3. That is, using the locking protocol for degree i ensures degree i consistent schedules.</li>
+<li><strong>Assertion 2</strong>. Transactions can pick their consistency.</li>
 </ul>
-<p>Define the following relations on transactions:</p>
+<p>Define the following relations on transactions: $\newcommand{\l}{&lt;}$ $\newcommand{\ll}{&lt;\!\!&lt;}$ $\newcommand{\lll}{&lt;\!\!&lt;\!\!&lt;}$</p>
 <ul>
-<li><code>T1 &lt; T2</code> if there is a write-write dependency between T1 and T2.</li>
-<li><code>T1 &lt;&lt; T2</code> if <code>T1 &lt; T2</code> or there is a write-read dependency between T1 and T2.</li>
-<li><code>T1 &lt;&lt;&lt; T2</code> if <code>T1 &lt;&lt; T2</code> or there is a read-write dependency between T1 and T2.</li>
+<li>$T_1 \l T_2$ if there is a write-write dependency between $T_1$ and $T_2$.</li>
+<li>$T_1 \ll T_2$ if $T_1 \l T_2$ or there is a write-read dependency between $T_1$ and $T_2$.</li>
+<li>$T_1 \lll T_2$ if $T_1 \ll T_2$ or there is a read-write dependency between $T_1$ and $T_2$.</li>
 </ul>
-<p>Let <code>&lt;*</code>, <code>&lt;&lt;*</code>, and <code>&lt;&lt;&lt;*</code> be the transitive closure of <code>&lt;</code>, <code>&lt;&lt;</code>, and <code>&lt;&lt;&lt;</code>. If <code>&lt;*</code>, <code>&lt;&lt;*</code>, <code>&lt;&lt;&lt;*</code> is a partial order for a schedule, then the schedule is degree 1, 2, 3 consistent.</p>
+<p>Let $\l^*$, $\ll^*$, and $\lll^*$ be the transitive closure of $&lt;$, $\ll$, and $\lll$. If $&lt;^*$, $\ll^*$, $\lll^*$ is a partial order for a schedule, then the schedule is degree 1, 2, 3 consistent.</p>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {

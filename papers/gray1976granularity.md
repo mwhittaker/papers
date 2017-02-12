@@ -1,5 +1,5 @@
-## [Granularity of Locks and Degrees of Consistency in a Shared Database (1976)](https://scholar.google.com/scholar?cluster=15730220590995320737&hl=en&as_sdt=0,5)
-**Granularity of Locks Summary.**
+# [Granularity of Locks and Degrees of Consistency in a Shared Database (1976)](https://scholar.google.com/scholar?cluster=15730220590995320737&hl=en&as_sdt=0,5)
+## Granularity of Locks
 Locks are needed in a database system to ensure that transactions are isolated
 from one another. But what exactly should be locked?
 
@@ -16,8 +16,8 @@ fields!  However, this approach has very high locking overhead. If the
 transaction needs to read a lot of fields from a lot of records, it will spend
 a lot of time acquiring a lot of locks.
 
-A compromise between these to extremes is to use *multiple granularity
-locking*, where a transaction can choose the granularity of its locks. For
+A compromise between these to extremes is to use **multiple granularity
+locking**, where a transaction can choose the granularity of its locks. For
 example, one transaction may lock a table, another may lock a page, and another
 may lock a record. Note, however, that unlike with single granularity locking,
 care must be taken to ensure that locks at different granularities do not
@@ -31,22 +31,23 @@ database's resources are organized into a hierarchy. For example, a database
 has tables, each table has pages, and each page has records. A transaction can
 acquire a lock on any node in this hierarchy of one of the following types:
 
-- IS: An *intention shared lock* on a node indicates that a transaction plans
+- IS: An **intention shared lock** on a node indicates that a transaction plans
   on acquiring a shared lock on one of the descendants of the node.
-- IX: An *intention exclusive lock* on a node indicates that a transaction
+- IX: An **intention exclusive lock** on a node indicates that a transaction
   plans on acquiring an exclusive lock on one of the descendants of the node.
-- S: A *shared lock* on a node implicitly grants the transaction shared read
+- S: A **shared lock** on a node implicitly grants the transaction shared read
   access to the subtree rooted at the node.
-- SIX: A *SIX lock* on a node implicitly grants the transaction shared read
+- SIX: A **SIX lock** on a node implicitly grants the transaction shared read
   access to the subtree rooted at the node and simultaneously indicates that
   the same transaction may acquire an exclusive lock on one of the descendants
   of the node.
-- X: An *exclusive lock* on a node implicitly grants the transaction exclusive
-  read and write access to the subtree rooted at the node.
+- X: An **exclusive lock** on a node implicitly grants the transaction
+  exclusive read and write access to the subtree rooted at the node.
 
 Transactions acquire locks starting at the root and obey the following
 compatibility matrix:
 
+<center>
 |     | IS  | IX  | S   | SIX | X   |
 | --- | --- | --- | --- | --- | --- |
 | IS  | ✓   | ✓   | ✓   | ✓   |     |
@@ -54,6 +55,7 @@ compatibility matrix:
 | S   | ✓   |     | ✓   |     |     |
 | SIX | ✓   |     |     |     |     |
 | X   |     |     |     |     |     |
+</center>
 
 More specifically, these are the rules for acquiring locks:
 
@@ -77,12 +79,12 @@ locks on the leaves are compatible. Intuitively this means that the locking
 protocol is equivalent to the naive scheme of explicitly locking the leaves,
 but it does so without the locking overhead.
 
-The protocol can again be extended to *dyamic lock graphs* where the set of
-resources changes over time. For example, we can introduce *index interval
-locks* that lock an interval of the index. To migrate a node between parents,
+The protocol can again be extended to **dyamic lock graphs** where the set of
+resources changes over time. For example, we can introduce **index interval
+locks** that lock an interval of the index. To migrate a node between parents,
 we simply acquire X locks on the old and new location.
 
-**Degrees of Consistency Summary.**
+## Degrees of Consistency
 Ensuring serializability is expensive, and some applications can get away with
 weaker consistency models. In this paper, Grey et al. present three definitions
 of four degrees of consistency.
@@ -111,19 +113,25 @@ is run one after another. A schedule is legal if obeys a locking protocol. A
 schedule is degree i consistent if every transaction observes degree i
 consistency according to the first definition.
 
-- *Assertion 1*. Definition 2 implies definition 3. That is, using the locking
+- **Assertion 1**. Definition 2 implies definition 3. That is, using the locking
   protocol for degree i ensures degree i consistent schedules.
-- *Assertion 2*. Transactions can pick their consistency.
+- **Assertion 2**. Transactions can pick their consistency.
 
 Define the following relations on transactions:
+$\\newcommand{\\l}{<}$
+$\\newcommand{\\ll}{<\\!\\!<}$
+$\\newcommand{\\lll}{<\\!\\!<\\!\\!<}$
 
-- `T1 < T2` if there is a write-write dependency between T1 and T2.
-- `T1 << T2` if `T1 < T2` or there is a write-read dependency between T1 and
-  T2.
-- `T1 <<< T2` if `T1 << T2` or there is a read-write dependency between T1 and
-  T2.
+- $T_1 \\l T_2$ if there is a write-write dependency between $T_1$ and $T_2$.
+- $T_1 \\ll T_2$ if $T_1 \\l T_2$ or there is a write-read dependency between
+  $T_1$ and $T_2$.
+- $T_1 \\lll T_2$ if $T_1 \\ll T_2$ or there is a read-write dependency between
+  $T_1$ and $T_2$.
 
-Let `<*`, `<<*`, and `<<<*` be the transitive closure of `<`, `<<`, and `<<<`.
-If `<*`, `<<*`, `<<<*` is a partial order for a schedule, then the schedule is
-degree 1, 2, 3 consistent.
+Let $\\l^\*$, $\\ll^\*$, and $\\lll^\*$ be the transitive closure of $<$,
+$\\ll$, and $\\lll$.  If $<^\*$, $\\ll^\*$, $\\lll^\*$ is a partial order for a
+schedule, then the schedule is degree 1, 2, 3 consistent.
 
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>

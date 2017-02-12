@@ -1,7 +1,7 @@
-- [ ] `codd1970relational.md`
-- [ ] `liu1973scheduling.md`
-- [ ] `ritchie1978unix.md`
-- [ ] `gray1976granularity.md`
+- [x] `codd1970relational.md`
+- [x] `liu1973scheduling.md`
+- [x] `ritchie1978unix.md`
+- [x] `gray1976granularity.md`
 - [ ] `lauer1979duality.md`
 - [ ] `lampson1980experience.md`
 - [ ] `chamberlin1981history.md`

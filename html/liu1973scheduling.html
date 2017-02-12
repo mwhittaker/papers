@@ -8,7 +8,7 @@
 
 <body>
   <div id="container">
-<h2 id="scheduling-algorithms-for-multiprogramming-in-a-hard-real-time-environment-1973"><a href="https://scholar.google.com/scholar?cluster=11972780054098474552&amp;hl=en&amp;as_sdt=0,5">Scheduling Algorithms for Multiprogramming in a Hard-Real-Time Environment (1973)</a></h2>
+<h1 id="scheduling-algorithms-for-multiprogramming-in-a-hard-real-time-environment-1973"><a href="https://scholar.google.com/scholar?cluster=11972780054098474552&amp;hl=en&amp;as_sdt=0,5">Scheduling Algorithms for Multiprogramming in a Hard-Real-Time Environment (1973)</a></h1>
 <p>Consider a hard-real-time environment in which tasks <em>must</em> finish within some time after they are requested. We make the following assumptions.</p>
 <ul>
 <li>(A1) Tasks are periodic with fixed periods.</li>
@@ -17,20 +17,28 @@
 <li>(A4) Tasks have constant runtime.</li>
 <li>(A5) Non-periodic tasks are not realtime.</li>
 </ul>
-<p>Thus, we can model each task <code>t_i</code> as a period <code>T_i</code> and runtime <code>C_i</code>. A scheduling algorithm that immediately preempts tasks to guarantee that the task with the highest priority is running is called a <em>preemptive priority scheduling algorithm</em>. We consider three preemptive priority scheduling algorithms: a static/fixed priority scheduler (in which priorities are assigned ahead of time), a dynamic priority scheduler (in which priorities are assigned at runtime), and a mixed scheduling algorithm.</p>
-<p><strong>Fixed Priority Scheduling Algorithm.</strong> First, a few definitions:</p>
+<p>Thus, we can model each task $t_i$ as a period $T_i$ and runtime $C_i$. A scheduling algorithm that immediately preempts tasks to guarantee that the task with the highest priority is running is called a <strong>preemptive priority scheduling algorithm</strong>. We consider three preemptive priority scheduling algorithms: a static/fixed priority scheduler (in which priorities are assigned ahead of time), a dynamic priority scheduler (in which priorities are assigned at runtime), and a mixed scheduling algorithm.</p>
+<h2 id="fixed-priority-scheduling-algorithm">Fixed Priority Scheduling Algorithm</h2>
+<p>First, a few definitions:</p>
 <ul>
-<li>The <em>deadline</em> of a task is the time at which the next request is issued.</li>
-<li>An <em>overflow</em> occurs at time <code>t</code> if <code>t</code> is the deadline for an unfulfilled task.</li>
-<li>A schedule is <em>feasible</em> if there is no overflow.</li>
+<li>The <strong>deadline</strong> of a task is the time at which the next request is issued.</li>
+<li>An <strong>overflow</strong> occurs at time $t$ if $t$ is the deadline for an unfulfilled task.</li>
+<li>A schedule is <strong>feasible</strong> if there is no overflow.</li>
 <li>The response time of a task is the time between the task's request and the task's finish time.</li>
-<li>A <em>critical instant</em> for task <code>t</code> is the instant where <code>t</code> has the highest response time.</li>
+<li>A <strong>critical instant</strong> for task $t$ is the instant where $t$ has the highest response time.</li>
 </ul>
 <p>It can be shown that the critical instant for any task occurs when the task is requested simultaneously with all higher priority tasks. This result lets us easily determine if a feasible fixed priority schedule exists by pessimistically assuming all tasks are scheduled at their critical instant.</p>
-<p>It also suggests that given two tasks with periodicities <code>T1</code> and <code>T2</code> where <code>T1 &lt; T2</code>, we should give higher priority to the shorter task with period <code>T1</code>. This leads to the <em>rate-monotonic priority scheduling algorithm</em> where we assign higher priorities to shorter tasks. A feasible static schedule exists if and only if a feasible rate-monotonic scheduling algorithm exists.</p>
-<p>Define <em>processor utilization</em> to be the fraction of time the processor spends running tasks. We say a set of tasks <em>fully utilize</em> the processor if there exists a feasible schedule for them, but increasing the running time of any of the tasks implies there is no feasible schedule. The least upper bound on processor utilization is the minimum processor utilization for tasks that fully utilize the processor. For <code>m</code> tasks, the least upper bound is <code>m(2^(1/m) - 1)</code> which approaches <code>ln(2)</code> for large <code>m</code>.</p>
-<p><strong>Deadline Driven Scheduling Algorithm.</strong> The <em>deadline driven scheduling algorithm</em> (or earliest deadline first scheduling algorithm) dynamically assigns the highest priority to the task with the most imminent deadline. This scheduling algorithm has a least upper bound of 100% processor utilization. Moreover, if any feasible schedule exists for a set of tasks, a feasible deadline driven schedule exists.</p>
-<p><strong>Mixed Scheduling Algorithm.</strong> Scheduling hardware (at the time) resembled a fixed priority scheduler, but a dynamic scheduler could be implemented for less frequent tasks. A hybrid scheduling algorithm scheduled the <code>k</code> most frequent tasks using the rate-monotonic scheduling algorithm and scheduled the rest using the deadline driven algorithm.</p>
+<p>It also suggests that given two tasks with periodicities $T_1$ and $T_2$ where $T_1 &lt; T_2$, we should give higher priority to the shorter task with period $T_1$. This leads to the <strong>rate-monotonic priority scheduling algorithm</strong> where we assign higher priorities to shorter tasks. A feasible static schedule exists if and only if a feasible rate-monotonic scheduling algorithm exists.</p>
+<p>Define <strong>processor utilization</strong> to be the fraction of time the processor spends running tasks. We say a set of tasks <strong>fully utilize</strong> the processor if there exists a feasible schedule for them, but increasing the running time of any of the tasks implies there is no feasible schedule. The least upper bound on processor utilization is the minimum processor utilization for tasks that fully utilize the processor. For $m$ tasks, the least upper bound is $m(2^{1/m} - 1)$ which approaches $\ln(2)$ for large $m$.</p>
+<h2 id="deadline-driven-scheduling-algorithm">Deadline Driven Scheduling Algorithm</h2>
+<p>The <strong>deadline driven scheduling algorithm</strong> (or earliest deadline first scheduling algorithm) dynamically assigns the highest priority to the task with the most imminent deadline. This scheduling algorithm has a least upper bound of 100% processor utilization. Moreover, if any feasible schedule exists for a set of tasks, a feasible deadline driven schedule exists.</p>
+<h2 id="mixed-scheduling-algorithm.">Mixed Scheduling Algorithm.</h2>
+<p>Scheduling hardware (at the time) resembled a fixed priority scheduler, but a dynamic scheduler could be implemented for less frequent tasks. A hybrid scheduling algorithm scheduled the $k$ most frequent tasks using the rate-monotonic scheduling algorithm and scheduled the rest using the deadline driven algorithm.</p>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {

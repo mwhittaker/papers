@@ -1,5 +1,4 @@
-## [The Unix Time-Sharing System (1974)](https://scholar.google.com/scholar?cluster=2132419950152599605&hl=en&as_sdt=0,5)
-**Summary.**
+# [The Unix Time-Sharing System (1974)](https://scholar.google.com/scholar?cluster=2132419950152599605&hl=en&as_sdt=0,5)
 Unix was an operating system developed by Dennis Ritchie, Ken Thompson, and
 others at Bell Labs. It was the successor to Multics and is probably the single
 most influential piece of software ever written.
@@ -29,4 +28,3 @@ ability to run programs in the background. All this was implemented using fork,
 exec, wait, and pipes.
 
 Unix also supported signals.
-
