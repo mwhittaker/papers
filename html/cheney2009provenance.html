@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<style>
+  table {
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 2px solid black;
+    min-width: 50px;
+    padding: 4pt;
+  }
+</style>
+
+<p hidden>
+$\newcommand{\set}[1]{\left\{#1\right\}}$ $\newcommand{\setst}[2]{\left\{#1 \,\middle|\, #2\right\}}$ $\newcommand{\lam}[2]{\lambda #1.\&gt;#2}$ $\newcommand{\typedlam}[3]{\lam{#1\in#2}{#3}}$ $\newcommand{\denote}[1]{[ \! [{#1}] \! ]}$ $\newcommand{\domain}{\textbf{D}}$ $\newcommand{\relations}{\mathcal{R}}$ $\newcommand{\fields}{\mathcal{U}}$ $\newcommand{\getfield}[2]{t \cdot A}$ $\newcommand{\Tuple}{Tuple}$ $\newcommand{\UTuple}{U\text{-}Tuple}$ $\newcommand{\TupleLoc}{TupleLoc}$ $\newcommand{\FieldLoc}{FieldLoc}$
+</p>
+
+<h1 id="provenance-in-databases-why-how-and-where"><a href="https://scholar.google.com/scholar?cluster=14688264622623487965">Provenance in Databases: Why, How, and Where</a></h1>
+<h2 id="chapter-1-introduction">Chapter 1: Introduction</h2>
+<p><strong>Data provenance</strong>, also known as <strong>data lineage</strong>, describes the origin and history of data as it is moved, copied, transformed, and queried in a data system. In the context of relational databases, provenance will allow us to point at a tuple (or part of a tuple) in the output of a query and ask why or how it got there. In this book, we'll study three forms of provenance known as <em>why-provenance</em>, <em>how-provenance</em>, and <em>where-provenance</em>.</p>
+<h3 id="lineage">Lineage</h3>
+<p>The <strong>lineage</strong> of tuple $t$ in the output of evaluating query $Q$ against database instance $I$ is a subset of the tuples in $I$ (known as a <strong>witness</strong>) that are sufficient for $t$ to appear in the output. Lineage is best explained through an example. Consider the following relations $R$</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">id</th>
+<th align="left">A</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">$t_1$</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">$t_2$</td>
+<td align="left">2</td>
+</tr>
+</tbody>
+</table>
+<p>and $S$</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">id</th>
+<th align="left">A</th>
+<th align="left">B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">$t_3$</td>
+<td align="left">1</td>
+<td align="left">blue</td>
+</tr>
+<tr class="even">
+<td align="left">$t_4$</td>
+<td align="left">1</td>
+<td align="left">blue</td>
+</tr>
+<tr class="odd">
+<td align="left">$t_5$</td>
+<td align="left">1</td>
+<td align="left">red</td>
+</tr>
+<tr class="even">
+<td align="left">$t_6$</td>
+<td align="left">2</td>
+<td align="left">blue</td>
+</tr>
+<tr class="odd">
+<td align="left">$t_7$</td>
+<td align="left">2</td>
+<td align="left">red</td>
+</tr>
+</tbody>
+</table>
+<p>and consider the query $Q$:</p>
+<pre><code>SELECT R.A
+FROM   R, S
+WHERE  R.A = S.A AND S.B = blue</code></pre>
+<p>The result of evaluating query $Q$ is:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">id</th>
+<th align="left">A</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">$t_8$</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">$t_9$</td>
+<td align="left">2</td>
+</tr>
+</tbody>
+</table>
+<p>The lineage of $t_8$ is $\set{t_1, t_3, t_4}$, and the lineage of $t_9$ is $\set{R(t_2), S(t_6)}$. While the lineage of a tuple $t$ is sufficient for $t$ to appear in the output, the lineage is not necessary. For example, the lineage of $t_8$ does not capture the fact that $t_3$ and $t_4$ do not both have to appear in the input for $t_8$ to appear in the output. In fact, for a given output tuple $t$ there could be an exponential number of sufficient (but not necessary) witnesses for it.</p>
+<h3 id="why-provenance">Why-Provenance</h3>
+<p><strong>Why-provenance</strong> is similar to lineage but tries to avoid considering an exponential number of potential witnesses. Instead, it focuses on a restricted set of witnesses known as the <strong>witness basis</strong>. For example, the witness basis of $t_8$ is $\set{\set{t_1, t_3}, \set{t1_, t_4}}$. A <strong>minimal witness basis</strong> is a witness basis consisting only of minimal witnesses. That is, it won't include two witnesses $w$ and $w'$ where $w \subseteq w'$. The witness basis of two equivalent queries might differ, but the two queries are guaranteed to share the same minimal witness basis.</p>
+<h3 id="how-provenance">How-Provenance</h3>
+<p>Given an output tuple $t$, why-provenance provides witnesses that prove $t$ should appear in the output. However, why-provenance does not tell us <em>how</em> $t$ was formed from a witness. <strong>How-provenance</strong> uses a <strong>provenance semiring</strong> to hint at how an tuple was derived. The semiring consists of polynomials over tuple ids. The polynomial $t^2 + t \cdot t'$ hints at two derivations: one which uses $t$ twice and one which uses $t$ and $t'$.</p>
+<h3 id="where-provenance">Where-Provenance</h3>
+<p><strong>Where-provenance</strong> is very similar to why-provenance except that we'll now point at a particular entry (or <strong>location</strong>) of an output tuple $t$ and ask which input locations it was copied from. For example, the where-provenance of the $A$ entry of tuple $t_8$ is the $A$ entry of tuple $t_3$ or $t_4$.</p>
+<h3 id="eager-vs-lazy">Eager vs Lazy</h3>
+<p>There are two main ways to implement data lineage:</p>
+<ol style="list-style-type: decimal">
+<li>an <strong>eager</strong> (or <strong>bookkeeping</strong> or <strong>annotating</strong>) approach, and</li>
+<li>a <strong>lazy</strong> (or <strong>non-annotating</strong>) approach.</li>
+</ol>
+<p>In the eager approach, tuples are annotated and their annotations are propagated through the evaluation of a query. The lineage of an output tuple can then be directly determined using its annotations. In the lazy approach, tuples are not annotated. Instead, the lineage of a tuple must be derived by inspecting the query and input database.</p>
+<h3 id="notational-preliminaries">Notational Preliminaries</h3>
+<ul>
+<li>Let $\domain = \set{d_1, \ldots, d_n}$ be a finite domain of data values.</li>
+<li>Let $\fields$ be a collection of <strong>field names</strong> (or <strong>attribute names</strong>) where $U, V \subseteq \fields$.</li>
+<li>A <strong>record</strong> (or <strong>tuple</strong>) $t, u$ is a function $U \to \domain$ written $(A_1:d_1, \ldots, A_n:d_n)$.</li>
+<li>A tuple whose domain is $U$ is said to be a <strong>$U$-tuple</strong>.</li>
+<li>$\Tuple$ is the set of all tuples and $\UTuple$ is the set of all $U$-tuples.</li>
+<li>We write $\getfield{t}{A}$ as a shorthand for $t(A)$.</li>
+<li>We write $t[U]$ as a shorthand for the restriction of $t$ to $U$: $\typedlam{A}{U}{\getfield{t}{A}}$.</li>
+<li>We write $t[A \mapsto B]$ for the renaming of field $A$ to $B$.</li>
+<li>We write $(A: e(A))$ as a shorthand for $\typedlam{A}{U}{e(A)}$.</li>
+<li>A <strong>relation</strong> (or <strong>table</strong>) $r: U$ is a finite set of tuples over $U$.</li>
+<li>$\relations$ is a finite collection of <strong>relation names</strong>.</li>
+<li>A schema $\textbf{R}$ is a function $(R_1:U_1, \ldots, R_n:U_n)$ from $\relations$ to $2^{\fields}$.</li>
+<li>A <strong>database</strong> (or <strong>instance</strong>) $I: \textbf{R}$ is a function mapping each $R_i:U_i \in \textbf{R}$ to a relation $r_i$ over $U_i$.</li>
+<li>A <strong>tuple location</strong> is a tuple tagged with a relation name and is written $(R, t)$. We write $\TupleLoc = \relations \times \Tuple$ for the set of all tagged tuples.</li>
+<li>We can view a database $I$ as $\setst{(R, t)}{t \in I(R)} \subseteq \TupleLoc$.</li>
+<li>A <strong>field location</strong> is a triple $(R, t, A)$ which refers to a particular field or a particular tuple. We let $\FieldLoc$ be the set of all field locations.</li>
+<li>Letting $Y_{\bot} = Y \cup \set{\bot}$, we'll view a partial function $f: X \rightharpoonup Y$ as a total function $f: X \to Y_{\bot}$.</li>
+</ul>
+<p>Finally, this is the syntax of <strong>monotone relation algebra</strong>:</p>
+<pre><code>$$
+\begin{array}{rrl}
+  Q &amp; ::= &amp; R \\
+    &amp; |   &amp; \set{t} \\
+    &amp; |   &amp; \sigma_{\theta}(Q) \\
+    &amp; |   &amp; \pi_{U}(Q) \\
+    &amp; |   &amp; Q_1 \bowtie Q_2 \\
+    &amp; |   &amp; Q_1 \cup Q_2 \\
+    &amp; |   &amp; \rho_{A \mapsto B}(Q) \\
+\end{array}
+$$</code></pre>
+<p>This is the semantics:</p>
+<pre><code>$$
+\begin{array}{rrl}
+  \denote{R}(I) &amp; = &amp;
+    \set{t} \\
+  \denote{\set{t}}(I) &amp; = &amp;
+    I(R) \\
+  \denote{\sigma_{\theta}(Q)}(I) &amp; = &amp;
+    \setst{t \in \denote{Q}(I)}{\theta(t)} \\
+  \denote{\pi_{U}(Q)}(I) &amp; = &amp;
+    \setst{t[U]}{t \in \denote{Q}(I)} \\
+  \denote{Q_1 \bowtie Q_2}(I) &amp; = &amp;
+    \setst{t}{t[U_1] \in \denote{Q_1}(I), t[U_2] \in \denote{Q_2}(I)} \\
+  \denote{Q_1 \cup Q_2}(I) &amp; = &amp;
+    \denote{Q_1}(I) \cup \denote{Q_2}(I) \\
+  \denote{\rho_{A \mapsto B}(Q)}(I) &amp; = &amp;
+    \setst{t[A \mapsto B]}{t \in \denote{Q}(I)} \\
+\end{array}
+$$</code></pre>
+<h2 id="chapter-2-why-provenance">Chapter 2: Why-Provenance</h2>
+<p>TODO</p>
+<h2 id="chapter-3-how-provenance">Chapter 3: How-Provenance</h2>
+<p>TODO</p>
+<h2 id="chapter-4-where-provenance">Chapter 4: Where-Provenance</h2>
+<p>TODO</p>
+<h2 id="chapter-5-comparing-models-of-provenance">Chapter 5: Comparing Models of Provenance</h2>
+<p>TODO</p>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
+  </div>
+</body>
+</html>
