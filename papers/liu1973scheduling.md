@@ -45,7 +45,7 @@ there exists a feasible schedule for them, but increasing the running time of
 any of the tasks implies there is no feasible schedule. The least upper bound
 on processor utilization is the minimum processor utilization for tasks that
 fully utilize the processor. For $m$ tasks, the least upper bound is $m(2^{1/m}
-- 1)$ which approaches $\\ln(2)$ for large $m$.
+- 1)$ which approaches $\ln(2)$ for large $m$.
 
 ## Deadline Driven Scheduling Algorithm
 The **deadline driven scheduling algorithm** (or earliest deadline first

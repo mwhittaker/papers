@@ -345,13 +345,12 @@ $$
 $$
 ```
 
-Using this rewrite rule, we iteratively use $p^{[i]}$, $\\delta(p)^{[i-1]}$,
-and $p^{[i-1]}$ to compute $\\Delta(p)^{[i]}$. Then, we compute
-$\\delta(p)^{[i]} = \\Delta(p)^{[i]} - p^{[i]}$. We repeat this process until
-we reach a fixpoint. When we evaluate stratified Datalog programs with
-negation, we simply treat each negated predicate as if it were in the EDB.
-Moreover, if a rule is linear recursive, we can simplify the algorithm even
-further (see book for details).
+Using this rewrite rule, we iteratively use $p^{[i]}$, $\delta(p)^{[i-1]}$, and
+$p^{[i-1]}$ to compute $\Delta(p)^{[i]}$. Then, we compute $\delta(p)^{[i]} =
+\Delta(p)^{[i]} - p^{[i]}$. We repeat this process until we reach a fixpoint.
+When we evaluate stratified Datalog programs with negation, we simply treat
+each negated predicate as if it were in the EDB.  Moreover, if a rule is linear
+recursive, we can simplify the algorithm even further (see book for details).
 
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">

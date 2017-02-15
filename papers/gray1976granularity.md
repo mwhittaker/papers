@@ -118,19 +118,19 @@ consistency according to the first definition.
 - **Assertion 2**. Transactions can pick their consistency.
 
 Define the following relations on transactions:
-$\\newcommand{\\l}{<}$
-$\\newcommand{\\ll}{<\\!\\!<}$
-$\\newcommand{\\lll}{<\\!\\!<\\!\\!<}$
+$\newcommand{\l}{<}$
+$\newcommand{\ll}{<\\!\\!<}$
+$\newcommand{\lll}{<\\!\\!<\\!\\!<}$
 
-- $T_1 \\l T_2$ if there is a write-write dependency between $T_1$ and $T_2$.
-- $T_1 \\ll T_2$ if $T_1 \\l T_2$ or there is a write-read dependency between
+- $T_1 \l T_2$ if there is a write-write dependency between $T_1$ and $T_2$.
+- $T_1 \ll T_2$ if $T_1 \l T_2$ or there is a write-read dependency between
   $T_1$ and $T_2$.
-- $T_1 \\lll T_2$ if $T_1 \\ll T_2$ or there is a read-write dependency between
+- $T_1 \lll T_2$ if $T_1 \ll T_2$ or there is a read-write dependency between
   $T_1$ and $T_2$.
 
-Let $\\l^\*$, $\\ll^\*$, and $\\lll^\*$ be the transitive closure of $<$,
-$\\ll$, and $\\lll$.  If $<^\*$, $\\ll^\*$, $\\lll^\*$ is a partial order for a
-schedule, then the schedule is degree 1, 2, 3 consistent.
+Let $\l^\*$, $\ll^\*$, and $\lll^\*$ be the transitive closure of $<$, $\ll$,
+and $\lll$.  If $<^\*$, $\ll^\*$, $\lll^\*$ is a partial order for a schedule,
+then the schedule is degree 1, 2, 3 consistent.
 
 <script type="text/javascript" async
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
