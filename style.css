@@ -82,3 +82,7 @@ pre {
 code {
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
+
+table {
+  margin-bottom: 1.15em;
+}
