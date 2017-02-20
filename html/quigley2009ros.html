@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h1 id="ros-an-open-source-robot-operating-system-2009"><a href="https://scholar.google.com/scholar?cluster=143767492575573826">ROS: an open-source Robot Operating System (2009)</a></h1>
+<p>Writing code that runs on a robot is a <em>very</em> challenging task. Hardware varies from robot to robot, and the software required to perform certain tasks (e.g. picking up objects) can require an enormous amount of code (e.g. low-level drivers, object detection, motion planning, etc.). ROS, the Robot Operating System, is a framework for writing and managing distributed systems that run on robots. Note that ROS is not an operating system as the name suggests.</p>
+<h2 id="nomenclature">Nomenclature</h2>
+<p>A <strong>node</strong> is a process (or software module) that performs computation. Nodes communicate by sending <strong>messages</strong> (like protocol buffers) to one another. Nodes can publish messages to a <strong>topic</strong> or subscribe to a topic to receive messages. ROS also provides <strong>services</strong> (i.e. RPCs) which are defined by a service name, a request message type, and a response message type.</p>
+<h2 id="what-is-ros">What is ROS?</h2>
+<p>In short, ROS provides the following core functionality.</p>
+<ul>
+<li>ROS provides a messaging format similar to protocol buffers. Programmers define messages using a ROS IDL and a compiler generates code in various languages (e.g. C++, Octave, LISP). Processes running on robots then send messages to one another using XML RPC.</li>
+<li>ROS provides command line tools to debug or alter the execution of distributed systems. For example, one command line tool can be used to log a message stream to disk without having to change any source code. These logged messages can then be replayed to develop and test other modules. Other command line tools are described below.</li>
+<li>ROS organizes code into <strong>packages</strong>. A package is just a directory of code (or data or anything really) with some associated metadata. Packages are organized into <strong>repositories</strong> which are trees of directories with packages at the leaves. ROS provides a package manager to query repositories, download packages, and build code.</li>
+</ul>
+<h2 id="design-goals">Design Goals</h2>
+<p>ROS has the following design goals which motivate its design.</p>
+<ul>
+<li><strong>Peer-to-peer.</strong> Because ROS systems are running on interconnected robots, it makes sense for systems to be written in a peer-to-peer fashion. For example, imagine two clusters of networked robots communicate over a slow wireless link. Running a master on either of the clusters will slow down the system.</li>
+<li><strong>Multilingual.</strong> ROS wants to support multiple programming languages which motivated its protobuf-like message format.</li>
+<li><strong>Tools-based.</strong> Instead of being a monolithic code base, ROS includes a disaggregated set of command line tools.</li>
+<li><strong>Thin.</strong> Many robot algorithms developed by researchers <em>could</em> be re-used but often isn't because it becomes tightly coupled with the researcher's specific environment. ROS encourages algorithms to developed agnostic to ROS so they can be easily re-used.</li>
+<li><strong>Free and Open-Source</strong> By being free and open-source, ROS is easier to debug and encourages collaboration between lots of researchers.</li>
+</ul>
+<h2 id="use-cases">Use Cases</h2>
+<ul>
+<li><strong>Debugging a single node.</strong> Because ROS systems are loosely coupled modules communicating via RPC, one module can be debugged against other already debugged modules.</li>
+<li><strong>Logging and playback.</strong> As mentioned above, message streams can be transparently logged to disk for future replay.</li>
+<li><strong>Packaged subsystems.</strong> Programmers can describe the structure of a distributed system, and ROS can launch the system on across multiple hosts.</li>
+<li><strong>Collaborative development.</strong> ROS' packages and repositories encourage collaboration.</li>
+<li><strong>Visualization and monitoring.</strong> Message streams can be intercepted and visualized over time. Subscribe streams can also be filtered by expressions before being visualized.</li>
+<li><strong>Composition of functionality.</strong> Namespaces can be used to launch the same system multiple times.</li>
+</ul>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
+  </div>
+</body>
+</html>
