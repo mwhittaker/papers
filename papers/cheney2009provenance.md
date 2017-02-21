@@ -19,7 +19,7 @@ $\newcommand{\denote}[1]{[ \\! [{#1}] \\! ]}$
 $\newcommand{\domain}{\textbf{D}}$
 $\newcommand{\relations}{\mathcal{R}}$
 $\newcommand{\fields}{\mathcal{U}}$
-$\newcommand{\getfield}[2]{t \cdot A}$
+$\newcommand{\getfield}[2]{#1 \cdot #2}$
 $\newcommand{\Tuple}{Tuple}$
 $\newcommand{\UTuple}{U\text{-}Tuple}$
 $\newcommand{\TupleLoc}{TupleLoc}$
@@ -352,6 +352,44 @@ correctness of the compositional definition with the following two theorems:
 
 - If $\lin(Q, I, t) = \bot$, then $t \notin Q(I)$.
 - If $\lin(Q, I, t) = J \neq \bot$, then $J \subset I$ and $t \in Q(J)$.
+
+### WHIPS
+The WHIPS data warehouse system lazily implements lineage for queries with
+select, project, join, union, set difference, and aggregation. Given a query
+$Q$, database $I$, and tuple $t \in Q(I)$, WHIPS produces one or more reverse
+queries which produce the lineage of $t$ when run against $I$.
+
+For simple **select-project-join** (SPJ) queries---queries that only include
+the select, project, and join operators---the algorithm produces a single
+reverse query $Q_r$ for a query $Q$. First, we canonicalize $Q$ into
+project-select-join form:
+  $\project{A}(\select{\theta}(R_1 \join \cdots \join R_n))$.
+Then, we form the reverse query
+  $Q_r = \select{\phi}(R_1 \join \cdots \join R_n)$
+where
+  $\phi = \theta \land
+          (\land_{A_i \in A} \getfield{R_j}{A_i} = \getfield{t}{A_i})$.
+After evaluating $Q_r(I)$, a postprocessign step decomposes each tuple into its
+source tuples from $\Rs$. For example, consider
+  $Q = \project{A}(\select{S.B=\blue}(R \join S))$
+from above. Here,
+  $Q_r = \select{S.b=\blue \land \getfield{R}{A} = \getfield{t}{A}}(R \join S)$.
+
+The correctness of this algorithm depends crucially on the fact that lineage is
+invariant with respect to query rewrites. If this were not true, then the
+lineage of $Q$ (for some database $I$ and tuple $t$) could be different from
+the canonicalized $Q$ (for the same database $I$ and tuple $t$). WHIPS makes
+sure to only support queries for which lineage is invariant to query rewriting,
+but in general there do exist equivalent queries $Q$ and $Q'$, a database $I$,
+and a tuple $t$ where $\lin(Q, I, t) \neq \lin(Q', I, t)$. These
+counterexamples appear when one of $Q$ or $Q'$ include a relation $R$ multiple
+times. Two counterexamples are given in the book.
+
+To handle arbitrary queries (not just SPJ queries) WHIPS canonicalizes a query
+$Q$ into a sequence of D-segments and AUSPJ-segments. It then produces a series
+of queries that correspond to the intermediate results of the query. It then
+uses the non-compositional definition of lineage to recursively trace lineage
+through the intermediate results.
 
 ### Why-Provenance
 
