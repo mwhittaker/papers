@@ -5,5 +5,5 @@ default: $(HTMLS)
 
 html/%.html: papers/%.md header.html footer.html
 	cat header.html > $@
-	pandoc --from markdown-tex_math_dollars-raw_tex --to html $< >> $@
+	pandoc --from markdown-tex_math_dollars-raw_tex --to html --smart $< >> $@
 	cat footer.html >> $@
