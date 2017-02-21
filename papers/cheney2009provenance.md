@@ -11,6 +11,7 @@
 </style>
 
 <p hidden>
+$\newcommand{\parens}[1]{\left(#1\right)}$
 $\newcommand{\set}[1]{\left\\{#1\right\\}}$
 $\newcommand{\setst}[2]{\left\\{#1 \\,\middle|\\, #2\right\\}}$
 $\newcommand{\lam}[2]{\lambda #1.\\>#2}$
@@ -392,6 +393,94 @@ uses the non-compositional definition of lineage to recursively trace lineage
 through the intermediate results.
 
 ### Why-Provenance
+<p hidden>
+$\newcommand{\Wit}{\textsf{Wit}}$
+$\newcommand{\Why}{\textsf{Why}}$
+$\newcommand{\MWit}{\textsf{MWit}}$
+$\newcommand{\MWhy}{\textsf{MWhy}}$
+$\newcommand{\powerset}[1]{\mathcal{P}\parens{#1}}$
+<p>
+
+Recall that lineage is not as precise as it could be. For example, $\lin(Q, I,
+t_8) = \set{R(t_1), S(t_3), S(t_4)}$, but $\set{R(t_1), S(t_3)}$ and
+$\set{R(t_1), S(t_4)}$ are both sufficient to produce $t_8$. **Why-provenance**
+refines lineage and addresses this problem.
+
+Given a database $I$, query $Q$, and tuple $t$, let $J \subseteq I$ be a
+**witness** of $t$ if $t \in Q(J)$. Let $\Wit(Q, I, t) = \setst{J \subseteq
+I}{t \in Q(J)}$ be the set of all witnesses of $t$ with respect to $Q$ and $I$.
+A couple things to note:
+
+- If $Q$ is monotone, then for any $I$ and $t$, $\Wit(Q, I, t)$ is closed under
+  $\supseteq$. That is, if $J \in \Wit(Q, I, t)$ and $K \supseteq J$, then $K
+  \in \Wit(Q, I, t)$. Why? Well if $J \subseteq K$, then $Q(J) \subseteq Q(K)$.
+  Thus, if $t \in Q(J)$, $t \in Q(K)$ so $K$ is a witness.
+- If $\Wit(Q, I, t) = \emptyset$, then $t \notin Q(I)$. Why? Well, if $t$ were
+  in $Q(I)$ the $I$ would be in $\Wit(Q, I, t)$.
+- If $Q$ is monotone and $\emptyset \in \Wit(Q, I, t)$, then $\Wit(Q, I, t) =
+  \powerset{I}$. Why? Well every $J \subseteq I$ is a superset of $\emptyset$,
+  so by the first note, $J$ is a witness.
+
+The why-provenance of a tuple $t$ with respect to a query $Q$ and database
+$I$--- denoted $\Why(Q, I, t)$---is a subset of $\Wit(Q, I, t)$ known as the
+**witness basis**. Each witness in the witness basis is known as a
+**proof-witness**. Let $A \Cup B = \setst{a \cup b}{a \in A, b \in B}$.
+
+```
+$$
+\begin{align*}
+  \Why(\set{u}, I, t) &= \begin{cases}
+    \set{\emptyset} & u = t \\
+    \emptyset       & u \neq t
+  \end{cases} \\
+  \Why(R, I, t) &= \begin{cases}
+    \set{\set{R(t)}} & t \in R(I) \\
+    \emptyset        & t \notin R(I)
+  \end{cases} \\
+  \Why(\select{\theta}(Q), I, t) &= \begin{cases}
+    \Why(Q, I, t) & \theta(t) \\
+    \emptyset     & \lnot \theta(t)
+  \end{cases} \\
+  \Why(\project{A}(Q), I, t)
+    &= \bigcup \setst{\Why(Q, I, u)}{u \in Q(I), u[A] = t} \\
+  \Why(\rename{A}{B}(Q), I, t)
+    &= \Why(Q, I, t[B \mapsto A]) \\
+  \Why(Q_1 \join Q_2, I, t)
+    &= \Why(Q_1, I, t[A_1]) \Cup \Why(Q_2, I, t[A_2]) \\
+  \Why(Q_1 \cup Q_2, I, t)
+    &= \Why(Q_1, I, t) \cup \Why(Q_2, I, t)
+\end{align*}
+$$
+```
+
+Some properties of why-provenance:
+
+- If $\Why(Q, I, t) = \emptyset$, then $t \notin Q(I)$.
+- If $J \in \Why(Q, I, t)$, then $J \subseteq I$ and $t \in Q(J)$.
+- If $J \in \Wit(Q, I, t)$, then there exists a $J' \in \Why(Q, I, t)$ such
+  that $J' \subseteq J$.
+- $\Wit(Q, I, t)$ is equal to
+  $\setst{J \subseteq I}{\exists J' \in \Wit(Q, I, t), J' \subseteq J}$.
+- For two equivalent queries $Q$ and $Q'$, there might exists a database $I$
+  and tuple $t$ such that $\Why(Q, I, t) \neq \Why(Q', I, t)$. That is,
+  why-provenance is not invariant to query rewriting.
+
+Let $(\mathcal{X}, \leq)$ be a partially ordered set. We say $x \in X \subseteq
+\mathcal{X}$ is **minimal** if there does not exist a $x' \in X$ where $x'
+\leq x$. Note that $x$ need not be a minimum element in order to be minimal.
+
+Given a query $Q$, database $I$, and tuple $t$, we say $J \subset I$ is a
+**minimal witness** of $t$ if $J$ is a minimal element of $\Wit(Q, I, t)$. Let
+$\MWit(Q, I, t)$ be the subset of $\Wit(Q, I, t)$ of only minimal witnesses.
+Similarly, let $\MWhy(Q, I, t)$ be the subset of $\Why(Q, I, t)$ of only
+minimal witnesses.
+
+Some properties:
+
+- $\MWit(Q, I, t) \subseteq \Why(Q, I, t)$.
+- $\MWit(Q, I, t) = \MWhy(Q, I, t)$.
+- For equivalent queries $Q$ and $Q'$, $\MWhy(Q, I, t) = \MWhy(Q', I, t)$. That
+  is, minimal witness bases are invariant under query rewriting.
 
 ## Chapter 3: How-Provenance
 TODO
