@@ -21,12 +21,12 @@
 </style>
 
 <p hidden>
-$\newcommand{\set}[1]{\left\{#1\right\}}$ $\newcommand{\setst}[2]{\left\{#1 \,\middle|\, #2\right\}}$ $\newcommand{\lam}[2]{\lambda #1.\&gt;#2}$ $\newcommand{\typedlam}[3]{\lam{#1\in#2}{#3}}$ $\newcommand{\denote}[1]{[ \! [{#1}] \! ]}$ $\newcommand{\domain}{\textbf{D}}$ $\newcommand{\relations}{\mathcal{R}}$ $\newcommand{\fields}{\mathcal{U}}$ $\newcommand{\getfield}[2]{t \cdot A}$ $\newcommand{\Tuple}{Tuple}$ $\newcommand{\UTuple}{U\text{-}Tuple}$ $\newcommand{\TupleLoc}{TupleLoc}$ $\newcommand{\FieldLoc}{FieldLoc}$
+$\newcommand{\set}[1]{\left\{#1\right\}}$ $\newcommand{\setst}[2]{\left\{#1 \,\middle|\, #2\right\}}$ $\newcommand{\lam}[2]{\lambda #1.\&gt;#2}$ $\newcommand{\typedlam}[3]{\lam{#1\in#2}{#3}}$ $\newcommand{\denote}[1]{[ \! [{#1}] \! ]}$ $\newcommand{\domain}{\textbf{D}}$ $\newcommand{\relations}{\mathcal{R}}$ $\newcommand{\fields}{\mathcal{U}}$ $\newcommand{\getfield}[2]{t \cdot A}$ $\newcommand{\Tuple}{Tuple}$ $\newcommand{\UTuple}{U\text{-}Tuple}$ $\newcommand{\TupleLoc}{TupleLoc}$ $\newcommand{\FieldLoc}{FieldLoc}$ $\newcommand{\select}[1]{\sigma_{#1}}$ $\newcommand{\project}[1]{\pi_{#1}}$ $\newcommand{\join}{\bowtie}$ $\newcommand{\setdiff}{\backslash}$
 </p>
 
 <h1 id="provenance-in-databases-why-how-and-where"><a href="https://scholar.google.com/scholar?cluster=14688264622623487965">Provenance in Databases: Why, How, and Where</a></h1>
 <h2 id="chapter-1-introduction">Chapter 1: Introduction</h2>
-<p><strong>Data provenance</strong>, also known as <strong>data lineage</strong>, describes the origin and history of data as it is moved, copied, transformed, and queried in a data system. In the context of relational databases, provenance will allow us to point at a tuple (or part of a tuple) in the output of a query and ask why or how it got there. In this book, we'll study three forms of provenance known as <em>why-provenance</em>, <em>how-provenance</em>, and <em>where-provenance</em>.</p>
+<p><strong>Data provenance</strong>, also known as <strong>data lineage</strong>, describes the origin and history of data as it is moved, copied, transformed, and queried in a data system. In the context of relational databases, provenance will allow us to point at a tuple (or part of a tuple) in the output of a query and ask why or how it got there. In this book, we’ll study three forms of provenance known as <em>why-provenance</em>, <em>how-provenance</em>, and <em>where-provenance</em>.</p>
 <h3 id="lineage">Lineage</h3>
 <p>The <strong>lineage</strong> of tuple $t$ in the output of evaluating query $Q$ against database instance $I$ is a subset of the tuples in $I$ (known as a <strong>witness</strong>) that are sufficient for $t$ to appear in the output. Lineage is best explained through an example. Consider the following relations $R$</p>
 <table>
@@ -109,11 +109,11 @@ WHERE  R.A = S.A AND S.B = blue</code></pre>
 </table>
 <p>The lineage of $t_8$ is $\set{t_1, t_3, t_4}$, and the lineage of $t_9$ is $\set{R(t_2), S(t_6)}$. While the lineage of a tuple $t$ is sufficient for $t$ to appear in the output, the lineage is not necessary. For example, the lineage of $t_8$ does not capture the fact that $t_3$ and $t_4$ do not both have to appear in the input for $t_8$ to appear in the output. In fact, for a given output tuple $t$ there could be an exponential number of sufficient (but not necessary) witnesses for it.</p>
 <h3 id="why-provenance">Why-Provenance</h3>
-<p><strong>Why-provenance</strong> is similar to lineage but tries to avoid considering an exponential number of potential witnesses. Instead, it focuses on a restricted set of witnesses known as the <strong>witness basis</strong>. For example, the witness basis of $t_8$ is $\set{\set{t_1, t_3}, \set{t1_, t_4}}$. A <strong>minimal witness basis</strong> is a witness basis consisting only of minimal witnesses. That is, it won't include two witnesses $w$ and $w'$ where $w \subseteq w'$. The witness basis of two equivalent queries might differ, but the two queries are guaranteed to share the same minimal witness basis.</p>
+<p><strong>Why-provenance</strong> is similar to lineage but tries to avoid considering an exponential number of potential witnesses. Instead, it focuses on a restricted set of witnesses known as the <strong>witness basis</strong>. For example, the witness basis of $t_8$ is $\set{\set{t_1, t_3}, \set{t1_, t_4}}$. A <strong>minimal witness basis</strong> is a witness basis consisting only of minimal witnesses. That is, it won’t include two witnesses $w$ and $w’$ where $w \subseteq w’$. The witness basis of two equivalent queries might differ, but the two queries are guaranteed to share the same minimal witness basis.</p>
 <h3 id="how-provenance">How-Provenance</h3>
-<p>Given an output tuple $t$, why-provenance provides witnesses that prove $t$ should appear in the output. However, why-provenance does not tell us <em>how</em> $t$ was formed from a witness. <strong>How-provenance</strong> uses a <strong>provenance semiring</strong> to hint at how an tuple was derived. The semiring consists of polynomials over tuple ids. The polynomial $t^2 + t \cdot t'$ hints at two derivations: one which uses $t$ twice and one which uses $t$ and $t'$.</p>
+<p>Given an output tuple $t$, why-provenance provides witnesses that prove $t$ should appear in the output. However, why-provenance does not tell us <em>how</em> $t$ was formed from a witness. <strong>How-provenance</strong> uses a <strong>provenance semiring</strong> to hint at how an tuple was derived. The semiring consists of polynomials over tuple ids. The polynomial $t^2 + t \cdot t’$ hints at two derivations: one which uses $t$ twice and one which uses $t$ and $t’$.</p>
 <h3 id="where-provenance">Where-Provenance</h3>
-<p><strong>Where-provenance</strong> is very similar to why-provenance except that we'll now point at a particular entry (or <strong>location</strong>) of an output tuple $t$ and ask which input locations it was copied from. For example, the where-provenance of the $A$ entry of tuple $t_8$ is the $A$ entry of tuple $t_3$ or $t_4$.</p>
+<p><strong>Where-provenance</strong> is very similar to why-provenance except that we’ll now point at a particular entry (or <strong>location</strong>) of an output tuple $t$ and ask which input locations it was copied from. For example, the where-provenance of the $A$ entry of tuple $t_8$ is the $A$ entry of tuple $t_3$ or $t_4$.</p>
 <h3 id="eager-vs-lazy">Eager vs Lazy</h3>
 <p>There are two main ways to implement data lineage:</p>
 <ol style="list-style-type: decimal">
@@ -139,7 +139,7 @@ WHERE  R.A = S.A AND S.B = blue</code></pre>
 <li>A <strong>tuple location</strong> is a tuple tagged with a relation name and is written $(R, t)$. We write $\TupleLoc = \relations \times \Tuple$ for the set of all tagged tuples.</li>
 <li>We can view a database $I$ as $\setst{(R, t)}{t \in I(R)} \subseteq \TupleLoc$.</li>
 <li>A <strong>field location</strong> is a triple $(R, t, A)$ which refers to a particular field or a particular tuple. We let $\FieldLoc$ be the set of all field locations.</li>
-<li>Letting $Y_{\bot} = Y \cup \set{\bot}$, we'll view a partial function $f: X \rightharpoonup Y$ as a total function $f: X \to Y_{\bot}$.</li>
+<li>Letting $Y_{\bot} = Y \cup \set{\bot}$, we’ll view a partial function $f: X \rightharpoonup Y$ as a total function $f: X \to Y_{\bot}$.</li>
 </ul>
 <p>Finally, this is the syntax of <strong>monotone relation algebra</strong>:</p>
 <pre><code>$$
@@ -172,8 +172,54 @@ $$</code></pre>
     \setst{t[A \mapsto B]}{t \in \denote{Q}(I)} \\
 \end{array}
 $$</code></pre>
+<p>Often, we will omit the denotational brackets $\denote{\cdot}$ and abbreviate $\denote{Q}(I)$ as $Q(I)$. We will also sometimes denote a grouping by columns $G$ as $\alpha_G(Q)$.</p>
 <h2 id="chapter-2-why-provenance">Chapter 2: Why-Provenance</h2>
-<p>TODO</p>
+<h3 id="lineage-1">Lineage</h3>
+<p hidden>
+$\newcommand{\Rs}{R_1, \ldots, R_n}$ $\newcommand{\Rprimes}{R_1’, \ldots, R_n’}$ $\newcommand{\Qs}{Q_1, \ldots, Q_n}$ $\newcommand{\Ss}{S_1, \ldots, S_n}$ $\newcommand{\lineage}{\textsf{Lineage}}$ $\newcommand{\blue}{\text{blue}}$ $\newcommand{\red}{\text{red}}$
+</p>
+
+<p>First, we review lineage. Let $Op$ be a relation operator over input relations $(\Rs)$. The <strong>lineage</strong> of a tuple $t \in Op(\Rs)$ is a subset $(\Rprimes)$ of $(\Rs)$ such that:</p>
+<ol style="list-style-type: decimal">
+<li>$Op(\Rprimes) = \set{t}$;</li>
+<li>For all $i \in [n]$ and for all $t_i \in R_i’$, $Op(R_1’, \ldots, \set{t_i}, \ldots, R_n’) \neq \emptyset$; and</li>
+<li>$(\Rprimes)$ is maximal among subsets satisfying 1 and 2.</li>
+</ol>
+<p>1 ensures the lineage is relevant to $t$, 2 ensures that no irrelevant tuples are included, and 3 ensures the lineage is “complete”. Given the definition of lineage, we can compute it. Let $\lineage(t, Op(\Rs))$ be the lineage of tuple $t \in Op(\Rs)$.</p>
+<pre><code>$$
+\begin{align*}
+  \lineage(t, \select{\theta}(R))
+    &amp;= (\set{t}) \\
+  \lineage(t, \project{U}(R))
+    &amp;= (\setst{t&#39; \in R}{t&#39;[U] = t}) \\
+  \lineage(t, R_1 \join \cdots \join R_n)
+    &amp;= \left.(\setst{t_i \in R_i}{t[U_i] = t_i})\right\vert_{i \in [n]} \\
+  \lineage(t, R_1 \cup \cdots \cup R_n)
+    &amp;= \left.(\setst{t_i \in R_i}{t = t_i})\right\vert_{i \in [n]} \\
+  \lineage(t, R_1 \setdiff R_2)
+    &amp;= (\set{t}, R_2) \\
+  \lineage(t, \alpha_G(R))
+    &amp;= (\setst{t&#39; \in R}{t[G] = t&#39;[G]})
+\end{align*}
+$$</code></pre>
+<p>Next, consider a query $Op(\Qs)$ run on a database $I$. Let $S_i = Q_i(I)$ and let $\lineage(t, Op(\Qs), I)$ be the lineage of $t$ in $Op(\Qs)(I)$.</p>
+<pre><code>$$
+\lineage(t, Op(\Qs), I) =
+  \bigcup_{S_i(t&#39;) \in \lineage(t, Op(\Ss))} \lineage(S_i(t&#39;), S_i)
+$$</code></pre>
+<p>Consider again the relations $R$ and $S$ and the query $Q$ from above. We can express $Q$ in the relation algebra—$Q = \project{A}(\select{S.B = \text{blue}}(R \join S))$—and compute the lineage of $t_8$.</p>
+<pre><code>$$
+\begin{align*}
+  \lineage(t_8, \project{A}(\select{S.a=\blue}(R(I) \join S(I))))
+    &amp;= \set{(1, blue)} \\
+  \lineage(\set{(1, blue)}, \select{S.a=\blue}(R(I) \join S(I)))
+    &amp;= \set{(1, blue)} \\
+  \lineage(\set{(1, blue)}, R(I) \join S(I))
+    &amp;= \set{\set{t_1}, \set{t_3, t_4}}
+\end{align*}
+$$</code></pre>
+<h3 id="a-compositional-definition-of-lineage">A Compositional Definition of Lineage</h3>
+<h3 id="why-provenance-1">Why-Provenance</h3>
 <h2 id="chapter-3-how-provenance">Chapter 3: How-Provenance</h2>
 <p>TODO</p>
 <h2 id="chapter-4-where-provenance">Chapter 4: Where-Provenance</h2>

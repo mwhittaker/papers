@@ -24,6 +24,10 @@ $\newcommand{\Tuple}{Tuple}$
 $\newcommand{\UTuple}{U\text{-}Tuple}$
 $\newcommand{\TupleLoc}{TupleLoc}$
 $\newcommand{\FieldLoc}{FieldLoc}$
+$\newcommand{\select}[1]{\sigma_{#1}}$
+$\newcommand{\project}[1]{\pi_{#1}}$
+$\newcommand{\join}{\bowtie}$
+$\newcommand{\setdiff}{\backslash}$
 </p>
 
 # [Provenance in Databases: Why, How, and Where](https://scholar.google.com/scholar?cluster=14688264622623487965)
@@ -184,8 +188,85 @@ $$
 $$
 ```
 
+Often, we will omit the denotational brackets $\denote{\cdot}$ and abbreviate
+$\denote{Q}(I)$ as $Q(I)$. We will also sometimes denote a grouping by columns
+$G$ as $\alpha_G(Q)$.
+
 ## Chapter 2: Why-Provenance
-TODO
+### Lineage
+<p hidden>
+$\newcommand{\Rs}{R_1, \ldots, R_n}$
+$\newcommand{\Rprimes}{R_1', \ldots, R_n'}$
+$\newcommand{\Qs}{Q_1, \ldots, Q_n}$
+$\newcommand{\Ss}{S_1, \ldots, S_n}$
+$\newcommand{\lineage}{\textsf{Lineage}}$
+$\newcommand{\blue}{\text{blue}}$
+$\newcommand{\red}{\text{red}}$
+</p>
+
+First, we review lineage. Let $Op$ be a relation operator over input relations
+$(\Rs)$. The **lineage** of a tuple $t \in Op(\Rs)$ is a subset $(\Rprimes)$ of
+$(\Rs)$ such that:
+
+1. $Op(\Rprimes) = \set{t}$;
+2. For all $i \in [n]$ and for all $t_i \in R_i'$, $Op(R_1', \ldots, \set{t_i},
+   \ldots, R_n') \neq \emptyset$; and
+3. $(\Rprimes)$ is maximal among subsets satisfying 1 and 2.
+
+1 ensures the lineage is relevant to $t$, 2 ensures that no irrelevant tuples
+are included, and 3 ensures the lineage is "complete". Given the definition of
+lineage, we can compute it. Let $\lineage(t, Op(\Rs))$ be the lineage of tuple
+$t \in Op(\Rs)$.
+
+```
+$$
+\begin{align*}
+  \lineage(t, \select{\theta}(R))
+    &= (\set{t}) \\
+  \lineage(t, \project{U}(R))
+    &= (\setst{t' \in R}{t'[U] = t}) \\
+  \lineage(t, R_1 \join \cdots \join R_n)
+    &= \left.(\setst{t_i \in R_i}{t[U_i] = t_i})\right\vert_{i \in [n]} \\
+  \lineage(t, R_1 \cup \cdots \cup R_n)
+    &= \left.(\setst{t_i \in R_i}{t = t_i})\right\vert_{i \in [n]} \\
+  \lineage(t, R_1 \setdiff R_2)
+    &= (\set{t}, R_2) \\
+  \lineage(t, \alpha_G(R))
+    &= (\setst{t' \in R}{t[G] = t'[G]})
+\end{align*}
+$$
+```
+
+Next, consider a query $Op(\Qs)$ run on a database $I$. Let $S_i = Q_i(I)$ and
+let $\lineage(t, Op(\Qs), I)$ be the lineage of $t$ in $Op(\Qs)(I)$.
+
+```
+$$
+\lineage(t, Op(\Qs), I) =
+  \bigcup_{S_i(t') \in \lineage(t, Op(\Ss))} \lineage(S_i(t'), S_i)
+$$
+```
+
+Consider again the relations $R$ and $S$ and the query $Q$ from above. We can
+express $Q$ in the relation algebra---$Q = \project{A}(\select{S.B =
+\text{blue}}(R \join S))$---and compute the lineage of $t_8$.
+
+```
+$$
+\begin{align*}
+  \lineage(t_8, \project{A}(\select{S.a=\blue}(R(I) \join S(I))))
+    &= \set{(1, blue)} \\
+  \lineage(\set{(1, blue)}, \select{S.a=\blue}(R(I) \join S(I)))
+    &= \set{(1, blue)} \\
+  \lineage(\set{(1, blue)}, R(I) \join S(I))
+    &= \set{\set{t_1}, \set{t_3, t_4}}
+\end{align*}
+$$
+```
+
+### A Compositional Definition of Lineage
+
+### Why-Provenance
 
 ## Chapter 3: How-Provenance
 TODO
