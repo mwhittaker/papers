@@ -27,6 +27,7 @@ $\newcommand{\FieldLoc}{FieldLoc}$
 $\newcommand{\select}[1]{\sigma_{#1}}$
 $\newcommand{\project}[1]{\pi_{#1}}$
 $\newcommand{\join}{\bowtie}$
+$\newcommand{\rename}[2]{\rho_{#1 \mapsto #2}}$
 $\newcommand{\setdiff}{\backslash}$
 </p>
 
@@ -265,6 +266,92 @@ $$
 ```
 
 ### A Compositional Definition of Lineage
+<p hidden>
+$\newcommand{\lin}{\textsf{Lin}}$
+$\newcommand{\strictunion}{\cup_{\text{S}}}$
+$\newcommand{\lazyunion}{\cup_{\text{L}}}$
+$\newcommand{\lazyflattening}{\cup_{\text{L}}}$
+</p>
+
+The previous definition of lineage has a couple flaws:
+  (a) it's confusing,
+  (b) it doesn't handle queries with constants, and
+  (c) it is only defined for tuples in the output of a query.
+We can fix these flaws with a **compositional definition of lineage**. Let
+$\lin$ be a partial function which takes a query $Q$, a database $I$, and a
+tuple $t$ and returns
+
+- $\emptyset{}$ if $t$ was constructed from $Q$ itself,
+- the non-empty lineage of $t$ if $t \in Q(I)$, and
+- $\bot$ (i.e. $\lin(Q, I, t)$ is undefined) if $t \notin Q(I)$.
+
+Define the **strict union** ($\strictunion$),
+
+```
+$$
+\begin{aligned}
+  \bot \strictunion X &= \bot \\
+  X \strictunion \bot &= \bot \\
+  X \strictunion Y &= X \cup Y
+\end{aligned}
+$$
+```
+
+**lazy union** ($\lazyunion$),
+
+```
+$$
+\begin{aligned}
+  \bot \lazyunion X &= X \\
+  X \lazyunion \bot &= X \\
+  X \lazyunion Y &= X \cup Y
+\end{aligned}
+$$
+```
+
+and **lazy flattening** ($\lazyflattening$) operators.
+
+```
+$$
+  \lazyflattening \set{X_1, \ldots, X_n} = \bot \cup X_1 \cup \cdots \cup X_n
+$$
+```
+
+Using these operators, defining lineage is straightforward.
+
+```
+$$
+\begin{align*}
+  \lin{\set{u}, I, t} &= \begin{cases}
+    \emptyset & t = u \\
+    \bot      & t \neq u
+  \end{cases} \\
+  \lin(R, I, t) &= \begin{cases}
+    \set{R(t)} & t \in I(R) \\
+    \bot       & t \notin I(R)
+  \end{cases} \\
+  \lin(\select{\theta}(Q), I, t) &= \begin{cases}
+    \lin(Q, I, t) & \theta(t) \\
+    \bot          & \lnot \theta(t)
+  \end{cases} \\
+  \lin(\project{U}(Q), I, t)
+    &= \lazyflattening \setst{\lin(Q, I, t)}{u \in Q(I), u[U] = t} \\
+  \lin(\rename{A}{B}(Q), I, t)
+    &= \lin(Q, I, t[B \mapsto A]) \\
+  \lin(Q_1 \join Q_2, I, t)
+    &= \lin(Q_1, I, t[U_1]) \strictunion \lin(Q_2, I, t[U_2]) \\
+  \lin(Q_1 \cup Q_2, I, t)
+    &= \lin(Q_1, I, t) \lazyunion \lin(Q_2, I, t)
+\end{align*}
+$$
+```
+
+It can be shown that this definition of lineage is equivalent to the previous
+one (ignoring minor representation differences). Moreover, we can capture the
+correctness of the compositional definition with the following two theorems:
+
+- If $\lin(Q, I, t) = \bot$, then $t \notin Q(I)$.
+- If $\lin(Q, I, t) = J \neq \bot$, then $J \subset I$ and $t \in Q(J)$.
 
 ### Why-Provenance
 
