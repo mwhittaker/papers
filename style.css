@@ -30,6 +30,8 @@ body {
 
 #indextitle {
   font-size: 60pt;
+  margin-top: 0pt;
+  margin-bottom: 0pt;
 }
 
 .year {
