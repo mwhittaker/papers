@@ -9,7 +9,7 @@
 <body>
   <div id="container">
 <h2 id="experience-with-processes-and-monitors-in-mesa-1980"><a href="https://goo.gl/1TqQQM">Experience with Processes and Monitors in Mesa (1980)</a></h2>
-<p><strong>Summary.</strong> In 1980, synchronization primitives like semaphores, monitors, and condition variables had been well studied in the literature, but there weren't any large systems implementing them. Mesa was a programming language that was being developed to write the Pilot operating system at Xerox. Due to the inherent concurrency of an operating system, Mesa was designed to ease the development of concurrent programs. The Mesa designers considered implementing a message passing interface, but deemed it too complex. They considered semaphores, but found them too undisciplined. They considered cooperative multi-threading but came upon a number of serious disadvantages:</p>
+<p><strong>Summary.</strong> In 1980, synchronization primitives like semaphores, monitors, and condition variables had been well studied in the literature, but there weren’t any large systems implementing them. Mesa was a programming language that was being developed to write the Pilot operating system at Xerox. Due to the inherent concurrency of an operating system, Mesa was designed to ease the development of concurrent programs. The Mesa designers considered implementing a message passing interface, but deemed it too complex. They considered semaphores, but found them too undisciplined. They considered cooperative multi-threading but came upon a number of serious disadvantages:</p>
 <ul>
 <li>Cooperative multithreading cannot take advantage of multiple cores.</li>
 <li>Preemption is already required to service time-sensitive I/O devices.</li>
@@ -27,8 +27,8 @@
 <pre><code>p &lt;- fork ReadLine[terminal]
 ...
 buffer &lt;- join p</code></pre>
-<p>Moreover, if a forked thread was not intended to be joined, it could instead be detached via <code>detach[p]</code>. This fork/join style process management had a number of advantages---(i) processes were first class values, (ii) thread forking was type checked, and (iii) any procedure could be forked---but also introduced lots of opportunities for dangling references.</p>
-<p>Monitors are objects that only allow a single thread to be executing one of its functions at any given time. They unify data, synchronization of the data, and access of the data into one lexical bundle. Mesa monitors included public <em>entry preocedures</em> and private <em>internal procedures</em> that operated with the monitor locked as well as public <em>external procedures</em> that operated without locking the monitor. Monitors, in conjunction with condition variables, were used to maintain an invariant about an object that was true upon entering and exiting any of the monitor's methods. Monitors also lead to potential deadlocks:</p>
+<p>Moreover, if a forked thread was not intended to be joined, it could instead be detached via <code>detach[p]</code>. This fork/join style process management had a number of advantages—(i) processes were first class values, (ii) thread forking was type checked, and (iii) any procedure could be forked—but also introduced lots of opportunities for dangling references.</p>
+<p>Monitors are objects that only allow a single thread to be executing one of its functions at any given time. They unify data, synchronization of the data, and access of the data into one lexical bundle. Mesa monitors included public <em>entry preocedures</em> and private <em>internal procedures</em> that operated with the monitor locked as well as public <em>external procedures</em> that operated without locking the monitor. Monitors, in conjunction with condition variables, were used to maintain an invariant about an object that was true upon entering and exiting any of the monitor’s methods. Monitors also lead to potential deadlocks:</p>
 <ul>
 <li>Two monitor methods could wait for one another.</li>
 <li>Two different monitors could enter each other.</li>
@@ -135,7 +135,7 @@ NUM_CONSUMERS = <span class="dv">2</span>
 <span class="kw">if</span> <span class="ot">__name__</span> == <span class="st">&quot;__main__&quot;</span>:
     main()</code></pre>
 <p>Threads waiting on a condition variable could also be awoken by a timeout, an abort, or a broadcast (e.g. <code>notify_all</code>).</p>
-<p>Mesa's implementation was divided between the processor, a runtime, and the compiler. The processor was responsible for process management and scheduling. Each process was on a ready queue, monitor lock queue, condition variable queue, or fault queue. The runtime was responsible for providing the fork/join interface. The compiler performed code generation and a few static sanity checks.</p>
+<p>Mesa’s implementation was divided between the processor, a runtime, and the compiler. The processor was responsible for process management and scheduling. Each process was on a ready queue, monitor lock queue, condition variable queue, or fault queue. The runtime was responsible for providing the fork/join interface. The compiler performed code generation and a few static sanity checks.</p>
 <p>Mesa was evaluated by Pilot (an OS), Violet (a distributed calendar), and Gateway (a router).</p>
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({

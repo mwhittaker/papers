@@ -20,8 +20,8 @@
 <li><em>Schema</em>. The final attribute of every predicate is from the domain Z. This <em>time suffix</em> connotes the timestamp of the record.</li>
 <li><em>Time Suffix</em>. Every subgoal must be unified on a common time suffix <code>T</code> and the head of every rule can take of of two forms:
 <ul>
-<li>In <em>deductive rules</em>, the head's time suffix <code>S</code> is equal to <code>T</code>. These rules connote deductions in a single time step.</li>
-<li>In <em>inductive rules</em>, the head's time suffix <code>S</code> is the successor of <code>T</code>. These rules connote inductions across time.</li>
+<li>In <em>deductive rules</em>, the head’s time suffix <code>S</code> is equal to <code>T</code>. These rules connote deductions in a single time step.</li>
+<li>In <em>inductive rules</em>, the head’s time suffix <code>S</code> is the successor of <code>T</code>. These rules connote inductions across time.</li>
 </ul></li>
 <li><em>Positive and Negative Predicates</em>. Every extensional predicate <code>p</code> has a corresponding positive and negative predicate <code>p_pos</code> and <code>p_neg</code>.</li>
 <li><em>Guarded EDB</em>. No rule, except for those above, can involve extensional predicates.</li>
@@ -36,7 +36,7 @@
 <pre><code>seq(B) &lt;- seq(A), event(_), succ(A, B).
 seq(A) &lt;- seq(A), not event(_).
 seq(0)@0.</code></pre>
-<p>We can use aggregation to implement a priority queue. Consider a predicate <code>priority_queue(X, P)</code> with values <code>X</code> and priority <code>P</code>. We can flatten out the queue's contents over time by buffering values in <code>m_priority_queue</code> and dequeueing them into <code>priority_queue</code> in order of priority.</p>
+<p>We can use aggregation to implement a priority queue. Consider a predicate <code>priority_queue(X, P)</code> with values <code>X</code> and priority <code>P</code>. We can flatten out the queue’s contents over time by buffering values in <code>m_priority_queue</code> and dequeueing them into <code>priority_queue</code> in order of priority.</p>
 <pre><code>persist[m_priority_queue_pos, m_priority_queue_neg, 2]
 
 the_min(min&lt;P&gt;) &lt;- m_priority_queue(_, P).
@@ -56,7 +56,7 @@ m_priority_queue_neg(X, P)@next &lt;-
 <li>The EDB is finite.</li>
 </ol>
 <p>We say a Dedalus0 rule is <em>instantaneously safe</em> if it is deductive, function-free (1), and range-restricted (2). A Dedalus0 program is instantaneously safe if all rules in its deductive reduction are instantaneously safe. Two sets of ground atoms are <em>equivalent modulo time</em> if the two sets are equal after projecting out the time suffix. A Dedalus0 program is quiescent at time T if it its atoms are equivalent modulo time to those at time T-1. A Dedalus0 program is <em>temporally safe</em> if it is <em>henceforth quiescent</em> after some time T. The paper provides three syntactic restrictions that are sufficient for a temporally stratifiable program to be temporally safe.</p>
-<p>Dedalus is a superset of Dedalus0 that introduces asynchronous choice. Intuitively, Dedalus introduces a third <em>asynchronous</em> type of rule that allows the head's timestamp to be a non-deterministic value, even values that are earlier than the timestamp of the body! In addition, Dedalus introduces horizontal partitioning by designating the first column of a predicate to be a <em>location specifier</em>. Entanglement:</p>
+<p>Dedalus is a superset of Dedalus0 that introduces asynchronous choice. Intuitively, Dedalus introduces a third <em>asynchronous</em> type of rule that allows the head’s timestamp to be a non-deterministic value, even values that are earlier than the timestamp of the body! In addition, Dedalus introduces horizontal partitioning by designating the first column of a predicate to be a <em>location specifier</em>. Entanglement:</p>
 <pre><code>p(A, B, N)@async &lt;- p(A, B)@N</code></pre>
 <p>can be used to implement things like Lamport clocks.</p>
   <script type="text/x-mathjax-config">

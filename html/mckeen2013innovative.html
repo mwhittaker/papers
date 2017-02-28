@@ -10,7 +10,7 @@
   <div id="container">
 <h2 id="innovative-instructions-and-software-model-for-isolated-execution-2013"><a href="https://scholar.google.com/scholar?cluster=11948934428694485446&amp;hl=en&amp;as_sdt=0,5">Innovative Instructions and Software Model for Isolated Execution (2013)</a></h2>
 <p><strong>Summary.</strong> Applications are responsible for managing an increasing amount of sensitive information. Intel SGX is a set of new instructions and memory access changes that allow users to put code and data into secured <em>enclaves</em> that are inaccessible even to privileged code. The enclaves provide confidentiality, integrity, and isolation.</p>
-<p>A process' virtual memory space is divided into different sections. There's a section for the code, a section for the stack, a section for the heap, etc. An enclave is just another region in the user's address space, except the enclave has some special properties. The enclave can store code and data. When a process is running code in the enclave, it can access data in the enclave. Otherwise, the enclave data is off limits.</p>
+<p>A process’ virtual memory space is divided into different sections. There’s a section for the code, a section for the stack, a section for the heap, etc. An enclave is just another region in the user’s address space, except the enclave has some special properties. The enclave can store code and data. When a process is running code in the enclave, it can access data in the enclave. Otherwise, the enclave data is off limits.</p>
 <p>Each enclave is composed of a set of pages, and these pages are stored in the <em>Enclave Page Cache (EPC)</em>.</p>
 <pre><code>+---------------------------------+
 | .-----. .-----. .-----. .-----. |
@@ -36,7 +36,7 @@
 | |     |         |     | |     | |     |
 | &#39;.....&#39;         &#39;.....&#39; &#39;.....&#39; &#39;.....&#39;
 +--------------------------------------------</code></pre>
-<p>In order to page an EPC page to main memory, all cached translations that point to it must first be cleared. Then, the page is encrypted. A nonce, called a version, is created for the page and put into a special <em>Version Array</em> (VA) page in the EPC. A MAC is taken of the encrypted contents, the version, and the page's metadata and is stored with the file in main memory. When the page is paged back into the EPC, the MAC is checked against the version in the VA before the VA is cleared.</p>
+<p>In order to page an EPC page to main memory, all cached translations that point to it must first be cleared. Then, the page is encrypted. A nonce, called a version, is created for the page and put into a special <em>Version Array</em> (VA) page in the EPC. A MAC is taken of the encrypted contents, the version, and the page’s metadata and is stored with the file in main memory. When the page is paged back into the EPC, the MAC is checked against the version in the VA before the VA is cleared.</p>
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {

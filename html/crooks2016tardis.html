@@ -42,7 +42,7 @@
 <li><em>multi-mode</em>, where a transaction can read from multiple branches and create a new merged branch.</li>
 </ul>
 <p>TARDiS provides an API to find the set of conflicting writes for a set of branches, the find the fork points for a set of branches, and to get the versioned values of objects. It also supports varying levels of begin and end constraints including serializability, snapshot isolation, read committed, etc.</p>
-<p>Here's an example TARDiS application that implements a counter.</p>
+<p>Here’s an example TARDiS application that implements a counter.</p>
 <pre><code>func increment(counter)
     Tx t = begin(AncestorConstraint)
     int value = t.get(counter)
@@ -65,7 +65,7 @@ func merge()
         result += (c - forkVal)
     t.put(counter, result)
     t.commit(SerializabilityConstraint)</code></pre>
-<p><strong>Design and Implementation.</strong> When a transaction begins, TARDiS performs a BFS from the leaves of the state DAG to find the first state satisfying the begin constraint. When a transaction is committed, TARDiS walks down the state DAG as far as possible until a state is reached that doesn't satisfy the end constraint, branching if necessary. Branches are represented as a set of (b, i) pairs to indicate the bth child of the ith node. Keys are mapped to a topologically sorted list of versions used during reading.</p>
+<p><strong>Design and Implementation.</strong> When a transaction begins, TARDiS performs a BFS from the leaves of the state DAG to find the first state satisfying the begin constraint. When a transaction is committed, TARDiS walks down the state DAG as far as possible until a state is reached that doesn’t satisfy the end constraint, branching if necessary. Branches are represented as a set of (b, i) pairs to indicate the bth child of the ith node. Keys are mapped to a topologically sorted list of versions used during reading.</p>
 <p>The garbage collector performs DAG compression, eliminating unneeded states in the state DAG. It also prunes record unneeded record versions after DAG compression.</p>
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({

@@ -24,7 +24,7 @@
 <li>The <strong>deadline</strong> of a task is the time at which the next request is issued.</li>
 <li>An <strong>overflow</strong> occurs at time $t$ if $t$ is the deadline for an unfulfilled task.</li>
 <li>A schedule is <strong>feasible</strong> if there is no overflow.</li>
-<li>The response time of a task is the time between the task's request and the task's finish time.</li>
+<li>The response time of a task is the time between the task’s request and the task’s finish time.</li>
 <li>A <strong>critical instant</strong> for task $t$ is the instant where $t$ has the highest response time.</li>
 </ul>
 <p>It can be shown that the critical instant for any task occurs when the task is requested simultaneously with all higher priority tasks. This result lets us easily determine if a feasible fixed priority schedule exists by pessimistically assuming all tasks are scheduled at their critical instant.</p>
