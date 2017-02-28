@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id="container">
+<h1 id="efficient-querying-and-maintenance-of-network-provenance-at-internet-scale-2010"><a href="https://scholar.google.com/scholar?cluster=16215370428886082563">Efficient Querying and Maintenance of Network Provenance at Internet-Scale (2010)</a></h1>
+<p><strong>Network provenance</strong> is like provenance, but over the network. It lets you point at a piece of state in a distributed protocol and ask how it was derived. Network provenance is useful to debug, find performance bottlenecks, and so on. This paper makes the following contributions:</p>
+<ol style="list-style-type: decimal">
+<li>It presents a <strong>distributed data model for network provenance</strong>. That is, it describes a way to physically organize network provenance into a bunch of horizontally partitioned relations.</li>
+<li>It describes a way to <strong>efficiently maintain and query provenance</strong>. Essentially, as an instrumented program executes, it proactively maintains a set of data structures which it can later use to answer provenance queries. It is analogous to a program generating profiles at runtime which a profile-guided optimizer later uses to optimize the program. This paper describes how to maintain those data structures and how to use them to answer queries.</li>
+<li>It introduces the <strong>ExSPAN prototype</strong> which implements (1) and (2).</li>
+</ol>
+<h2 id="declarative-networks">Declarative Networks</h2>
+<p><strong>Declarative networks</strong> are distributed systems (or protocols) implemented using <strong>NDLog</strong>: a variant of Datalog that is very similar to Bloom.</p>
+<h2 id="network-provenance">Network Provenance</h2>
+<p>Network provenance can be characterized by three axes:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Granularity.</strong> There are three granularities of network provenance.
+<ul>
+<li><strong>Tuple-level</strong> provenance is most similar to traditional provenance. It records every derivation (including all intermediate results) of every tuple.</li>
+<li><strong>Node-level</strong> provenance can be used to track which nodes a particular output tuple has been on, but does not necessarily include information about specific derivations.</li>
+<li>Finally, <strong>trust domain level</strong> provenance groups together nodes into trust domains and provides information about which trust domains a tuple has been in.</li>
+</ul></li>
+<li><strong>Representation.</strong> The granularity of provenance determines how provenance information is stored. For example, tuple-level provenance requires that the system stores all derivations while node-level provenance allows the system to store less information. Provenance can also be represented using provenance semirings, and provenance semirings can be compressed using BDDs.</li>
+<li><strong>Distribution.</strong> All provenance information can be stored on a single centralized node, or provenance information can be distributed across machines.</li>
+</ol>
+<h2 id="provenance-data-model">Provenance Data Model</h2>
+<p>The provenance of a tuple <code>t</code> is represented as a graph <code>(V,E)</code> where the vertex set <code>V</code> consists of <strong>tuple vertices</strong> (representing base and intermediate tuples) and <strong>rule execution vertices</strong> (representing rule instantiations). An edge from tuple vertex <code>t</code> to rule execution vertex <code>r</code> signifies that <code>t</code> is an input to <code>r</code>. An edge from <code>r</code> to <code>t</code> represents that <code>r</code> derived <code>t</code>. Essentially, we take a proof tree</p>
+<pre><code>        w(b,c)
+        ------ [r2]
+y(a,b)  z(b,c)
+-------------- [r1]
+     x(a)</code></pre>
+<p>and convert everything into a vertex:</p>
+<pre><code>          [w(b,c)]
+             ||
+            [r2]
+             ||
+ [y(a,b)] [z(b,c)]
+     \\     //
+       [r1]
+        ||
+      [x(a)]</code></pre>
+<p>Each tuple vertex <code>foo(a, b, c)</code> is assigned a <strong>VID</strong> <code>SHA-1(foo + a + b + c)</code>. Each rule execution vertex <code>r@x</code> with children <code>a, b, c</code> is assigned a <strong>RID</strong> <code>SHA-1(r + x + a + b + c)</code>. Provenance information is then stored in two tables:</p>
+<ol style="list-style-type: decimal">
+<li><code>prov(@Loc, VID, RID, RLoc)</code>, and</li>
+<li><code>ruleExec(@RLoc, RID, R, VIDList)</code></li>
+</ol>
+<p>where</p>
+<ul>
+<li><code>prov(@LOC, VID, RID, RLoc)</code> signifies that the tuple with VID <code>VID</code> resides at <code>LOC</code> and can be derived using the rule with RID <code>RID</code> which resides at <code>RLoc</code>; and</li>
+<li><code>ruleExec(@RLoc, RID, R, VIDList)</code> signifies that the rule with RID <code>RID</code> resides at <code>RLoc</code>, has label <code>R</code>, and has children with VIDs in <code>VIDList</code>.</li>
+</ul>
+<p>With these two tables, we can answer provenance queries (more on this later). When tuples are sent from one node to another, they include the <code>RID</code> and <code>RLoc</code> of the rule that derived them. This approach is known as the <strong>reference-based approach</strong> to network provenance. In alternative approach, known as the <strong>value-based approach</strong>, each tuple carries around all entries of <code>prov</code> and <code>ruleExec</code> needed to form its provenance.</p>
+<h2 id="distributed-provenance-maintenance">Distributed Provenance Maintenance</h2>
+<p>Given an NDLog program, ExSPAN rewrites each inference rule into a set of inference rules which maintains the <code>prov</code> and <code>ruleExec</code> rules. That is, whenever a tuple is inserted or deleted, the corresponding entries of <code>prov</code> and <code>ruleExec</code> are simultaneously updated. The specifics of the rewrite are complicated; see the paper for details.</p>
+<h2 id="querying-provenance">Querying Provenance</h2>
+<p>Users express a provenance query in the form <code>eProvQuery(@X, QID, VID, Ret)</code> which returns the provenance of tuple with VID <code>VID</code> residing at <code>X</code> to the node <code>Ret</code>. The query is also given a unique identifier <code>QID</code>. ExSPAN can answer a query like this with 10 NDLog rules (see paper for details). These ten rules are parametrized on three predicates—<code>f_pEDB</code>, <code>f_pIDB</code>, and <code>f_pRULE</code>—which users can use to customize the result of the query. For example, they can use them to return provenance semirings or return a count of the number of derivations for a particular tuple.</p>
+<h2 id="query-optimization">Query Optimization</h2>
+<p>ExSPAN performs optimizations to reduce the latency and bandwidth requirements of provenance queries.</p>
+<ul>
+<li>The (intermediate) results of queries are cached so that similar queries can avoid redundant work. When tuples are inserted or deleted, the corresponding cache entries are invalidated.</li>
+<li>By default, query processing performs a breadth-first search. A depth-first search can be more efficient when evaluating threshold queries like “does the number of derivations exceed 10?”</li>
+<li>ExSPAN can sometimes condense provenance semiring using BDDs.</li>
+</ul>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        skipTags: ['script', 'noscript', 'style', 'textarea'],
+      },
+      messageStyle: "none",
+    });
+  </script>
+  </div>
+</body>
+</html>
