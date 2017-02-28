@@ -1,5 +1,4 @@
-## [Experience with Processes and Monitors in Mesa (1980)](https://goo.gl/1TqQQM) ##
-**Summary.**
+# [Experience with Processes and Monitors in Mesa (1980)](https://scholar.google.com/scholar?cluster=492255216248422903)
 In 1980, synchronization primitives like semaphores, monitors, and condition
 variables had been well studied in the literature, but there weren't any large
 systems implementing them. Mesa was a programming language that was being
@@ -29,9 +28,11 @@ exposed a number of previously undiscussed issues:
 Mesa allowed an arbitrary function call to be forked and run by a separate
 thread and eventually joined:
 
-    p <- fork ReadLine[terminal]
-    ...
-    buffer <- join p
+```
+p <- fork ReadLine[terminal]
+...
+buffer <- join p
+```
 
 Moreover, if a forked thread was not intended to be joined, it could instead be
 detached via `detach[p]`. This fork/join style process management had a number
@@ -42,11 +43,12 @@ lots of opportunities for dangling references.
 Monitors are objects that only allow a single thread to be executing one of its
 functions at any given time. They unify data, synchronization of the data, and
 access of the data into one lexical bundle. Mesa monitors included public
-*entry preocedures* and private *internal procedures* that operated with the
-monitor locked as well as public *external procedures* that operated without
-locking the monitor. Monitors, in conjunction with condition variables, were
-used to maintain an invariant about an object that was true upon entering and
-exiting any of the monitor's methods. Monitors also lead to potential deadlocks:
+**entry preocedures** and private **internal procedures** that operated with
+the monitor locked as well as public **external procedures** that operated
+without locking the monitor. Monitors, in conjunction with condition variables,
+were used to maintain an invariant about an object that was true upon entering
+and exiting any of the monitor's methods. Monitors also lead to potential
+deadlocks:
 
 - Two monitor methods could wait for one another.
 - Two different monitors could enter each other.
@@ -170,3 +172,7 @@ checks.
 
 Mesa was evaluated by Pilot (an OS), Violet (a distributed calendar), and
 Gateway (a router).
+
+<link href='../default_highlight.css' rel='stylesheet'>
+<script src="../highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>

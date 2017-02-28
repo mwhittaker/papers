@@ -87,4 +87,10 @@ code {
 
 table {
   margin-bottom: 1.15em;
+  border-collapse: collapse;
+}
+
+td, th {
+  padding: 5pt;
+  border: 1.5pt solid black;
 }

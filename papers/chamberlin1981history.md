@@ -1,20 +1,20 @@
-## [A History and Evaluation of System R (1981)](https://scholar.google.com/scholar?cluster=9472628621431764243&hl=en&as_sdt=0,5)
-**Summary.**
+# [A History and Evaluation of System R (1981)](https://scholar.google.com/scholar?cluster=9472628621431764243)
+## Summary
 Ed Codd proposed the relational model in 1970. As opposed to the navigational
-data models that came before it, the relational model boasted *data
-independence*: the ability for data storage and access methods to change
+data models that came before it, the relational model boasted **data
+independence**: the ability for data storage and access methods to change
 independently of applications. Some worried that data independence necessitated
 poor performance. System R was one of the first relation databases and proved
 that the relational model could be implemented efficiently.
 
-System R development proceeded in three phases. *Phase 0* (1974-1975) was a
+System R development proceeded in three phases. **Phase 0** (1974-1975) was a
 single-user PL/I interpreter prototype that processed a subset of SQL (e.g. no
 joins) using the XRM access method. The Phase 0 prototype was always intended
 to be thrown away. Instead, the focus was on tuning the user interface SQL.
 User studies and interviews were performed to increase the usability and
 understandability of SQL. Every tuple in the database was labelled with a TID
 which contained a page number. Each tuple contained pointers into separate
-domains, and *inversions* existed to map domain values to TIDs. The Phase 0
+domains, and **inversions** existed to map domain values to TIDs. The Phase 0
 query optimizer aimed to minimize the number of fetched tuples and would
 perform tricks like TID intersection to evaluate conjunctions. The prototype
 also introduced the design that the system catalog should be stored as
@@ -32,13 +32,13 @@ relations. Phase 0 brought about the following ideas:
 5. The query optimizer was complicated; more care should be given towards
    simpler and more common queries.
 
-*Phase 1* ranged from 1976 to 1977 and included the implementation of a full
+**Phase 1** ranged from 1976 to 1977 and included the implementation of a full
 blown multi-user relational database. Phase 1 was divided into two pieces:
 
-1. The *Relational Data System* (RDS) was an optimizing SQL processor
+1. The **Relational Data System** (RDS) was an optimizing SQL processor
    responsible for query optimization.
-2. The *Research Storage System* (RSS) was the access method that replaced XRM
-   and was responsible for things like locking and logging.
+2. The **Research Storage System** (RSS) was the access method that replaced
+   XRM and was responsible for things like locking and logging.
 
 Users could query System R using interactive queries or by embedding SQL
 queries in PL/I or Cobol. A preprocessor would compile the embedded SQL queries
@@ -72,7 +72,7 @@ but this was abandoned because it was (1) difficult to check for predicate
 disjointness, (2) predicates were sometimes falsely marked as overlapping, and
 (3) predicate locking broke the abstraction barrier of the RSS.
 
-*Phase 2* was a two-year period in which System R was evaluated. Users
+**Phase 2** was a two-year period in which System R was evaluated. Users
 generally enjoyed the uniformity of SQL, and their recommendations led to the
 introduction of EXISTS, LIKE, prepared statements, and outer joins. The query
 optimizer was evaluated assuming that data was uniformly distributed and that
@@ -83,25 +83,26 @@ uncommitted wasn't implemented as fast as it should have been. Read committed
 had more overhead than expected. Serializable transactions ended up being the
 most commonly used.
 
-**Commentary.**
+## Commentary
 System R introduced a bevy of influential and perennial ideas in the field of
 databases. Unix introduced a bevy of influential and perennial ideas in the
 field of operating systems. It's no coincidence that there are a striking
 number of system design principles that System R and Unix---as presented in
 *The Unix Time-Sharing System*---share:
 
-1. *Unified Abstractions.* Unix unified the file and I/O device abstraction
+1. **Unified Abstractions.** Unix unified the file and I/O device abstraction
    into a single interface. System R unified the table and catalog/metadata API
    into a single interface (i.e. everything is a relation). System R also
    unifed SQL as the query language used for ad-hoc queries, program-embeded
    queries, and view definitions. System R's decision to use relations to
    represent the catalog can also be seen as a form of dogfooding.
-2. *Simple is Better.* Unix started as Ken Thompson's pet project as an effort
-   to make development simpler and more enjoyable. Unix's simplicity stuck and
-   was one of its selling points. Similarly, System R spent a considerable
-   amount of effort simplifying the SQL interface to make it as easy to use as
-   possible. If a system's interface is too complicated, nobody will use it.
-3. *Performance isn't Everything.* Thompson and Ritchie implemented Unix in C
+2. **Simple is Better.** Unix started as Ken Thompson's pet project as an
+   effort to make development simpler and more enjoyable. Unix's simplicity
+   stuck and was one of its selling points. Similarly, System R spent a
+   considerable amount of effort simplifying the SQL interface to make it as
+   easy to use as possible. If a system's interface is too complicated, nobody
+   will use it.
+3. **Performance isn't Everything.** Thompson and Ritchie implemented Unix in C
    instead of assembly despite the fact that the kernel size increased by one
    third because C greatly improved the readability and maintainability of the
    system. Similarly, the System R paper comments that the relational model may
@@ -111,4 +112,3 @@ number of system design principles that System R and Unix---as presented in
    than hand-written assembly and optimized queries are likely faster than
    hand-optimized ones. This is an example of another systems principle of
    favoring higher-level declarative APIs which leave room for optimization.
-

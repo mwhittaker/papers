@@ -2,9 +2,9 @@
 - [x] `liu1973scheduling.md`
 - [x] `ritchie1978unix.md`
 - [x] `gray1976granularity.md`
-- [ ] `lauer1979duality.md`
-- [ ] `lampson1980experience.md`
-- [ ] `chamberlin1981history.md`
+- [x] `lauer1979duality.md`
+- [x] `lampson1980experience.md`
+- [x] `chamberlin1981history.md`
 - [ ] `mckusick1984fast.md`
 - [ ] `saltzer1984end.md`
 - [ ] `agrawal1987concurrency.md`

@@ -1,10 +1,9 @@
-## [On the Duality of Operating System Structures (1979)](https://scholar.google.com/scholar?cluster=12379045883699292297&hl=en&as_sdt=0,5)
-**Summary.**
+# [On the Duality of Operating System Structures (1979)](https://scholar.google.com/scholar?cluster=12379045883699292297&hl=en&as_sdt=0,5)
 Lauer and Needham explain the duality in expressiveness and performance between
 
-- *message-oriented* concurrency models in which there are a small number of
+- **message-oriented** concurrency models in which there are a small number of
   fixed tasks that communicate explicitly, and
-- *process-oriented* concurrency models in which there are a larger number of
+- **process-oriented** concurrency models in which there are a larger number of
   dynamic processes that share memory.
 
 Message-oriented systems can be characterized by the following hallmarks,
@@ -51,4 +50,3 @@ identical blocking and scheduling mechanism, then the two models lead to
 identical performance as well. Since the choice of model does not affect the
 user or implementor, the decision of which model to use should be based on the
 architecture of the underlying hardware.
-
