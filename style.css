@@ -94,3 +94,9 @@ td, th {
   padding: 5pt;
   border: 1.5pt solid black;
 }
+
+blockquote {
+  padding-left: 1em;
+  color: #777;
+  border-left: 0.25em solid #ddd;
+}
