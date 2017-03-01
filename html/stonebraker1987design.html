@@ -8,14 +8,14 @@
 
 <body>
   <div id="container">
-<h2 id="the-design-of-the-postgres-storage-system-1987"><a href="TODO">The Design of the POSTGRES Storage System (1987)</a></h2>
-<p><strong>Summary.</strong> POSTGRES, the ancestor of PostgreSQL, employed a storage system with three interesting characteristics:</p>
+<h1 id="the-design-of-the-postgres-storage-system-1987"><a href="https://scholar.google.com/scholar?cluster=6675294870941893293">The Design of the POSTGRES Storage System (1987)</a></h1>
+<p>POSTGRES, the ancestor of PostgreSQL, employed a storage system with three interesting characteristics:</p>
 <ol style="list-style-type: decimal">
 <li>No write-ahead logging (WAL) was used. In fact, there was no recovery code at all.</li>
 <li>The entire database history was recorded and archived. Updates were converted to updates, and data could be queried arbitrarily far in the past.</li>
 <li>The system was designed as a collection of asynchronous processes, rather than a monolithic piece of code.</li>
 </ol>
-<p>Transactions were sequentially assigned 40-bit transaction identifiers (XID) starting from 0. Each operation in a transaction was sequentially assigned a command identifiers (CID). Together the XID and CID formed a 48 bit interaction identifier (IID). Each IID was also assigned a two-bit transaction status and all IIDs were stored in a transaction log with a most recent <em>tail</em> of uncommitted transactions and a <em>body</em> of completed transactions.</p>
+<p>Transactions were sequentially assigned 40-bit transaction identifiers (XID) starting from 0. Each operation in a transaction was sequentially assigned a command identifiers (CID). Together the XID and CID formed a 48 bit interaction identifier (IID). Each IID was also assigned a two-bit transaction status and all IIDs were stored in a transaction log with a most recent <strong>tail</strong> of uncommitted transactions and a <strong>body</strong> of completed transactions.</p>
 <p>Every tuple in a relation was annotated with</p>
 <ul>
 <li>a record id,</li>
@@ -23,19 +23,19 @@
 <li>a max XID, CID and timestamp, and</li>
 <li>a forward pointer.</li>
 </ul>
-<p>The min values were associated with the transaction that created the record, and the max values were associated with the transaction that updated the record. When a record was updated, a new tuple was allocated with the same record id but updated min values, max values, and forward pointers. The new tuples were stored as diffs; the original tuple was the <em>anchor point</em>; and the forward pointers chained together the anchor point with its diffs.</p>
+<p>The min values were associated with the transaction that created the record, and the max values were associated with the transaction that updated the record. When a record was updated, a new tuple was allocated with the same record id but updated min values, max values, and forward pointers. The new tuples were stored as diffs; the original tuple was the <strong>anchor point</strong>; and the forward pointers chained together the anchor point with its diffs.</p>
 <p>Data could be queried at a particular timestamp or in a range of timestamps. Moreover, the min and max values of the records could be extracted allowing for queries like this:</p>
 <pre><code>SELECT Employee.min_timestamp, Eployee.max_timestamp, Employee.id
 FROM Employee[1 day ago, now]
 WHERE Employee.Salary &gt; 10,000</code></pre>
 <p>The timestamp of a transaction was not assigned when the transaction began. Instead, the timestamps were maintained in a TIME relation, and the timestamps in the records were left empty and asynchronously filled in. Upon creation, relations could be annotated as</p>
 <ul>
-<li><em>no archive</em> in which case timestamps were never filled in,</li>
-<li><em>light archive</em> in which timestamps were read from a TIME relation, or</li>
-<li><em>heavy archive</em> in which timestamps were lazily copied from the TIME relation into the records.</li>
+<li><strong>no archive</strong> in which case timestamps were never filled in,</li>
+<li><strong>light archive</strong> in which timestamps were read from a TIME relation, or</li>
+<li><strong>heavy archive</strong> in which timestamps were lazily copied from the TIME relation into the records.</li>
 </ul>
 <p>POSTGRES allowed for any number of indexes. The type of index (e.g. B-tree) and the operations that the index efficiently supported were explicitly set by the user.</p>
-<p>A <em>vacuum cleaner</em> process would, by instruction of the user, vacuum records stored on disk to an archival storage (e.g. WORM device). The archived data was allowed to have a different set of indexes. The vacuum cleaning proceeded in three steps:</p>
+<p>A <strong>vacuum cleaner</strong> process would, by instruction of the user, vacuum records stored on disk to an archival storage (e.g. WORM device). The archived data was allowed to have a different set of indexes. The vacuum cleaning proceeded in three steps:</p>
 <ol style="list-style-type: decimal">
 <li>Data was archived and archive indexes were formed.</li>
 <li>Anchor points were updated in the database.</li>

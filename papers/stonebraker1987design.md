@@ -1,5 +1,4 @@
-## [The Design of the POSTGRES Storage System (1987)](TODO) ##
-**Summary.**
+# [The Design of the POSTGRES Storage System (1987)](https://scholar.google.com/scholar?cluster=6675294870941893293)
 POSTGRES, the ancestor of PostgreSQL, employed a storage system with three
 interesting characteristics:
 
@@ -14,8 +13,8 @@ Transactions were sequentially assigned 40-bit transaction identifiers (XID)
 starting from 0. Each operation in a transaction was sequentially assigned a
 command identifiers (CID). Together the XID and CID formed a 48 bit interaction
 identifier (IID). Each IID was also assigned a two-bit transaction status and
-all IIDs were stored in a transaction log with a most recent *tail* of
-uncommitted transactions and a *body* of completed transactions.
+all IIDs were stored in a transaction log with a most recent **tail** of
+uncommitted transactions and a **body** of completed transactions.
 
 Every tuple in a relation was annotated with
 
@@ -28,8 +27,8 @@ The min values were associated with the transaction that created the record,
 and the max values were associated with the transaction that updated the
 record. When a record was updated, a new tuple was allocated with the same
 record id but updated min values, max values, and forward pointers. The new
-tuples were stored as diffs; the original tuple was the *anchor point*; and the
-forward pointers chained together the anchor point with its diffs.
+tuples were stored as diffs; the original tuple was the **anchor point**; and
+the forward pointers chained together the anchor point with its diffs.
 
 Data could be queried at a particular timestamp or in a range of timestamps.
 Moreover, the min and max values of the records could be extracted allowing for
@@ -44,16 +43,16 @@ Instead, the timestamps were maintained in a TIME relation, and the timestamps
 in the records were left empty and asynchronously filled in. Upon creation,
 relations could be annotated as
 
-- *no archive* in which case timestamps were never filled in,
-- *light archive* in which timestamps were read from a TIME relation, or
-- *heavy archive* in which timestamps were lazily copied from the TIME relation
-  into the records.
+- **no archive** in which case timestamps were never filled in,
+- **light archive** in which timestamps were read from a TIME relation, or
+- **heavy archive** in which timestamps were lazily copied from the TIME
+  relation into the records.
 
 POSTGRES allowed for any number of indexes. The type of index (e.g. B-tree) and
 the operations that the index efficiently supported were explicitly set by the
 user.
 
-A *vacuum cleaner* process would, by instruction of the user, vacuum records
+A **vacuum cleaner** process would, by instruction of the user, vacuum records
 stored on disk to an archival storage (e.g. WORM device). The archived data was
 allowed to have a different set of indexes. The vacuum cleaning proceeded in
 three steps:

@@ -1,6 +1,5 @@
-## [End-to-End Arguments in System Design (1984)](TODO) ##
-**Summary.**
-This paper presents the *end-to-end argument*:
+# [End-to-End Arguments in System Design (1984)](https://scholar.google.com/scholar?cluster=9463646641349983499)
+This paper presents the **end-to-end argument**:
 
 > The function in question can completely and correctly be implemented only
 > with the knowledge and help of the application standing at the end points of
@@ -45,4 +44,3 @@ the odds of a successful delivery become increasingly small making it
 prohibitively expensive for the application alone to ensure reliable delivery.
 The network may be able to perform a small amount of work to help guarantee
 reliable delivery making the file transfer more efficient.
-

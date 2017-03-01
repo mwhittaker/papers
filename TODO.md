@@ -5,10 +5,10 @@
 - [x] `lauer1979duality.md`
 - [x] `lampson1980experience.md`
 - [x] `chamberlin1981history.md`
-- [ ] `mckusick1984fast.md`
-- [ ] `saltzer1984end.md`
-- [ ] `agrawal1987concurrency.md`
-- [ ] `stonebraker1987design.md`
+- [x] `mckusick1984fast.md`
+- [x] `saltzer1984end.md`
+- [x] `agrawal1987concurrency.md`
+- [x] `stonebraker1987design.md`
 - [ ] `herlihy1990linearizability.md`
 - [ ] `stonebraker1991postgres.md`
 - [ ] `golub1992microkernel.md`
