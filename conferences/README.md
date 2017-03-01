@@ -1,0 +1,8 @@
+- [ ] CIDR
+- [ ] SIGMOD
+- [ ] SOCC
+- [ ] VLDB
+- [ ] EuroSys
+- [ ] NSDI
+- [ ] OSDI
+- [ ] USENIX ATC
