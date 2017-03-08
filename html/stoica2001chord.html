@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h2 id="chord-a-scalable-peer-to-peer-lookup-service-for-internet-applications-2001"><a href="https://goo.gl/AOCTas">Chord: A Scalable Peer-to-peer Lookup Service for Internet Applications (2001)</a></h2>
 <p><strong>Summary.</strong> Chord is a peer-to-peer lookup service—today, we’d call it a distributed hash table—mapping keys to servers that provides load balancing, decentralization, scalability, availability, and flexible key naming. In a Chord cluster with <code>N</code> nodes, each server stores O(log <code>N</code>) data, lookup takes O(log <code>N</code>) messages, and node joining requires O(log <code>N</code> * log <code>N</code>) messages. Note that Chord maps keys to <em>servers</em>, not <em>values</em>, but a key-value interface can easily be built on top of Chord. In fact, Chord leaves all higher level functionality, like caching and replication, to the user.</p>

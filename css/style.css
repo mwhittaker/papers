@@ -10,6 +10,21 @@ body {
   font-size: 18px;
 }
 
+#header {
+  background-color: #00afff;
+  color: white;
+  font-size: 24pt;
+  font-weight: bold;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  text-align: center;
+}
+
+#header a {
+  color: white;
+  text-decoration: none;
+}
+
 #container {
   padding-left: 1em;
   padding-right: 1em;
@@ -43,7 +58,7 @@ a:active, a:hover {color: #444; text-decoration: none; }
 
 h1 {
   line-height: 1;
-  margin-top: 1em;
+  margin-top: 0em;
   margin-bottom: 0.55em;
 }
 

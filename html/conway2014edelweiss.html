@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h1 id="edelweiss-automatic-storage-reclamation-for-distributed-programming">Edelweiss: Automatic storage reclamation for distributed programming</h1>
 <p>Shared mutable state is hard to reason about in distributed systems. As a result, many systems avoid shared mutable state in favor of having nodes accumulate immutable messages (or events) in a log and share the logs with other nodes. This paradigm is known as <em>Event Log Exchange</em> (ELE). While the ELE paradigm is often easier to reason about, the fact that event logs are perpetually growing makes it challenging to reclaim memory. Many existing storage systems write their own custom memory reclamation protocols. Edelweiss is a subset of Bloom. Edelweiss programs are written in the ELE style but can be automatically converted to a Bloom program which efficiently reclaims memory.</p>

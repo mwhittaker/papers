@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h2 id="dynamo-amazons-highly-available-key-value-store-2007"><a href="https://scholar.google.com/scholar?cluster=5432858092023181552&amp;hl=en&amp;as_sdt=0,5">Dynamo: Amazon’s Highly Available Key-value Store (2007)</a></h2>
 <p><strong>Overview.</strong> Amazon has a service-oriented infrastructure which consists of a large number of networked services, each with a strict <em>SLA</em>: a formal contract between the clients and server which guarantees the server meet certain performance benchmarks (e.g. 99.9% of responses are within 500 milliseconds). Amazon’s user-facing business model makes it more important to meet the SLAs by providing availability, scalability, and low-latency than it is to provide strong consistency. Dynamo is Amazon’s distributed higly-available eventually consistent zero-hop distributed hash table (a.k.a. key-value store) that uses consistent hashing, vector clocks, quorums, gossip, and more.</p>

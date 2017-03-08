@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h2 id="spark-sql-relational-data-processing-in-spark-2015"><a href="https://scholar.google.com/scholar?cluster=12543149035101013955&amp;hl=en&amp;as_sdt=0,5">Spark SQL: Relational Data Processing in Spark (2015)</a></h2>
 <p><strong>Summary.</strong> Data processing frameworks like MapReduce and Spark can do things that relational databases can’t do very easily. For example, they can operate over semi-structured or unstructured data, and they can perform advanced analytics. On the other hand, Spark’s API allows user to run arbitrary code (e.g. <code>rdd.map(some_arbitrary_function)</code>) which prevents Spark from performing certain optimizations. Spark SQL marries imperative Spark-like data processing with declarative SQL-like data processing into a single unified interface.</p>

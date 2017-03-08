@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h2 id="linearizability-a-correctness-condition-for-concurrent-objects-1990"><a href="https://scholar.google.com/scholar?cluster=7860241540823320465&amp;hl=en&amp;as_sdt=0,5">Linearizability: A Correctness Condition for Concurrent Objects (1990)</a></h2>
 <p>Imagine a distributed system implementing a single register. A client issues a read or write request to the system and then waits for a response. The distributed system receives multiple requests from multiple clients simultaneously. Ideally, the system executes these requests in parallel, but interleaving the request processing could return some weird and wonky responses to the clients. Intuitively, we’d like to make sure that our interleaved executions are equivalent to some simpler, sequential execution. This intuition is formalized as <em>linearizability</em>.</p>

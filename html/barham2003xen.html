@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h2 id="xen-and-the-art-of-virtualization-2003"><a href="https://scholar.google.com/scholar?cluster=11605682627859750448&amp;hl=en&amp;as_sdt=0,5">Xen and the Art of Virtualization (2003)</a></h2>
 <p><strong>Summary.</strong> Many virtual machine monitors, or <em>hypervisors</em>, aim to run unmodified guest operating systems by presenting a completely virtual machine. This lets any OS run on the hypervisor but comes with a significant performance penalty. Xen is an x86 hypervisor that uses <em>paravirtualization</em> to reduce virtualization overheads. Unlike with full virtualization, paravirtualization only virtualizes some components of the underlying machine. This paravirtualization requires modifications to the guest operating systems but not the applications running on it. Essentially, Xen sacrifices the ability to run unmodified guest operating systems for improved performance.</p>

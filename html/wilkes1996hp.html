@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h2 id="the-hp-autoraid-hierarchical-storage-system-1996"><a href="https://goo.gl/x8Ps2t">The HP AutoRAID hierarchical storage system (1996)</a></h2>
 <p><strong>Summary.</strong> The HP AutoRAID is a hierarchical storage system which caches write-active data using RAID-1 and stores write-inactive data using RAID-5. The main idea is that <a href="http://pages.cs.wisc.edu/~remzi/OSTEP/file-raid.pdf">RAID-1 has higher throughput and lower latency for random writes</a> but requires more storage than RAID-5. The AutoRAID system essentially introduces a new level in the memory hierarchy by using one RAID level (i.e. RAID-1) to cache another (i.e. RAID-5).</p>

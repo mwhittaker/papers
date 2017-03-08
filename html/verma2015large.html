@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h2 id="large-scale-cluster-management-at-google-with-borg-2015"><a href="https://scholar.google.com/scholar?cluster=18268680833362692042&amp;hl=en&amp;as_sdt=0,5">Large-scale cluster management at Google with Borg (2015)</a></h2>
 <p><strong>Summary.</strong> Borg is Google’s cluster manager. Users submit <em>jobs</em>, a collection of <em>tasks</em>, to Borg which are then run in a single <em>cell</em>, many of which live inside a single <em>cluster</em>. Borg jobs are either high priority latency-sensitive <em>production</em> jobs (e.g. user facing products and core infrastructure) or low priority <em>non-production</em> batch jobs. Jobs have typical properties like name and owner and can also express constraints (e.g. only run on certain architectures). Tasks also have properties and state their resource demands. Borg jobs are specified in BCL and are bundled as statically linked executables. Jobs are labeled with a priority and must operate within quota limits. Resources are bundled into <em>allocs</em> in which multiple tasks can run. Borg also manages a naming service, and exports a UI called Sigma to developers.</p>

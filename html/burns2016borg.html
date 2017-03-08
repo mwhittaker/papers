@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h2 id="borg-omega-and-kubernetes-2016"><a href="#borg-omega-and-kubernetes-2016">Borg, Omega, and Kubernetes (2016)</a></h2>
 <p><strong>Summary.</strong> Google has spent the last decade developing three container management systems. <em>Borg</em> is Google’s main cluster management system that manages long running production services and non-production batch jobs on the same set of machines to maximize cluster utilization. <em>Omega</em> is a clean-slate rewrite of Borg using more principled architecture. In Omega, all system state lives in a consistent Paxos-based storage system that is accessed by a multitude of components which act as peers. <em>Kubernetes</em> is the latest open source container manager that draws on lessons from both previous systems.</p>

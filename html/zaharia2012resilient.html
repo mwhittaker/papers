@@ -7,6 +7,9 @@
 </head>
 
 <body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
   <div id="container">
 <h2 id="resilient-distributed-datasets-a-fault-tolerant-abstraction-for-in-memory-cluster-computing-2012"><a href="TODO">Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing (2012)</a></h2>
 <p><strong>Summary.</strong> Frameworks like MapReduce made processing large amounts of data easier, but they did not leverage distributed memory. If a MapReduce was run iteratively, it would write all of its intermediate state to disk: something that was prohibitively slow. This limitation made batch processing systems like MapReduce ill-suited to <em>iterative</em> (e.g. k-means clustering) and <em>interactive</em> (e.g. ad-hoc queries) workflows. Other systems like Pregel did take advantage of distributed memory and reused the in-memory data across computations, but the systems were not general-purpose.</p>
