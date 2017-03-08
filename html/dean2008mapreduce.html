@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -36,15 +36,8 @@
 <li><em>Backup tasks.</em> Near the end of the computation, the master begins to reassign incomplete work to mitigate stragglers.</li>
 </ul>
 <p><strong>Refinements.</strong> - <em>Partition function.</em> Users can specify custom partition functions to replace the default (i.e. <code>hash(k) % R</code>). This is useful if, for example, users want to place logically grouped keys on the same reducer. - <em>Combiner function.</em> Users can specify a reduce function, known as a combiner, to run at the mapper. - <em>Input/output types.</em> There are a number of default input types (e.g. text, SSTable) and users can implement their own as well. - <em>Skipping bad records.</em> Sometimes a bug in the code causes a map or reduce function to deterministically crash. The MapReduce framework will inform workers to skip this task. Each worker registers a signal handler which sends a last-breathe UDP message to the master informing of the record which caused the crash. If the master sees multiple failures caused by the same record, it tells workers not to process it. - <em>Local execution.</em> The MapReduce framework supports a local execution to allow for easier debugging. - <em>Status information.</em> The master exports an HTTP server which includes a bunch of useful statistics and metadata. - <em>Counters.</em> The MapReduce framework also supports global counters which can be incremented and decremented by workers. The increments and decrements are aggregated by the master and are displayed on the master’s HTTP server.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

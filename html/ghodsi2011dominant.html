@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -102,15 +102,8 @@ x + 3y &lt;= 9
 </table>
 <p>Note that Asset Fairness does not provide Sharing Incentive and CEEI is not strategy proof. DRF does not provide Resource Monotonicity, but it can be shown that no resource allocation policy that satisfies sharing incentive and Pareto efficiency can provide resource monotonicity.</p>
 <p>Up until now, we’ve assumed continuous allocations. We can extend DRF to use discrete allocations for K machines where each machine has at least a max-task amount of resources. Here the max-task is <code>&lt;max d_i1, ..., max d_im&gt;</code>. It’s guaranteed that the difference in dominant share allocations between any two users is less than one max-task compared to the continuous case.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

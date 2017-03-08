@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -28,15 +28,8 @@
 <li><em>Stale replica detection.</em> Chunks are given increasing version numbers by the master whenever a lease is granted. This allows the server to detect stale replicas.</li>
 </ul>
 <p><strong>Fault Tolerance and Diagnosis.</strong> GFS achieves high availability by ensuring that masters and chunk servers can recover from failures quickly. It also replicates the master and provides read-only shadow masters that lag the real master. Data integrity is ensured with checksums.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

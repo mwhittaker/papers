@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -28,15 +28,8 @@
 <p>Heron implements TCP and Spout Backpressure. Each socket is associated with a queue whose size has a high and low watermark. If the size exceeds the high watermark, backpressure is applied until it drops below the low watermark.</p>
 <p><strong>Heron Instances.</strong> Each Heron instance runs a single JVM which runs a single task which makes debugging significantly easier. Heron instances cannot be single-threaded because slow user code could prevent things like metrics from being reported in a timely manner. So, Heron implements Heron Instances with two threads: a <em>Gateway Thread</em> and a <em>Task Execution Thread</em>. The Gateway Thread communicates with the Task Execution Thread and also communicates with the SM and MM. The Task Execution Thread runs user code and gathers metrics. The Gateway Thread communicates with the Task Execution Thread using a set of one-directional queues. The sizes of these queues can be adjusted to avoid bad GC.</p>
 <p><strong>Metrics Manager.</strong> The metrics manager, well, manages metrics. It reports metrics to the TM and to a Twitter monitoring system.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

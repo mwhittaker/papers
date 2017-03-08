@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -14,15 +14,8 @@
 <p>The most important feature of Unix was its file system. Ordinary files were simple arrays of bytes physically stored as 512-byte blocks: a rather simple design. Each file was given an inumber: an index into an ilist of inodes. Each inode contained metadata about the file and pointers to the actual data of the file in the form of direct and indirect blocks. This representation made it easy to support (hard) linking. Each file was protected with 9 bits: the same protection model Linux uses today. Directories were themselves files which stored mappings from filenames to inumbers. Devices were modeled simply as files in the <code>/dev</code> directory. This unifying abstraction allowed devices to be accessed with the same API. File systems could be mounted using the <code>mount</code> command. Notably, Unix didn’t support user level locking, as it was neither necessary nor sufficient.</p>
 <p>Processes in Unix could be created using a fork followed by an exec, and processes could communicate with one another using pipes. The shell was nothing more than an ordinary process. Unix included file redirection, pipes, and the ability to run programs in the background. All this was implemented using fork, exec, wait, and pipes.</p>
 <p>Unix also supported signals.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

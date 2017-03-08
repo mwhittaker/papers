@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -37,15 +37,8 @@
 <p>Since a candidate must receive a majority of votes and committed values have been replicated to a majority of nodes, a candidate must contact a node with all committed values during its election which will prevent it from being elected if it doesn’t have all the committed log entries.</p>
 <p>To prevent another subtle bug, leaders also do not directly commit values from previous terms. They only commit values from their own term which indirectly commits previous log entries from previous terms.</p>
 <p><strong>Cluster Membership Changes.</strong> A Raft cluster cannot be instantaneously switched from one configuration to another. For example consider a cluster moving from 3 to 5 nodes. It’s possible that two nodes are elected master for the same term which can lead to a safety violation. Instead, the cluster transitions to a <em>joint consensus</em> phase where decisions require a majority from both the old and new configuration. Once a majority of nodes accept the new configuration, the cluster can transition to it.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

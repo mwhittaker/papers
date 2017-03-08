@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -24,15 +24,8 @@
 </ul>
 <p>YARN is orchestrated by a per-cluster <em>Resource Manager</em> (RM) that tracks resource usage and node liveness, enforces allocation invariants, and arbitrates contention among tenants. <em>Application Masters</em> (AM) are responsible for negotiating resources with the RM and manage the execution of single job. AMs send ResourceRequests to the RM telling it resource requirements, locality preferences, etc. In return, the RM hands out <em>containers</em> (e.g. &lt;2GB RAM, 1 CPU&gt;) to AMs. The RM also communicates with Node Managers (NM) running on each node which are responsible for measuring node resources and managing (i.e. starting and killing) tasks. When a user want to submit a job, it sends it to the RM which hands a capability to an AM to present to an NM. The RM is a single point of failure. If it fails, it restores its state from disk and kills all running AMs. The AMs are trusted to be faul-tolerant and resubmit any prematurely terminated jobs.</p>
 <p>YARN is deployed at Yahoo where it manages roughly 500,000 daily jobs. YARN supports frameworks like Hadoop, Tez, Spark, Dryad, Giraph, and Storm.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

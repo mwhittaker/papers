@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -32,15 +32,8 @@
 <p>The fault tolerance of these jobs is provided by a mix of job retries, BigTable’s idempotent update semantics, and a watchdog that terminates divergent programs.</p>
 <p>Finally, a two-phase garbage collector tombstones rows that satisfy a garbage collection predicate and removes them one day later if they still match the predicate. Batch jobs do not process tombstoned rows.</p>
 <p>The Goods frontend includes dataset profile pages, dataset search driven by a handful of heuristics to rank datasets by importance, and teams dashboard.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

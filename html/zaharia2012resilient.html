@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -13,15 +13,8 @@
 <p><em>Spark</em> uses <em>Resilient Distributed Datasets</em> (RDDs) to perform general computations in memory. RDDs are immutable partitioned collections of records. Unlike pure distributed shared memory abstractions which allow for arbitrary fine-grained writes, RDDs can only be constructed using coarse-grained transformations from on-disk data or other RDDs. This weaker abstraction can be implemented efficiently. Spark also uses RDD lineage to implement low-overhead fault tolerance. Rather than persist intermediate datasets, the lineage of an RDD can be persisted and efficiently recomputed. RDDs could also be checkpointed to avoid the recomputation of a long lineage graph.</p>
 <p>Spark has a Scala-integrated API and comes with a modified interactive interpreter. It also includes a large number of useful <em>transformations</em> (which construct RDDs) and <em>actions</em> (which derive data from RDDs). Users can also manually specify RDD persistence and partitioning to further improve performance.</p>
 <p>Spark subsumed a huge number of existing data processing frameworks like MapReduce and Pregel in a small amount of code. It was also much, much faster than everything else on a large number of applications.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

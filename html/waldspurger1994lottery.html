@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -34,15 +34,8 @@
 <li><em>Synchronization resources.</em> The prototype implements lottery scheduled mutexes in which all threads blocked on the mutex transfer tickets to the thread who holds the mutex. When the mutex is released, a lottery is held to hand it off to one of the waiting threads. This type of mutex does not suffer from priority inversion.</li>
 <li><em>Space-shared resources.</em> Lottery scheduling can also be used to multiplex space. We run an inverse-lottery in which a loser, as opposed to a winner, is chosen. For example, if we need to allocate a physical page to back a virtual page, but all the virtual pages are taken, we run an inverse lottery to select a loser and flush the page to disk. Each transaction is chosen with probability <code>(1/(n-1))(1 - t/T)</code> where <code>n</code> is the number of clients, <code>t</code> is the number of tickets for a client, and <code>T</code> is the total number of tickets. The multiplier is a normalizing factor and the multiplicand is the inverse probability.</li>
 </ul>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

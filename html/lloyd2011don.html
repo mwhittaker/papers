@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -28,15 +28,8 @@
 </ol>
 <p><strong>Garbage Collection.</strong> There are miscellaneous pieces of metadata in COPS that can be garbage collected. For example, COPS-GT maintains many versions of each key-value pair so that a get transaction can issue a read request at older values. If we’re not careful, the size of this metadata could grow without bound. COPS bounds the duration of get transactions to some arbitrary time <code>T</code>, restarting any transactions that last longer than <code>T</code>. Then, once a new version of a value is written, the old ones can be garbage collected after roughly <code>T</code> amount of time.</p>
 <p><strong>Fault Tolerance.</strong> Fault tolerance is provided using chain-replication. If a data center goes down, data could be lost, but woe is the way of a highly available system.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

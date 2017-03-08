@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -32,15 +32,8 @@
 <li><em>Client or server coordination.</em> Instead of communicating with a load balancer, clients can periodically request membership information and route requests themselves.</li>
 <li><em>Balancing foreground and background.</em> Dynamo uses a resource controller to implement admission control for background tasks, preventing them from interfering with important foreground tasks.</li>
 </ul>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

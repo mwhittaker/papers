@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -48,15 +48,8 @@
 <p><em>Workers and Executors.</em> Each executor is a thread running in a JVM. Each worker process has a thread to receive tuples and thread to send tuples. The receiving thread multiplexes tuples to different tasks’ input queues. Each executor runs (1) a <em>user logic thread</em> which reads tuples from its input queue and processes them and (2) an <em>executor send thread</em> which puts outbound tuples in a global outbound queue.</p>
 <p><strong>Processing Semantics.</strong> Storm provides <em>at most once</em> and <em>at least once</em> semantics. Each tuple in the system is assigned a unique 64 bit identifier. When a bolt processes a tuple, it can generate new tuples. Each of these tuples is also given a unique identifier. The lineage of each tuple is tracked in a lineage tree. When a tuple leaves the system, all bolts that contributed to it are acknowledged and can retire their buffered output. Storm implements this using a memory-efficient representation that uses bitwise XORs.</p>
 <p><strong>Commentary.</strong> The paper doesn’t mention stateful operators.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

@@ -173,6 +173,6 @@ checks.
 Mesa was evaluated by Pilot (an OS), Violet (a distributed calendar), and
 Gateway (a router).
 
-<link href='../default_highlight.css' rel='stylesheet'>
-<script src="../highlight.pack.js"></script>
+<link href='../css/default_highlight.css' rel='stylesheet'>
+<script src="../js/highlight.pack.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>

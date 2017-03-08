@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -64,15 +64,8 @@ p_2: {} -[v(b)]-&gt; {v(b)} ------------------&#39;</code></pre>
 <p>Calls to <code>u</code> must be immediately preceded by calls to <code>t</code>. Op-based causal histories are defined similarly to state-based causal histories where <code>t</code> behaves like <code>q</code> and <code>m</code> is now missing. The definition of happens-before and concurrent operations extends naturally from earlier. An op-based object whose updates commute is a CvRDT. If messages are delivered exactly once, message delivery respect the causal order, then CvRDTs are SEC.</p>
 <p>Turns out, CvRDTs and CmRDTs are equivalent in that they can simulate one another. Moreover SEC is incomparable to sequential consistency. Consider an add-wins set CRDT in which one process performs <code>add(e); remove(e')</code> and another performs <code>add(e'); remove(e)</code>. When the two sets are merged, they contain <code>e</code> and <code>e'</code>, but under sequential consistency, one of the removes must occur last.</p>
 <p>Example CRDTs include vector clocks, increment-only counters, increment-decrement counters add-only sets, add-remove sets, maps, logs, and graphs.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

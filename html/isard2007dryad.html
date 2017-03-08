@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -55,15 +55,8 @@ ON l.objID = n.neighborObjID
 <p>Each vertex in a graph is put into a stage. Each stage has a stage manager which manages the execution of the stage. The stage managers do things like re-execute tasks to avoid stragglers.</p>
 <p>The Dryad graph can also be changed at runtime to support optimization like tree aggregation or partial aggregation.</p>
 <p><strong>Building on Dryad.</strong> Dryad provides a rather low-level C++ interface. Other teams have developed higher-level interfaces to Dryad including a Nebual scripting language, integration with a RDBMS, and hope for integration with SQL or LINQ.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

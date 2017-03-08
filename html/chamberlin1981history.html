@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -38,15 +38,8 @@
 <li><strong>Simple is Better.</strong> Unix started as Ken Thompson’s pet project as an effort to make development simpler and more enjoyable. Unix’s simplicity stuck and was one of its selling points. Similarly, System R spent a considerable amount of effort simplifying the SQL interface to make it as easy to use as possible. If a system’s interface is too complicated, nobody will use it.</li>
 <li><strong>Performance isn’t Everything.</strong> Thompson and Ritchie implemented Unix in C instead of assembly despite the fact that the kernel size increased by one third because C greatly improved the readability and maintainability of the system. Similarly, the System R paper comments that the relational model may never exceed the performance of a hand-optimized navigational database, but the abstraction it provides is worth the cost. Somewhat comically, today’s compilers and query optimizers are so good, compiled C is likely smaller than hand-written assembly and optimized queries are likely faster than hand-optimized ones. This is an example of another systems principle of favoring higher-level declarative APIs which leave room for optimization.</li>
 </ol>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

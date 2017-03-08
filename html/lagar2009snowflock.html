@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -19,15 +19,8 @@
 <li>Finally, parent and children VMs often access the same code and data. SnowFlock takes advantage of this data locality by prefetching; when one child VM requests a page of memory, the parent multicasts it to all children.</li>
 </ol>
 <p>Furthermore, the same copy-on-write techniques to maintain an immutable snapshot of memory are used on the disk. And, the parent and children virtual machines are connected by a virtual subnet in which each child is given an IP address based on its unique id.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

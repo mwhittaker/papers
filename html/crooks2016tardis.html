@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -67,15 +67,8 @@ func merge()
     t.commit(SerializabilityConstraint)</code></pre>
 <p><strong>Design and Implementation.</strong> When a transaction begins, TARDiS performs a BFS from the leaves of the state DAG to find the first state satisfying the begin constraint. When a transaction is committed, TARDiS walks down the state DAG as far as possible until a state is reached that doesn’t satisfy the end constraint, branching if necessary. Branches are represented as a set of (b, i) pairs to indicate the bth child of the ith node. Keys are mapped to a topologically sorted list of versions used during reading.</p>
 <p>The garbage collector performs DAG compression, eliminating unneeded states in the state DAG. It also prunes record unneeded record versions after DAG compression.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -34,15 +34,8 @@
 </ol>
 <p>There are three forms of secure bindings. First are hardware mechanism like the TLB entries or screens in which each pixel is tagged with a process. Second are software mechanisms like TLB caching or packet filters. Third is downloading and executing code using type-safe languages, interpretation, or sandboxing. Exokernels can download Application-Specific Safe Handlers (ASHes). 2. <em>Visible resource revocation.</em> In traditional operating systems, resource revocation is made invisible to applications. For example, when an application’s page is swapped to disk, it is not notified. The exokernel makes resource revocation visible by notifying the libOS. For example, each libOS is notified when its quantum is over. This allows it do things like only store the registers it needs. 3. <em>Abort protocol.</em> If a libOS is misbehaving and not responding to revocation requests, the exokernel can forcibly remove allocations. Naively, it could kill the libOS. Less naively, ti can simply remove all secure bindings.</p>
 <p>The paper also presents the Aegis exokernel and the ExOS library operating system.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

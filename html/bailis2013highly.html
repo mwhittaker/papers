@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -17,15 +17,8 @@
 </ol>
 <p>Second, are weaker consistency models consistent enough? In short, yeah probably. In a survey of databases, Bailis finds that many do not employ serializability by default and some do not even provide full serializability. Bailis also finds that four of the five transactions in the TPC-C benchmark can be implemented with highly available transactions.</p>
 <p>After defining availability, Bailis presents the taxonomy of which consistency can be implemented as HATs, and also argues why some fundamentally cannot. He also performs benchmarks on AWS to show the performance benefits of HAT.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

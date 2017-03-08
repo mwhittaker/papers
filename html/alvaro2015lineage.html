@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -58,15 +58,8 @@ foo(A,B,T+1) :- foo(B,A,T), Clock(B,A,T)</code></pre></li>
 </ul>
 <p>It then rewrites the Datalog program to maintain its own provenance graph, and extracts lineage from the graph via recursive queries that walk the graph.</p>
 <p>Given an execution of the Datalog program, Molly generates a CNF formula where the disjuncts inside each conjunct <code>x1 or .. or xn</code> represent a message drop or node failure that would invalidate a particular derivation. If all derivations can be invalidated, then the formula is unsatisfiable and the program is fault-tolerant. If the formula is satisfiable, then each satisfied conjunct represents a counterexample of the derivation. Molly uses a SMT solver to solve these formulas.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

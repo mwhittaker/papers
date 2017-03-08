@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -59,15 +59,8 @@ m_priority_queue_neg(X, P)@next &lt;-
 <p>Dedalus is a superset of Dedalus0 that introduces asynchronous choice. Intuitively, Dedalus introduces a third <em>asynchronous</em> type of rule that allows the head’s timestamp to be a non-deterministic value, even values that are earlier than the timestamp of the body! In addition, Dedalus introduces horizontal partitioning by designating the first column of a predicate to be a <em>location specifier</em>. Entanglement:</p>
 <pre><code>p(A, B, N)@async &lt;- p(A, B)@N</code></pre>
 <p>can be used to implement things like Lamport clocks.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

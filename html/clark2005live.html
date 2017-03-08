@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -34,15 +34,8 @@
 </ol>
 <p>A higher transfer bandwidth reduces the downtime of migration but interferes with active services running on the machines. Conversely, a lower transfer bandwidth increases the downtime of migration but does not interfere as much with active services. This paper uses a dynamic rate limiting scheme. An administrator sets a lower and upper bandwidth limit. Transfer begins at the lower limit. The next iteration uses the estimated page dirtying rate from the last round plus a constant. This process terminates when the upper limit is reached or there is not much memory left to transfer. Moreover, pages that are repeatedly dirtied are not pre-copied.</p>
 <p>Migration can also take advantage of paravirtualization. OSes can sleep processes that write a lot, and they can report which pages are free to Xen to limit a full memory scan.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

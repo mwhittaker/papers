@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -137,20 +137,13 @@ NUM_CONSUMERS = <span class="dv">2</span>
 <p>Threads waiting on a condition variable could also be awoken by a timeout, an abort, or a broadcast (e.g. <code>notify_all</code>).</p>
 <p>Mesa’s implementation was divided between the processor, a runtime, and the compiler. The processor was responsible for process management and scheduling. Each process was on a ready queue, monitor lock queue, condition variable queue, or fault queue. The runtime was responsible for providing the fork/join interface. The compiler performed code generation and a few static sanity checks.</p>
 <p>Mesa was evaluated by Pilot (an OS), Violet (a distributed calendar), and Gateway (a router).</p>
-<link href='../default_highlight.css' rel='stylesheet'>
-<script src="../highlight.pack.js"></script>
+<link href='../css/default_highlight.css' rel='stylesheet'>
+<script src="../js/highlight.pack.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
 
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

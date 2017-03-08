@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -47,15 +47,8 @@
 <p>When <code>S</code> fails, <code>S-</code> must sent <code>Send_S-</code> to <code>S+</code> before it begins forwarding new updates. Doing this preserves the Update Propagation Invariant.</p>
 <p>When a node fails, the number of non-crashed nodes in the chain decreases. The fewer the nodes, the more likely it is to lose availability. Thus, it is desirable to add nodes to the chain. A new node can be added anywhere in the chain, but it’s easiest to do at the end. The new tail receives the history from the old tail. While this is happening, the old tail is free to process updates, so long as it records them in <code>Sent_i</code>. When the new tail is ready, the old tail forwards the pending operations and the master informs the servers and clients of the new node.</p>
 <p><strong>Primary/Backup Protocols.</strong> In a Primary/Backup system, a single master replicates operations to a set of backups in parallel. Chain replication is similar to primary/backup techniques, but there are a few differences. First, a query at a primary may need to stall waiting for a pending update to be acknowledged by a backup. With chain replication, queries never stall. On the other hand, chain replication has much higher update latency that primary/backup systems. Moreover, when nodes in a chain replicated system fail, there is typically fewer messages that have to be sent to resolve the failure compared to when a node fails in a primary/backup system.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

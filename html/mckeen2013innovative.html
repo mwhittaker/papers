@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -37,15 +37,8 @@
 | &#39;.....&#39;         &#39;.....&#39; &#39;.....&#39; &#39;.....&#39;
 +--------------------------------------------</code></pre>
 <p>In order to page an EPC page to main memory, all cached translations that point to it must first be cleared. Then, the page is encrypted. A nonce, called a version, is created for the page and put into a special <em>Version Array</em> (VA) page in the EPC. A MAC is taken of the encrypted contents, the version, and the page’s metadata and is stored with the file in main memory. When the page is paged back into the EPC, the MAC is checked against the version in the VA before the VA is cleared.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>

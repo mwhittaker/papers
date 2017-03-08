@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Papers</title>
-  <link href='../style.css' rel='stylesheet'>
+  <link href='../css/style.css' rel='stylesheet'>
   <meta name=viewport content="width=device-width, initial-scale=1">
 </head>
 
@@ -38,15 +38,8 @@
 <p>For (a), if the load decreases the low watermark, nodes are removed from the system. If the load exceeds the high watermark, nodes are added to the system.</p>
 <p>For (b), we can make a perfect decision using a integer linear program. The program has an indicator variable for <code>x_ij</code> to assign each hot tuple <code>i</code> to node <code>j</code> and an indicator variable <code>y_ij</code> to assign every cold block <code>i</code> to node <code>j</code>. Constraints ensure that assignments make sense, load is balanced, and not too many tuples are moved.</p>
 <p>The integer linear program solves the problem exactly, but is expensive. E-Store uses a couple of approximation algorithms to approximate the integer linear program solution.</p>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea'],
-      },
-      messageStyle: "none",
-    });
-  </script>
   </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
 </body>
 </html>
