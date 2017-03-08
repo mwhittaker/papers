@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<p hidden>
+$\newcommand{\fire}{\textsf{fire}}$ $\newcommand{\next}{\textsf{next}}$ $\newcommand{\rin}{\textsf{in}}$ $\newcommand{\rout}{\textsf{out}}$
+</p>
+
+<h1 id="declarative-datalog-debugging-for-mere-mortals-2012"><a href="https://scholar.google.com/scholar?cluster=15263235670415505934">Declarative Datalog Debugging for Mere Mortals (2012)</a></h1>
+<p>Debugging datalog programs is hard. Given a buggy model $M = P(I)$ of a datalog program $P$ run on database instance $I$, we might want to know why certain tuples in $M$ appear that shouldn’t. This paper presents a technique to rewrite $P$ to a modified program $\hat{P}$ which computes a modified model $\hat{M}$ which includes the provenance of every tuple in $M$.</p>
+<h2 id="overview">Overview</h2>
+<p>The modified model $\hat{M}$ represents a provenance graph $(V, E)$ where a vertex is a rule instance $r$ or an atom $a$. An edge $r \to a$ indicates that rule instance $r$ derived atom $a$ (i.e. $a$ is the head of $r$), and an edge $a \to r$ indicates that $a$ appears in the body of $r$. Well, this isn’t quite true. The graph also includes the iterations in which a tuple is derived using a naive evaluation strategy.</p>
+<p>The rewrite $P \to \hat{P}$ proceeds in three steps: <strong>rule firings</strong>, <strong>graph reification</strong>, and <strong>statelog rewriting</strong>. The first two construct the provenance graph; the third adds the iteration information.</p>
+<h2 id="rule-firings">Rule Firings</h2>
+<p>First, we must capture every rule firing. We rewrite a rule of the form:</p>
+<pre><code>\(
+\begin{array}{lrcl}
+  r: &amp; H(\bar{Y}) &amp;\coleq&amp; B_1(\bar{X_1}), \ldots, B_n(\bar{X_n})
+\end{array}
+\)</code></pre>
+<p>into two rules:</p>
+<pre><code>\(
+\begin{array}{lrcl}
+  r_{in}:  &amp; \fire_r(\bar{X}) &amp;\coleq&amp; B_1(\bar{X_1}), \ldots, B_n(\bar{X_n}) \\
+  r_{out}: &amp; H(\bar{Y}) &amp;\coleq&amp; \fire_r(\bar{X})
+\end{array}
+\)</code></pre>
+<p>where $\bar{X} \defeq \cup_i \bar{X_i}$.</p>
+<h2 id="graph-reification">Graph Reification</h2>
+<p>Next, we use Skolemization to convert $r_{in}$ and $r_{out}$ into concrete nodes in our provenance graph. For each pair $r_{in}$ and $r_{out}$, we generate the following $n$ rules for edges into $\fire_r(\bar{X})$.</p>
+<pre><code>\(
+\begin{array}{rcl}
+  g(B_i(\bar{X_i}), \rin, \fire_r(\bar{X})) &amp;\coleq&amp; \fire_r(\bar{X})
+\end{array}
+\)</code></pre>
+<p>We also generate an edge from $\fire_r(\bar{X})$ to $H(\bar{Y})$:</p>
+<pre><code>\(
+\begin{array}{rcl}
+  g(\fire_r(\bar{X}), \rout, H(\bar{Y})) &amp;\coleq&amp; \fire_r(\bar{X})
+\end{array}
+\)</code></pre>
+<h2 id="statelog-rewriting">Statelog Rewriting</h2>
+<p>Finally, we track the iterations at which a rule is derived under a naive evaluation scheme. We replace $r_{in}$ and $r_{out}$.</p>
+<pre><code>\(
+\begin{array}{lrcl}
+  r_{in}: &amp; \fire_r(S1, \bar{X}) &amp;\coleq&amp;
+    B_1(S, \bar{X_1}), \ldots, B_n(S, \bar{X_n}), \next(S, S1) \\
+  r_{out}: &amp; H(S, \bar{Y}) &amp;\coleq&amp; \fire_r(S, \bar{X})
+\end{array}
+\)</code></pre>
+<p>Every iteration <code>S</code> has a successor so long as tuples are produced:</p>
+<pre><code>\(
+\begin{array}{rcl}
+  \next(0, 1) &amp;\coleq&amp; \textsf{true} \\
+  \next(S, S1) &amp;\coleq&amp; \next(\_, S), \textsf{newAtom}(S, A), S1=S+1 \\
+  \textsf{newAtom}(S1, A) &amp;\coleq&amp;
+    \next(S, S1), g(S1, \_, \rout, A), \lnot g(S, \_, \rout, A)
+\end{array}
+\)</code></pre>
+<h2 id="debugging-and-profiling">Debugging and Profiling</h2>
+<p>Given a provenance graph $\hat{M} = \hat{P}(I)$, we can perform the following debugging and profiling tasks.</p>
+<ul>
+<li>We can inspect the provenance graph or the provenance graph stripped of iteration information.</li>
+<li>We can look at the subgraph that terminates in some atom $A$ to examine its derivations.</li>
+<li>For each atom, we can determine the first iteration at which it is derived. Similarly, for each rule, we can determine the first iteration in which it is fired.</li>
+<li>We can count the total number of derived facts.</li>
+<li>We can count the total number of rules fired.</li>
+<li>We can compute the number of iterations required to terminate.</li>
+<li>We can compute the number of times a rule is re-derived.</li>
+<li>We can count the number of tuples derived per iteration per relation.</li>
+</ul>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
