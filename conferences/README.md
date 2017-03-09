@@ -6,3 +6,5 @@
 - [ ] NSDI
 - [ ] OSDI
 - [ ] USENIX ATC
+- [ ] TODS
+- [ ] VLDBJ
