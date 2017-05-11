@@ -232,7 +232,13 @@ TCARD/P + W*RSICARD
   </tr>
 </table>
 
-
+<h2 id="access-path-selection-for-joins">Access Path Selection for Joins</h2>
+<p>The System R query optimizer considers access plans with (pipelined) tuple-nested loop joins and sort-merge joins. The most critical part of choosing an access plan is choosing a join order. There are <code>n!</code> left-deep access plans for <code>n</code> relations (that's a lot). To avoid enumerating all of them, the query optimizer uses dynamic programming.</p>
+<p>First, it determines the cheapest single-relation access path for each relation and for each interesting order. Note that interesting orders now include ordering by a GROUP BY or ORDER BY clause <em>and</em> any joining predicates which could take advantage of the order with a sort-merge join. Then, it determines the cheapest 2-way join with each single-relation access path as the outer relation. Then, it determines the cheapest 3-way join with the 2-way joins as the outer relation. And so on.</p>
+<p>The query optimizer performs a couple of tricks to speed up this algorithm. First, it does not consider a cross-join if there are other more selective joins possible. Second, it computes interesting order equivalence classes to avoid computing redundant interesting orders. For example, if there are predicates <code>E.DNO = D.DNO</code> and <code>D.DNO = F.DNO</code>, then all three columns belong to the same equivalence class.</p>
+<p>This algorithm computes at worst (2<sup>n</sup> times the number of interesting orders) intermediate access paths.</p>
+<h2 id="nested-queries">Nested Queries</h2>
+<p>Non-correlated subqueries are evaluated once before their parent query. Correlated subqueries are evaluated every time the parent query is evaluated. As an optimization, we can sort the parent tuples by the correlated column and compute the subquery once for every unique value of teh correlated column.</p>
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
