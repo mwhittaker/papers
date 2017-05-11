@@ -106,8 +106,8 @@ table {
 }
 
 td, th {
-  padding: 5pt;
-  border: 1.5pt solid black;
+  padding: 2pt;
+  border: 1.25pt solid gray;
 }
 
 blockquote {
