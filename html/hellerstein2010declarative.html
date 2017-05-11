@@ -12,17 +12,17 @@
   </div>
   <div id="container">
 <h2 id="the-declarative-imperative-experiences-and-conjectures-in-distributed-logic-2010"><a href="https://scholar.google.com/scholar?cluster=1374149560926608837&amp;hl=en&amp;as_sdt=0,5">The Declarative Imperative: Experiences and Conjectures in Distributed Logic (2010)</a></h2>
-<p><strong>Summary.</strong> With (a strict interpretation of) Moore’s Law in decline and an overabundance of compute resources in the cloud, performance necessitates parallelism. The rub? Parallel programming is difficult. Contemporaneously, Datalog (and variants) have proven effective in an increasing number of domains from networking to distributed systems. Better yet, declarative logic programming allows for programs to be built with orders of magnitude less code and permits formal reasoning. In this invited paper, Joe discusses his experiences with distributed declarative programming and conjectures some deep connections between logic and distributed systems.</p>
-<p>Joe’s group has explored many distributed Datalog variants, the latest of which is <em>Dedalus</em>. Dedalus includes notions of time: both intra-node atomicity and sequencing and inter-node causality. Every table in Dedalus includes a timestamp in its rightmost column. Dedalus’ rules are characterized by how they interact with these timestamps:</p>
+<p><strong>Summary.</strong> With (a strict interpretation of) Moore's Law in decline and an overabundance of compute resources in the cloud, performance necessitates parallelism. The rub? Parallel programming is difficult. Contemporaneously, Datalog (and variants) have proven effective in an increasing number of domains from networking to distributed systems. Better yet, declarative logic programming allows for programs to be built with orders of magnitude less code and permits formal reasoning. In this invited paper, Joe discusses his experiences with distributed declarative programming and conjectures some deep connections between logic and distributed systems.</p>
+<p>Joe's group has explored many distributed Datalog variants, the latest of which is <em>Dedalus</em>. Dedalus includes notions of time: both intra-node atomicity and sequencing and inter-node causality. Every table in Dedalus includes a timestamp in its rightmost column. Dedalus' rules are characterized by how they interact with these timestamps:</p>
 <ul>
 <li><em>Deductive rules</em> involve a single timestamp. They are traditional Datalog stamements.</li>
 <li><em>Inductive rules</em> involve a head with a timestamp one larger than the timestamps of the body. They represent the creation of facts from one point in time to the next point in time.</li>
 <li><em>Asynchronous rules</em> involve a head with a non-deterministically chosen timestamp. These rules capture the notion of non-deterministic message delivery.</li>
 </ul>
-<p>Joe’s group’s experience with distributed logic programming lead to the following conclusions:</p>
+<p>Joe's group's experience with distributed logic programming lead to the following conclusions:</p>
 <ul>
 <li>Datalog can very concisely express distributed algorithms that involved recursive computations of transitive closures like web crawling.</li>
-<li>Annotating relations with a location specifier column allows tables to be transparently partitions and allows for declarative communication: a form of “network data independence”. This could permit many networking optimizations.</li>
+<li>Annotating relations with a location specifier column allows tables to be transparently partitions and allows for declarative communication: a form of &quot;network data independence&quot;. This could permit many networking optimizations.</li>
 <li>Stratifying programs based on timesteps introduces a notion of transactionality. Every operation taking place in the same timestamp occurs atomically.</li>
 <li>Making all tables ephemeral and persisting data via explicit inductive rules naturally allows transience in things like soft-state caches without precluding persistence.</li>
 <li>Treating events as a streaming join of inputs with persisted data is an alternative to threaded or event-looped parallel programming.</li>
@@ -32,7 +32,7 @@
 <p>The experience also leads to a number of conjectures:</p>
 <ul>
 <li>The CALM conjecture stats that programs that can be expressed in monotonic Datalog are exactly the programs that can be implemented with coordination-free eventual consistency.</li>
-<li>Dedalus’ asynchronous rules allow for an infinite number of traces. Perhaps, all these traces are confluent and result in the same final state. Or perhaps they are all equivalent for some notion of equivalence.</li>
+<li>Dedalus' asynchronous rules allow for an infinite number of traces. Perhaps, all these traces are confluent and result in the same final state. Or perhaps they are all equivalent for some notion of equivalence.</li>
 <li>The CRON conjecture states that messages sent to the past lead only to paradoxes if the message has non-monotonic implications.</li>
 <li>If computation today is so cheap, then the real computation cost comes from coordination between strata. Thus, the minimum number of Dedalus timestamps required to implement a program represents its minimum <em>coordination complexity</em>.</li>
 <li>To further decrease latency, programs can be computed approximately either by providing probabilistic bounds on their outputs or speculatively executing and fixing results in a post-hoc manner.</li>

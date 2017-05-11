@@ -27,7 +27,7 @@
 </ul>
 <p>Lessons in implementation:</p>
 <ul>
-<li><em>Process orientation and virtual TCB array.</em> Threads’ kernel stack was allocated above their TCB.</li>
+<li><em>Process orientation and virtual TCB array.</em> Threads' kernel stack was allocated above their TCB.</li>
 <li><em>Lazy scheduling.</em> When a thread blocked, it was marked as blocked but not yet removed from the ready queue. When the scheduler selected the next task to run, it would iterate through the ready queue until it found an actually ready task. This meant that scheduling time was bounded only by the number of threads. This was later replaced by Benno scheduling.</li>
 <li><em>Direct process switch.</em> When a thread blocked on IPC, the scheduler would immediately run another task in its quantum regardless of priority. This direct process switch mechanism was kept but made to respect priorities.</li>
 <li><em>Preemption.</em> Most L4 implementations have a nonpreemptable kernel with strategic preemption points.</li>

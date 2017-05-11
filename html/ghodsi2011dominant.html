@@ -12,8 +12,8 @@
   </div>
   <div id="container">
 <h2 id="dominant-resource-fairness-fair-allocation-of-multiple-resource-types-2011"><a href="https://scholar.google.com/scholar?cluster=9727161448401355953&amp;hl=en&amp;as_sdt=0,5">Dominant Resource Fairness: Fair Allocation of Multiple Resource Types (2011)</a></h2>
-<p>Scheduling and resource allocation policies are at the heart of many systems. However, most resource allocation policies, including very popular ones like <em>max-min fairness</em>, involve allocating a single resource type. In distributed data processing frameworks like Hadoop and Dryad, resources often come in many forms (e.g. CPU, GPU, disk size, memory size, network bandwidth, etc.) and clients often have varying resource requirements. This paper introduces <em>dominant resource fairness</em> (DRF): a new resource allocation policy that handles multiple resource types. DRF satisfies a good number of desirable properties and is implemented in Mesos.</p>
-<p><strong>Allocation Properties.</strong> It’s not easy to describe what makes a resource allocation policy “good” or “fair”, especially since most resource allocation policies don’t concern multiple object types. Here, we present a set of desirable properties that any resource allocation policy ought to have. The first four are essential; the last four are nice.</p>
+<p>Scheduling and resource allocation policies are at the heart of many systems. However, most resource allocation policies, including very popular ones like <em>max-min fairness</em>, involve allocating a single resource type. In distributed data processing frameworks like Hadoop and Dryad, resources often come in many forms (e.g. CPU, GPU, disk size, memory size, network bandwidth, etc.) and clients often have varying resource requirements. This paper introduces <em>dominant resource fairness</em> (DRF): a new resource allocation policy that handles multiple resource types. DRF satisfies a good number of desirable properties and is implemented in Mesos.</p>
+<p><strong>Allocation Properties.</strong> It's not easy to describe what makes a resource allocation policy &quot;good&quot; or &quot;fair&quot;, especially since most resource allocation policies don't concern multiple object types. Here, we present a set of desirable properties that any resource allocation policy ought to have. The first four are essential; the last four are nice.</p>
 <ol style="list-style-type: decimal">
 <li><strong>Sharing incentive.</strong> No user should be better off if resource were statically and equally partitioned between users.</li>
 <li><strong>Strategy proofness.</strong> Users should be able to improve their allocations by lying about their requirements.</li>
@@ -21,8 +21,8 @@
 <li><strong>Pareto efficient.</strong> We should not be able to allocate more resources to a user without taking away resources from another.</li>
 <li><em>Single resource fairness.</em> For a single resource, the solution should reduce to max-min fairness.</li>
 <li><em>Bottleneck fairness.</em> If all users want the same resource the most, the solution should reduce to max-min fairness.</li>
-<li><em>Population monotonicity.</em> When a user leaves the system, nobody’s allocation should decrease.</li>
-<li><em>Resource monotonicity.</em> When new resources are introduced into the system, nobody’s allocation should decrease.</li>
+<li><em>Population monotonicity.</em> When a user leaves the system, nobody's allocation should decrease.</li>
+<li><em>Resource monotonicity.</em> When new resources are introduced into the system, nobody's allocation should decrease.</li>
 </ol>
 <p><strong>Dominant Resource Fairness.</strong> Assume our system has 9 CPU and 18 GB of memory. Assume job A has tasks that require <code>&lt;1 CPU, 4 GB&gt;</code> and job B has tasks that require <code>&lt;3 CPU, 1 GB&gt;</code>. Tasks of A need <code>1/9</code> of the CPU and <code>4/18 = 2/9</code> of the memory. Tasks of B need <code>3/9 = 1/3</code> of the CPU and <code>1/18</code> of the memory. We say that CPU is the <em>dominant share</em> of A and memory is the dominant share of B. Generally, given resource capacity vector <code>&lt;c_1, ..., c_n&gt;</code> and a user task requirement vector <code>&lt;a_1, ..., a_n&gt;</code>, the dominant share is the max of all <code>a_i/c_i</code>.</p>
 <p>DRF aims to maximize allocations such that all users have an equal dominant share. In the example above, we want to find <code>x</code> allocations for A and <code>y</code> allocations for B such that:</p>
@@ -104,7 +104,7 @@ x + 3y &lt;= 9
 </tbody>
 </table>
 <p>Note that Asset Fairness does not provide Sharing Incentive and CEEI is not strategy proof. DRF does not provide Resource Monotonicity, but it can be shown that no resource allocation policy that satisfies sharing incentive and Pareto efficiency can provide resource monotonicity.</p>
-<p>Up until now, we’ve assumed continuous allocations. We can extend DRF to use discrete allocations for K machines where each machine has at least a max-task amount of resources. Here the max-task is <code>&lt;max d_i1, ..., max d_im&gt;</code>. It’s guaranteed that the difference in dominant share allocations between any two users is less than one max-task compared to the continuous case.</p>
+<p>Up until now, we've assumed continuous allocations. We can extend DRF to use discrete allocations for K machines where each machine has at least a max-task amount of resources. Here the max-task is <code>&lt;max d_i1, ..., max d_im&gt;</code>. It's guaranteed that the difference in dominant share allocations between any two users is less than one max-task compared to the continuous case.</p>
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>

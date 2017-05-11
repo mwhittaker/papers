@@ -63,12 +63,12 @@ y(a,b)  z(b,c)
 <h2 id="distributed-provenance-maintenance">Distributed Provenance Maintenance</h2>
 <p>Given an NDLog program, ExSPAN rewrites each inference rule into a set of inference rules which maintains the <code>prov</code> and <code>ruleExec</code> rules. That is, whenever a tuple is inserted or deleted, the corresponding entries of <code>prov</code> and <code>ruleExec</code> are simultaneously updated. The specifics of the rewrite are complicated; see the paper for details.</p>
 <h2 id="querying-provenance">Querying Provenance</h2>
-<p>Users express a provenance query in the form <code>eProvQuery(@X, QID, VID, Ret)</code> which returns the provenance of tuple with VID <code>VID</code> residing at <code>X</code> to the node <code>Ret</code>. The query is also given a unique identifier <code>QID</code>. ExSPAN can answer a query like this with 10 NDLog rules (see paper for details). These ten rules are parametrized on three predicates—<code>f_pEDB</code>, <code>f_pIDB</code>, and <code>f_pRULE</code>—which users can use to customize the result of the query. For example, they can use them to return provenance semirings or return a count of the number of derivations for a particular tuple.</p>
+<p>Users express a provenance query in the form <code>eProvQuery(@X, QID, VID, Ret)</code> which returns the provenance of tuple with VID <code>VID</code> residing at <code>X</code> to the node <code>Ret</code>. The query is also given a unique identifier <code>QID</code>. ExSPAN can answer a query like this with 10 NDLog rules (see paper for details). These ten rules are parametrized on three predicates---<code>f_pEDB</code>, <code>f_pIDB</code>, and <code>f_pRULE</code>---which users can use to customize the result of the query. For example, they can use them to return provenance semirings or return a count of the number of derivations for a particular tuple.</p>
 <h2 id="query-optimization">Query Optimization</h2>
 <p>ExSPAN performs optimizations to reduce the latency and bandwidth requirements of provenance queries.</p>
 <ul>
 <li>The (intermediate) results of queries are cached so that similar queries can avoid redundant work. When tuples are inserted or deleted, the corresponding cache entries are invalidated.</li>
-<li>By default, query processing performs a breadth-first search. A depth-first search can be more efficient when evaluating threshold queries like “does the number of derivations exceed 10?”</li>
+<li>By default, query processing performs a breadth-first search. A depth-first search can be more efficient when evaluating threshold queries like &quot;does the number of derivations exceed 10?&quot;</li>
 <li>ExSPAN can sometimes condense provenance semiring using BDDs.</li>
 </ul>
   </div>

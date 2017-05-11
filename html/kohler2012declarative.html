@@ -16,9 +16,9 @@ $\newcommand{\fire}{\textsf{fire}}$ $\newcommand{\next}{\textsf{next}}$ $\newcom
 </p>
 
 <h1 id="declarative-datalog-debugging-for-mere-mortals-2012"><a href="https://scholar.google.com/scholar?cluster=15263235670415505934">Declarative Datalog Debugging for Mere Mortals (2012)</a></h1>
-<p>Debugging datalog programs is hard. Given a buggy model $M = P(I)$ of a datalog program $P$ run on database instance $I$, we might want to know why certain tuples in $M$ appear that shouldn’t. This paper presents a technique to rewrite $P$ to a modified program $\hat{P}$ which computes a modified model $\hat{M}$ which includes the provenance of every tuple in $M$.</p>
+<p>Debugging datalog programs is hard. Given a buggy model $M = P(I)$ of a datalog program $P$ run on database instance $I$, we might want to know why certain tuples in $M$ appear that shouldn't. This paper presents a technique to rewrite $P$ to a modified program $\hat{P}$ which computes a modified model $\hat{M}$ which includes the provenance of every tuple in $M$.</p>
 <h2 id="overview">Overview</h2>
-<p>The modified model $\hat{M}$ represents a provenance graph $(V, E)$ where a vertex is a rule instance $r$ or an atom $a$. An edge $r \to a$ indicates that rule instance $r$ derived atom $a$ (i.e. $a$ is the head of $r$), and an edge $a \to r$ indicates that $a$ appears in the body of $r$. Well, this isn’t quite true. The graph also includes the iterations in which a tuple is derived using a naive evaluation strategy.</p>
+<p>The modified model $\hat{M}$ represents a provenance graph $(V, E)$ where a vertex is a rule instance $r$ or an atom $a$. An edge $r \to a$ indicates that rule instance $r$ derived atom $a$ (i.e. $a$ is the head of $r$), and an edge $a \to r$ indicates that $a$ appears in the body of $r$. Well, this isn't quite true. The graph also includes the iterations in which a tuple is derived using a naive evaluation strategy.</p>
 <p>The rewrite $P \to \hat{P}$ proceeds in three steps: <strong>rule firings</strong>, <strong>graph reification</strong>, and <strong>statelog rewriting</strong>. The first two construct the provenance graph; the third adds the iteration information.</p>
 <h2 id="rule-firings">Rule Firings</h2>
 <p>First, we must capture every rule firing. We rewrite a rule of the form:</p>

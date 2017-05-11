@@ -29,7 +29,7 @@ $\newcommand{\parens}[1]{\left(#1\right)}$ $\newcommand{\set}[1]{\left\{#1\right
 
 <h1 id="provenance-in-databases-why-how-and-where"><a href="https://scholar.google.com/scholar?cluster=14688264622623487965">Provenance in Databases: Why, How, and Where</a></h1>
 <h2 id="chapter-1-introduction">Chapter 1: Introduction</h2>
-<p><strong>Data provenance</strong>, also known as <strong>data lineage</strong>, describes the origin and history of data as it is moved, copied, transformed, and queried in a data system. In the context of relational databases, provenance will allow us to point at a tuple (or part of a tuple) in the output of a query and ask why or how it got there. In this book, we’ll study three forms of provenance known as <em>why-provenance</em>, <em>how-provenance</em>, and <em>where-provenance</em>.</p>
+<p><strong>Data provenance</strong>, also known as <strong>data lineage</strong>, describes the origin and history of data as it is moved, copied, transformed, and queried in a data system. In the context of relational databases, provenance will allow us to point at a tuple (or part of a tuple) in the output of a query and ask why or how it got there. In this book, we'll study three forms of provenance known as <em>why-provenance</em>, <em>how-provenance</em>, and <em>where-provenance</em>.</p>
 <h3 id="lineage">Lineage</h3>
 <p>The <strong>lineage</strong> of tuple $t$ in the output of evaluating query $Q$ against database instance $I$ is a subset of the tuples in $I$ (known as a <strong>witness</strong>) that are sufficient for $t$ to appear in the output. Lineage is best explained through an example. Consider the following relations $R$</p>
 <table>
@@ -112,11 +112,11 @@ WHERE  R.A = S.A AND S.B = blue</code></pre>
 </table>
 <p>The lineage of $t_8$ is $\set{t_1, t_3, t_4}$, and the lineage of $t_9$ is $\set{R(t_2), S(t_6)}$. While the lineage of a tuple $t$ is sufficient for $t$ to appear in the output, the lineage is not necessary. For example, the lineage of $t_8$ does not capture the fact that $t_3$ and $t_4$ do not both have to appear in the input for $t_8$ to appear in the output. In fact, for a given output tuple $t$ there could be an exponential number of sufficient (but not necessary) witnesses for it.</p>
 <h3 id="why-provenance">Why-Provenance</h3>
-<p><strong>Why-provenance</strong> is similar to lineage but tries to avoid considering an exponential number of potential witnesses. Instead, it focuses on a restricted set of witnesses known as the <strong>witness basis</strong>. For example, the witness basis of $t_8$ is $\set{\set{t_1, t_3}, \set{t1_, t_4}}$. A <strong>minimal witness basis</strong> is a witness basis consisting only of minimal witnesses. That is, it won’t include two witnesses $w$ and $w’$ where $w \subseteq w’$. The witness basis of two equivalent queries might differ, but the two queries are guaranteed to share the same minimal witness basis.</p>
+<p><strong>Why-provenance</strong> is similar to lineage but tries to avoid considering an exponential number of potential witnesses. Instead, it focuses on a restricted set of witnesses known as the <strong>witness basis</strong>. For example, the witness basis of $t_8$ is $\set{\set{t_1, t_3}, \set{t1_, t_4}}$. A <strong>minimal witness basis</strong> is a witness basis consisting only of minimal witnesses. That is, it won't include two witnesses $w$ and $w'$ where $w \subseteq w'$. The witness basis of two equivalent queries might differ, but the two queries are guaranteed to share the same minimal witness basis.</p>
 <h3 id="how-provenance">How-Provenance</h3>
-<p>Given an output tuple $t$, why-provenance provides witnesses that prove $t$ should appear in the output. However, why-provenance does not tell us <em>how</em> $t$ was formed from a witness. <strong>How-provenance</strong> uses a <strong>provenance semiring</strong> to hint at how an tuple was derived. The semiring consists of polynomials over tuple ids. The polynomial $t^2 + t \cdot t’$ hints at two derivations: one which uses $t$ twice and one which uses $t$ and $t’$.</p>
+<p>Given an output tuple $t$, why-provenance provides witnesses that prove $t$ should appear in the output. However, why-provenance does not tell us <em>how</em> $t$ was formed from a witness. <strong>How-provenance</strong> uses a <strong>provenance semiring</strong> to hint at how an tuple was derived. The semiring consists of polynomials over tuple ids. The polynomial $t^2 + t \cdot t'$ hints at two derivations: one which uses $t$ twice and one which uses $t$ and $t'$.</p>
 <h3 id="where-provenance">Where-Provenance</h3>
-<p><strong>Where-provenance</strong> is very similar to why-provenance except that we’ll now point at a particular entry (or <strong>location</strong>) of an output tuple $t$ and ask which input locations it was copied from. For example, the where-provenance of the $A$ entry of tuple $t_8$ is the $A$ entry of tuple $t_3$ or $t_4$.</p>
+<p><strong>Where-provenance</strong> is very similar to why-provenance except that we'll now point at a particular entry (or <strong>location</strong>) of an output tuple $t$ and ask which input locations it was copied from. For example, the where-provenance of the $A$ entry of tuple $t_8$ is the $A$ entry of tuple $t_3$ or $t_4$.</p>
 <h3 id="eager-vs-lazy">Eager vs Lazy</h3>
 <p>There are two main ways to implement data lineage:</p>
 <ol style="list-style-type: decimal">
@@ -142,7 +142,7 @@ WHERE  R.A = S.A AND S.B = blue</code></pre>
 <li>A <strong>tuple location</strong> is a tuple tagged with a relation name and is written $(R, t)$. We write $\TupleLoc = \relations \times \Tuple$ for the set of all tagged tuples.</li>
 <li>We can view a database $I$ as $\setst{(R, t)}{t \in I(R)} \subseteq \TupleLoc$.</li>
 <li>A <strong>field location</strong> is a triple $(R, t, A)$ which refers to a particular field or a particular tuple. We let $\FieldLoc$ be the set of all field locations.</li>
-<li>Letting $Y_{\bot} = Y \cup \set{\bot}$, we’ll view a partial function $f: X \rightharpoonup Y$ as a total function $f: X \to Y_{\bot}$.</li>
+<li>Letting $Y_{\bot} = Y \cup \set{\bot}$, we'll view a partial function $f: X \rightharpoonup Y$ as a total function $f: X \to Y_{\bot}$.</li>
 </ul>
 <p>Finally, this is the syntax of <strong>monotone relation algebra</strong>:</p>
 <pre><code>$$
@@ -179,16 +179,16 @@ $$</code></pre>
 <h2 id="chapter-2-why-provenance">Chapter 2: Why-Provenance</h2>
 <h3 id="lineage-1">Lineage</h3>
 <p hidden>
-$\newcommand{\Rs}{R_1, \ldots, R_n}$ $\newcommand{\Rprimes}{R_1’, \ldots, R_n’}$ $\newcommand{\Qs}{Q_1, \ldots, Q_n}$ $\newcommand{\Ss}{S_1, \ldots, S_n}$ $\newcommand{\lineage}{\textsf{Lineage}}$ $\newcommand{\blue}{\text{blue}}$ $\newcommand{\red}{\text{red}}$
+$\newcommand{\Rs}{R_1, \ldots, R_n}$ $\newcommand{\Rprimes}{R_1', \ldots, R_n'}$ $\newcommand{\Qs}{Q_1, \ldots, Q_n}$ $\newcommand{\Ss}{S_1, \ldots, S_n}$ $\newcommand{\lineage}{\textsf{Lineage}}$ $\newcommand{\blue}{\text{blue}}$ $\newcommand{\red}{\text{red}}$
 </p>
 
 <p>First, we review lineage. Let $Op$ be a relation operator over input relations $(\Rs)$. The <strong>lineage</strong> of a tuple $t \in Op(\Rs)$ is a subset $(\Rprimes)$ of $(\Rs)$ such that:</p>
 <ol style="list-style-type: decimal">
 <li>$Op(\Rprimes) = \set{t}$;</li>
-<li>For all $i \in [n]$ and for all $t_i \in R_i’$, $Op(R_1’, \ldots, \set{t_i}, \ldots, R_n’) \neq \emptyset$; and</li>
+<li>For all $i \in [n]$ and for all $t_i \in R_i'$, $Op(R_1', \ldots, \set{t_i}, \ldots, R_n') \neq \emptyset$; and</li>
 <li>$(\Rprimes)$ is maximal among subsets satisfying 1 and 2.</li>
 </ol>
-<p>1 ensures the lineage is relevant to $t$, 2 ensures that no irrelevant tuples are included, and 3 ensures the lineage is “complete”. Given the definition of lineage, we can compute it. Let $\lineage(t, Op(\Rs))$ be the lineage of tuple $t \in Op(\Rs)$.</p>
+<p>1 ensures the lineage is relevant to $t$, 2 ensures that no irrelevant tuples are included, and 3 ensures the lineage is &quot;complete&quot;. Given the definition of lineage, we can compute it. Let $\lineage(t, Op(\Rs))$ be the lineage of tuple $t \in Op(\Rs)$.</p>
 <pre><code>$$
 \begin{align*}
   \lineage(t, \select{\theta}(R))
@@ -210,7 +210,7 @@ $$</code></pre>
 \lineage(t, Op(\Qs), I) =
   \bigcup_{S_i(t&#39;) \in \lineage(t, Op(\Ss))} \lineage(S_i(t&#39;), S_i)
 $$</code></pre>
-<p>Consider again the relations $R$ and $S$ and the query $Q$ from above. We can express $Q$ in the relation algebra—$Q = \project{A}(\select{S.B = \text{blue}}(R \join S))$—and compute the lineage of $t_8$.</p>
+<p>Consider again the relations $R$ and $S$ and the query $Q$ from above. We can express $Q$ in the relation algebra---$Q = \project{A}(\select{S.B = \text{blue}}(R \join S))$---and compute the lineage of $t_8$.</p>
 <pre><code>$$
 \begin{align*}
   \lineage(t_8, \project{A}(\select{S.a=\blue}(R(I) \join S(I))))
@@ -226,7 +226,7 @@ $$</code></pre>
 $\newcommand{\lin}{\textsf{Lin}}$ $\newcommand{\strictunion}{\cup_{\text{S}}}$ $\newcommand{\lazyunion}{\cup_{\text{L}}}$ $\newcommand{\lazyflattening}{\cup_{\text{L}}}$
 </p>
 
-<p>The previous definition of lineage has a couple flaws: (a) it’s confusing, (b) it doesn’t handle queries with constants, and (c) it is only defined for tuples in the output of a query. We can fix these flaws with a <strong>compositional definition of lineage</strong>. Let $\lin$ be a partial function which takes a query $Q$, a database $I$, and a tuple $t$ and returns</p>
+<p>The previous definition of lineage has a couple flaws: (a) it's confusing, (b) it doesn't handle queries with constants, and (c) it is only defined for tuples in the output of a query. We can fix these flaws with a <strong>compositional definition of lineage</strong>. Let $\lin$ be a partial function which takes a query $Q$, a database $I$, and a tuple $t$ and returns</p>
 <ul>
 <li>$\emptyset{}$ if $t$ was constructed from $Q$ itself,</li>
 <li>the non-empty lineage of $t$ if $t \in Q(I)$, and</li>
@@ -284,8 +284,8 @@ $$</code></pre>
 </ul>
 <h3 id="whips">WHIPS</h3>
 <p>The WHIPS data warehouse system lazily implements lineage for queries with select, project, join, union, set difference, and aggregation. Given a query $Q$, database $I$, and tuple $t \in Q(I)$, WHIPS produces one or more reverse queries which produce the lineage of $t$ when run against $I$.</p>
-<p>For simple <strong>select-project-join</strong> (SPJ) queries—queries that only include the select, project, and join operators—the algorithm produces a single reverse query $Q_r$ for a query $Q$. First, we canonicalize $Q$ into project-select-join form: $\project{A}(\select{\theta}(R_1 \join \cdots \join R_n))$. Then, we form the reverse query $Q_r = \select{\phi}(R_1 \join \cdots \join R_n)$ where $\phi = \theta \land (\land_{A_i \in A} \getfield{R_j}{A_i} = \getfield{t}{A_i})$. After evaluating $Q_r(I)$, a postprocessign step decomposes each tuple into its source tuples from $\Rs$. For example, consider $Q = \project{A}(\select{S.B=\blue}(R \join S))$ from above. Here, $Q_r = \select{S.b=\blue \land \getfield{R}{A} = \getfield{t}{A}}(R \join S)$.</p>
-<p>The correctness of this algorithm depends crucially on the fact that lineage is invariant with respect to query rewrites. If this were not true, then the lineage of $Q$ (for some database $I$ and tuple $t$) could be different from the canonicalized $Q$ (for the same database $I$ and tuple $t$). WHIPS makes sure to only support queries for which lineage is invariant to query rewriting, but in general there do exist equivalent queries $Q$ and $Q’$, a database $I$, and a tuple $t$ where $\lin(Q, I, t) \neq \lin(Q’, I, t)$. These counterexamples appear when one of $Q$ or $Q’$ include a relation $R$ multiple times. Two counterexamples are given in the book.</p>
+<p>For simple <strong>select-project-join</strong> (SPJ) queries---queries that only include the select, project, and join operators---the algorithm produces a single reverse query $Q_r$ for a query $Q$. First, we canonicalize $Q$ into project-select-join form: $\project{A}(\select{\theta}(R_1 \join \cdots \join R_n))$. Then, we form the reverse query $Q_r = \select{\phi}(R_1 \join \cdots \join R_n)$ where $\phi = \theta \land (\land_{A_i \in A} \getfield{R_j}{A_i} = \getfield{t}{A_i})$. After evaluating $Q_r(I)$, a postprocessign step decomposes each tuple into its source tuples from $\Rs$. For example, consider $Q = \project{A}(\select{S.B=\blue}(R \join S))$ from above. Here, $Q_r = \select{S.b=\blue \land \getfield{R}{A} = \getfield{t}{A}}(R \join S)$.</p>
+<p>The correctness of this algorithm depends crucially on the fact that lineage is invariant with respect to query rewrites. If this were not true, then the lineage of $Q$ (for some database $I$ and tuple $t$) could be different from the canonicalized $Q$ (for the same database $I$ and tuple $t$). WHIPS makes sure to only support queries for which lineage is invariant to query rewriting, but in general there do exist equivalent queries $Q$ and $Q'$, a database $I$, and a tuple $t$ where $\lin(Q, I, t) \neq \lin(Q', I, t)$. These counterexamples appear when one of $Q$ or $Q'$ include a relation $R$ multiple times. Two counterexamples are given in the book.</p>
 <p>To handle arbitrary queries (not just SPJ queries) WHIPS canonicalizes a query $Q$ into a sequence of D-segments and AUSPJ-segments. It then produces a series of queries that correspond to the intermediate results of the query. It then uses the non-compositional definition of lineage to recursively trace lineage through the intermediate results.</p>
 <h3 id="why-provenance-1">Why-Provenance</h3>
 <p hidden>
@@ -299,7 +299,7 @@ $\newcommand{\Wit}{\textsf{Wit}}$ $\newcommand{\Why}{\textsf{Why}}$ $\newcommand
 <li>If $\Wit(Q, I, t) = \emptyset$, then $t \notin Q(I)$. Why? Well, if $t$ were in $Q(I)$ the $I$ would be in $\Wit(Q, I, t)$.</li>
 <li>If $Q$ is monotone and $\emptyset \in \Wit(Q, I, t)$, then $\Wit(Q, I, t) = \powerset{I}$. Why? Well every $J \subseteq I$ is a superset of $\emptyset$, so by the first note, $J$ is a witness.</li>
 </ul>
-<p>The why-provenance of a tuple $t$ with respect to a query $Q$ and database $I$— denoted $\Why(Q, I, t)$—is a subset of $\Wit(Q, I, t)$ known as the <strong>witness basis</strong>. Each witness in the witness basis is known as a <strong>proof-witness</strong>. Let $A \Cup B = \setst{a \cup b}{a \in A, b \in B}$.</p>
+<p>The why-provenance of a tuple $t$ with respect to a query $Q$ and database $I$--- denoted $\Why(Q, I, t)$---is a subset of $\Wit(Q, I, t)$ known as the <strong>witness basis</strong>. Each witness in the witness basis is known as a <strong>proof-witness</strong>. Let $A \Cup B = \setst{a \cup b}{a \in A, b \in B}$.</p>
 <pre><code>$$
 \begin{align*}
   \Why(\set{u}, I, t) &amp;= \begin{cases}
@@ -328,17 +328,17 @@ $$</code></pre>
 <ul>
 <li>If $\Why(Q, I, t) = \emptyset$, then $t \notin Q(I)$.</li>
 <li>If $J \in \Why(Q, I, t)$, then $J \subseteq I$ and $t \in Q(J)$.</li>
-<li>If $J \in \Wit(Q, I, t)$, then there exists a $J’ \in \Why(Q, I, t)$ such that $J’ \subseteq J$.</li>
-<li>$\Wit(Q, I, t)$ is equal to $\setst{J \subseteq I}{\exists J’ \in \Wit(Q, I, t), J’ \subseteq J}$.</li>
-<li>For two equivalent queries $Q$ and $Q’$, there might exists a database $I$ and tuple $t$ such that $\Why(Q, I, t) \neq \Why(Q’, I, t)$. That is, why-provenance is not invariant to query rewriting.</li>
+<li>If $J \in \Wit(Q, I, t)$, then there exists a $J' \in \Why(Q, I, t)$ such that $J' \subseteq J$.</li>
+<li>$\Wit(Q, I, t)$ is equal to $\setst{J \subseteq I}{\exists J' \in \Wit(Q, I, t), J' \subseteq J}$.</li>
+<li>For two equivalent queries $Q$ and $Q'$, there might exists a database $I$ and tuple $t$ such that $\Why(Q, I, t) \neq \Why(Q', I, t)$. That is, why-provenance is not invariant to query rewriting.</li>
 </ul>
-<p>Let $(\mathcal{X}, \leq)$ be a partially ordered set. We say $x \in X \subseteq \mathcal{X}$ is <strong>minimal</strong> if there does not exist a $x’ \in X$ where $x’ \leq x$. Note that $x$ need not be a minimum element in order to be minimal.</p>
+<p>Let $(\mathcal{X}, \leq)$ be a partially ordered set. We say $x \in X \subseteq \mathcal{X}$ is <strong>minimal</strong> if there does not exist a $x' \in X$ where $x' \leq x$. Note that $x$ need not be a minimum element in order to be minimal.</p>
 <p>Given a query $Q$, database $I$, and tuple $t$, we say $J \subset I$ is a <strong>minimal witness</strong> of $t$ if $J$ is a minimal element of $\Wit(Q, I, t)$. Let $\MWit(Q, I, t)$ be the subset of $\Wit(Q, I, t)$ of only minimal witnesses. Similarly, let $\MWhy(Q, I, t)$ be the subset of $\Why(Q, I, t)$ of only minimal witnesses.</p>
 <p>Some properties:</p>
 <ul>
 <li>$\MWit(Q, I, t) \subseteq \Why(Q, I, t)$.</li>
 <li>$\MWit(Q, I, t) = \MWhy(Q, I, t)$.</li>
-<li>For equivalent queries $Q$ and $Q’$, $\MWhy(Q, I, t) = \MWhy(Q’, I, t)$. That is, minimal witness bases are invariant under query rewriting.</li>
+<li>For equivalent queries $Q$ and $Q'$, $\MWhy(Q, I, t) = \MWhy(Q', I, t)$. That is, minimal witness bases are invariant under query rewriting.</li>
 </ul>
 <h2 id="chapter-3-how-provenance">Chapter 3: How-Provenance</h2>
 <p>TODO</p>

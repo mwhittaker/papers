@@ -15,8 +15,8 @@
 <p>Databases experience anomalous load in many forms:</p>
 <ul>
 <li><strong>Hot Spots.</strong> Sometimes, a small <em>minority</em> of the tuples in the database account for a large <em>majority</em> of the load.</li>
-<li><strong>Time-Varying Skew.</strong> Load is sometimes diurnal (i.e. large in the day, small at night) or seasonal (e.g. large around Christmas).</li>
-<li><strong>Load Spikes.</strong> Sometimes, predictable or unpredictable events cause a huge increase in load (e.g. a game winning touchdown in the Superbowl).</li>
+<li><strong>Time-Varying Skew.</strong> Load is sometimes diurnal (i.e. large in the day, small at night) or seasonal (e.g. large around Christmas).</li>
+<li><strong>Load Spikes.</strong> Sometimes, predictable or unpredictable events cause a huge increase in load (e.g. a game winning touchdown in the Superbowl).</li>
 <li><strong>Hockey Stick Effect.</strong> Startups sometimes experience an exponential growth rate leading to an exponential increase in load.</li>
 </ul>
 <p>E-Store is an distributed elastic OLTP RDBMs built on top of H-Store that can handle varying load by (a) adding and removing nodes and (b) moving tuples between nodes.</p>

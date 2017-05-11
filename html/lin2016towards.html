@@ -21,18 +21,18 @@
 <h2 id="leap">LEAP</h2>
 <p>LEAP is based on the following assumptions and observations:</p>
 <ul>
-<li>Transactions in an OLTP workload don’t read or write many tuples.</li>
+<li>Transactions in an OLTP workload don't read or write many tuples.</li>
 <li>Tuples in an OLTP database are typically very small.</li>
 <li>Multiple transactions issued one after another may access the same data again and again.</li>
-<li>As more advanced network technology becomes available (e.g. RDMA), the cost of moving data becomes smaller and smaller.</li>
+<li>As more advanced network technology becomes available (e.g. RDMA), the cost of moving data becomes smaller and smaller.</li>
 </ul>
 <p>With LEAP, tuples are horizontally partitioned across a set of nodes, and each tuple is stored exactly once. Each node has two data structures:</p>
 <ul>
 <li>a <strong>data table</strong> which stores tuples, and</li>
 <li>a horizontally partitioned <strong>owner table</strong> key-value store which stores ownership information.</li>
 </ul>
-<p>Consider a tuple <code>d = (k, v)</code> with primary key <code>k</code> and value <code>v</code>. The owner table contains an entry<code>(k, o)</code> indicating that node <code>o</code> owns the tuple with key <code>k</code>. The node <code>o</code> contains a <code>(k, v)</code> entry in its data table. The owner table key-value store is partitioned across nodes using any arbitrary partitioning scheme (e.g. hash-based, range-based).</p>
-<p>When a node initiates a transaction, it requests ownership of every tuple it reads and writes. This migrates the tuples to the initiating node and updates the ownership information to reflect the ownership transfer. Here’s how the ownership transfer protocol works. For a given tuple <code>d = (k, v)</code>, the <strong>requester</strong> is the node requesting ownership of <code>d</code>, the <strong>partitioner</strong> is the node with ownership information <code>(k, o)</code>, and the owner is the node that stores <code>d</code>.</p>
+<p>Consider a tuple <code>d = (k, v)</code> with primary key <code>k</code> and value <code>v</code>. The owner table contains an entry<code>(k, o)</code> indicating that node <code>o</code> owns the tuple with key <code>k</code>. The node <code>o</code> contains a <code>(k, v)</code> entry in its data table. The owner table key-value store is partitioned across nodes using any arbitrary partitioning scheme (e.g. hash-based, range-based).</p>
+<p>When a node initiates a transaction, it requests ownership of every tuple it reads and writes. This migrates the tuples to the initiating node and updates the ownership information to reflect the ownership transfer. Here's how the ownership transfer protocol works. For a given tuple <code>d = (k, v)</code>, the <strong>requester</strong> is the node requesting ownership of <code>d</code>, the <strong>partitioner</strong> is the node with ownership information <code>(k, o)</code>, and the owner is the node that stores <code>d</code>.</p>
 <ul>
 <li>First, the requester sends an <strong>owner request</strong> with key <code>k</code> to the partitioner.</li>
 <li>Then, the partitioner looks up the owner of the tuple with <code>k</code> in its owner table and sends a <strong>transfer request</strong> to the owner.</li>
@@ -48,7 +48,7 @@
 <p>If the transfer request is dropped and the owner deletes the tuple, data is lost. See the appendix for information on how to make this ownership transfer fault tolerant. Also see the paper for a theoretical comparison of 2PC and LEAP.</p>
 <h2 id="leap-based-oltp-engine">LEAP-Based OLTP Engine</h2>
 <p>L-Store is a distributed OLTP database based on H-Store which uses LEAP to manage transactions. Transactions acquire read/write locks on individual tuples and use strict two-phase locking. Transactions are assigned globally unique identifiers, and deadlock prevention is implemented with a wait-die scheme where lower timestamped transactions have higher priority. That is, higher priority threads wait on lower priority threads, but lower priority threads abort rather than wait on higher priority threads.</p>
-<p>Concurrent local transactions are processed as usual; what’s interesting is concurrent transfer requests. Imagine a transaction is requesting ownership of a tuple on another node.</p>
+<p>Concurrent local transactions are processed as usual; what's interesting is concurrent transfer requests. Imagine a transaction is requesting ownership of a tuple on another node.</p>
 <ul>
 <li>First, the requester creates a <strong>request lock</strong> locally indicating that it is currently trying to request ownership of the tuple. It then sends an owner request to the partitioner.</li>
 <li>The partitioner may receive multiple concurrent owner requests. It processes them serially using the wait-die scheme. As an optimization, it processes requests in decreasing timestamp order to avoid aborts whenever possible. It then forwards a transfer request to the owner.</li>

@@ -11,7 +11,7 @@
     <a href="../">Papers</a>
   </div>
   <div id="container">
-<h2 id="cause-im-strong-enough-reasoning-about-consistency-choices-in-distributed-systems-2016"><a href="https://scholar.google.com/scholar?cluster=16043456868654348168&amp;hl=en&amp;as_sdt=0,5">’Cause I’m Strong Enough: Reasoning about Consistency Choices in Distributed Systems (2016)</a></h2>
+<h2 id="cause-im-strong-enough-reasoning-about-consistency-choices-in-distributed-systems-2016"><a href="https://scholar.google.com/scholar?cluster=16043456868654348168&amp;hl=en&amp;as_sdt=0,5">'Cause I'm Strong Enough: Reasoning about Consistency Choices in Distributed Systems (2016)</a></h2>
 <p>Strong consistency increases latency; weak consistency is hard to reason about. Compromising between the two, a number of databases allow each operation to run with either strong or weak consistency. Ideally, users choose the minimal set of strongly consistent operations needed to enforce some application specific invariant. However, deciding which operations to run with strong consistency and which to run with weak consistency can be very challenging. This paper</p>
 <ol style="list-style-type: decimal">
 <li>introduces a formal hybrid consistency model which subsumes many existing consistency models,</li>
@@ -46,7 +46,7 @@
 <li><code>F_o^tok(s) = F_o(s)[2]</code> (the tokens acquired by the operation).</li>
 </ul>
 <p>Our consistency model will ensure that two operations that acquire conflicting operations will be ordered.</p>
-<p><strong>Formal Semantics.</strong> Recall a <em>strict partial order</em> is a partial order that is transitive and irreflexive (e.g. sets ordered by strict subset). Given a partial order <code>R</code>, we say <code>(a, b) \in R</code> or <code>a -R-&gt; b</code>. Consider a countably infinite set <code>Event</code> of events ranged over by <code>e, f, g</code>. If operations are like transactions, an event is like applying a transaction at a replica.</p>
+<p><strong>Formal Semantics.</strong> Recall a <em>strict partial order</em> is a partial order that is transitive and irreflexive (e.g. sets ordered by strict subset). Given a partial order <code>R</code>, we say <code>(a, b) \in R</code> or <code>a -R-&gt; b</code>. Consider a countably infinite set <code>Event</code> of events ranged over by <code>e, f, g</code>. If operations are like transactions, an event is like applying a transaction at a replica.</p>
 <ul>
 <li><em>Definition 1.</em> Given token system <code>TS = (Token, #)</code>, an <em>execution</em> is a tuple <code>X = (E, oper, rval, tok, hb)</code> where
 <ul>
@@ -63,7 +63,7 @@
 <li><code>Exec(TS)</code> be the set of all executions over token system <code>TS</code>, and</li>
 <li><code>ctxt(e, X) = (E, X.oper|E, X.rval|E, X.tok|E, X.hb|E)</code> be the context of <code>e</code> where <code>E = X.hb^-1(e)</code>. Intuitively, <code>ctxt(e, X)</code> is the subexection of <code>X</code> that only includes operations causally preceding <code>e</code>.</li>
 </ul>
-<p>Executions are directed graphs of operations, but without a semantics, they are rather meaningless. Here, we define a relation <code>evald_F \subset Exec(TS) x P(State)</code> where <code>evald_F(Y)</code> is the set of all final states <code>Y</code> can be in after all operations are propagated to all replicas. We’ll see shortly that if all non-token-conflicting operations commute, then <code>evald_F</code> is a function.</p>
+<p>Executions are directed graphs of operations, but without a semantics, they are rather meaningless. Here, we define a relation <code>evald_F \subset Exec(TS) x P(State)</code> where <code>evald_F(Y)</code> is the set of all final states <code>Y</code> can be in after all operations are propagated to all replicas. We'll see shortly that if all non-token-conflicting operations commute, then <code>evald_F</code> is a function.</p>
 <ul>
 <li><code>evald_F(Y) = {}</code> if <code>Y.E = {}</code>, and</li>
 <li><code>evald_F(Y) = {F_e^eff(s)(s') | e \in max(Y), s \in evald_F(ctxt(e, Y)), s'   \in evalfd_F(Y|Y.E - {e})}</code> otherwise.</li>

@@ -20,18 +20,18 @@ $\newcommand{\trace}{\mathcal{E}}$
 <ul>
 <li>Traditional data lineage allows us to get the lineage of any output tuple produced by a query run against a fixed database. In a distributed system, it is still useful to know the lineage of a tuple stored at a node, but it is also useful to the know the lineage of tuples that existed in the past.</li>
 <li>Networks are free to drop, delay, and reorder messages arbitrarily.</li>
-<li>In a distributed system, lineage can either be computed <strong>proactively</strong> (i.e. provenance information is computed at runtime while the system executes) or <strong>reactively</strong> (i.e. inputs to programs can be logged and provenance can be re-derived on the fly). A provenance system would have to allow users to choose between these two alternatives.</li>
+<li>In a distributed system, lineage can either be computed <strong>proactively</strong> (i.e. provenance information is computed at runtime while the system executes) or <strong>reactively</strong> (i.e. inputs to programs can be logged and provenance can be re-derived on the fly). A provenance system would have to allow users to choose between these two alternatives.</li>
 </ul>
-<p>This paper presents <strong>distributed time-aware provenance</strong> (DTaP)—a form of distributed lineage that can handle the scenarios above—and an implementation of DTaP named <strong>DistTape</strong>.</p>
+<p>This paper presents <strong>distributed time-aware provenance</strong> (DTaP)---a form of distributed lineage that can handle the scenarios above---and an implementation of DTaP named <strong>DistTape</strong>.</p>
 <h2 id="system-model">System Model</h2>
-<p>We assume programs are written in NDLog: a variant of datalog intended for writing distributed systems. An NDLog program is executed by expanding each NDLog rule into multiple delta rules which compute the tuples that should be inserted and deleted from a node’s relations. We can also capture the execution of an NDLog program with an <strong>execution trace</strong>: a sequence of all the insertions, deletions, and derivations that occur in the system. The execution trace is like a flattened version of every tuple’s proof tree.</p>
+<p>We assume programs are written in NDLog: a variant of datalog intended for writing distributed systems. An NDLog program is executed by expanding each NDLog rule into multiple delta rules which compute the tuples that should be inserted and deleted from a node's relations. We can also capture the execution of an NDLog program with an <strong>execution trace</strong>: a sequence of all the insertions, deletions, and derivations that occur in the system. The execution trace is like a flattened version of every tuple's proof tree.</p>
 <h2 id="dtap-model">DTaP Model</h2>
 <p>First, a few definitions:</p>
 <ul>
 <li>An update is either $+\tau$ (the derivation of tuple $\tau$) or $-\tau$ (the <em>un</em>derivation of tuple $\tau$). $\Delta \tau$ is used to range over both $+\tau$ and $-\tau$.</li>
-<li>An event $d@N_i = (e, r, t, c, e’)$ signifies that the inference rule instantiation $\frac{e \quad c}{e’}[r]$ occurred at time $t$ on node $N_i$.</li>
+<li>An event $d@N_i = (e, r, t, c, e')$ signifies that the inference rule instantiation $\frac{e \quad c}{e'}[r]$ occurred at time $t$ on node $N_i$.</li>
 <li>A trace $\trace$ is a sequence of events.</li>
-<li>A subtrace $\trace’ \subseteq \trace$ is a subsequence of a trace.</li>
+<li>A subtrace $\trace' \subseteq \trace$ is a subsequence of a trace.</li>
 <li>Given a trace $\trace$, event $d_i@N_i$ happens-before $d_j@N_j$ if the former precedes the latter in $\trace$.</li>
 </ul>
 <p>Given a trace $\trace$, DTaP models provenance as a graph $G(\trace) = (V, E)$ where each vertex is in one of six forms:</p>
@@ -40,8 +40,8 @@ $\newcommand{\trace}{\mathcal{E}}$
 <li><code>DELETE</code>$(t, n, \tau)$ signifies that tuple $\tau$ was deleted at node $n$ at time $t$.</li>
 <li><code>DERIVE</code>$(t, n, r, \tau)$ signifies that tuple $\tau$ was derived using rule $r$ at node $n$ at time $t$.</li>
 <li><code>UNDERIVE</code>$(t, n, r, \tau)$ signifies that tuple $\tau$ was underived using rule $r$ at node $n$ at time $t$.</li>
-<li><code>SEND</code>$(t, n, \Delta \tau, n’)$ was sent from node $n$ to node $n’$ at time $t$.</li>
-<li><code>RECEIVE</code>$(t, n’, \Delta \tau, n)$ was received at node $n’$ (sent from node $n$) at time $t$.</li>
+<li><code>SEND</code>$(t, n, \Delta \tau, n')$ was sent from node $n$ to node $n'$ at time $t$.</li>
+<li><code>RECEIVE</code>$(t, n', \Delta \tau, n)$ was received at node $n'$ (sent from node $n$) at time $t$.</li>
 </ul>
 <p>Edges are added in a straightforward way. For example, when a base tuple is inserted, an <code>INSERT</code> vertex is created. Or, when a tuple is derived, a <code>DERIVE</code> vertex is created. Or, when a tuple is sent from one node to another, a <code>SENT</code> vertex is created. The graph represents a proof tree in much the same way it does in <em>TAP: Time-aware Provenance for Distributed Systems</em>.</p>
 <p>Given a provenance graph $G(\trace)$, the provenance of event $\Delta \tau$, denoted $G(\Delta\tau, \trace)$, is the subgraph of $G(\trace)$ rooted at the <code>INSERT</code> or <code>DELETE</code> node corresponding to $\Delta\tau$. Let $\mathcal{A}(\Delta\tau, \trace)$ be the subsequence of $\trace$ obtained by a topological sort of $G(\Delta\tau, \trace)$. The paper defines what it means for $\mathcal{A}(\Delta\tau, \trace)$ to be <strong>valid</strong>, <strong>sound</strong>, <strong>complete</strong>, and <strong>minimal</strong> and argues that it is all four.</p>

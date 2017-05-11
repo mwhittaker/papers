@@ -12,7 +12,7 @@
   </div>
   <div id="container">
 <h2 id="realtime-data-processing-at-facebook-2016"><a href="http://dl.acm.org/citation.cfm?id=2904441">Realtime Data Processing at Facebook (2016)</a></h2>
-<p>There’s an enormous number of stream (a.k.a. real-time, interactive) processing systems in the wild: Twitter Storm, Twitter Heron, Google Millwheel, LinkedIn Samza, Spark Streaming, Apache Flink, etc. While all similar, the stream processing systems differ in their ease of use, performance, fault-tolerance, scalability, correctness, etc. In this paper, Facebook discusses the design decisions that go into developing a stream processing system and discusses the decisions they made with three of their real-time processing systems: Puma, Swift, and Stylus.</p>
+<p>There's an enormous number of stream (a.k.a. real-time, interactive) processing systems in the wild: Twitter Storm, Twitter Heron, Google Millwheel, LinkedIn Samza, Spark Streaming, Apache Flink, etc. While all similar, the stream processing systems differ in their ease of use, performance, fault-tolerance, scalability, correctness, etc. In this paper, Facebook discusses the design decisions that go into developing a stream processing system and discusses the decisions they made with three of their real-time processing systems: Puma, Swift, and Stylus.</p>
 <p><strong>Systems Overview.</strong> - <em>Scribe.</em> Scribe is a persistent messaging system for log data. Data is organized into categories, and Scribe buckets are the basic unit of stream processing. The data pushed into scribe is persisted in HDFS. - <em>Puma.</em> Puma is a real-time data processing system in which applications are written in a SQL-like language with user defined functions written in Java. The system is designed for compiled, rather than ad-hoc, queries. It used to compute aggregates and to filter Scribe streams. - <em>Swift.</em> Swift is used to checkpoint Scribe streams. Checkpoints are made every <code>N</code> strings or every <code>B</code> bytes. Swift is used for low-throughput applications. - <em>Stylus.</em> Stylus is a low-level general purpose stream processing system written in C++ and resembles Storm, Millwheel, etc. Stream processors are organized into DAGs and the system provides estimated low watermarks. - <em>Laser.</em> Laser is a high throughput, low latency key-value store built on RocksDB. - <em>Scuba.</em> Scuba supports ad-hoc queries for debugging. - <em>Hive.</em> Hive is a huge data warehouse which support SQL queries.</p>
 <p><strong>Example Application.</strong> Imagine a stream of events, where each event belongs to a single topic. Consider a streaming application which computes the top <code>k</code> events for each topic over 5 minute windows composed of four stages:</p>
 <ol style="list-style-type: decimal">
@@ -22,7 +22,7 @@
 <li><em>Ranker.</em> The ranker computes the top <code>k</code> events per topic.</li>
 </ol>
 <p>The filterer and joiner are stateless; the scorer and ranker are stateful. The filterer and ranker can be implemented in Puma. All can be implemented in Stylus.</p>
-<p><strong>Language Paradigm.</strong> The choice of the language in which users write applications can greatly impact a system’s ease of use:</p>
+<p><strong>Language Paradigm.</strong> The choice of the language in which users write applications can greatly impact a system's ease of use:</p>
 <ul>
 <li><em>Declarative.</em> SQL is declarative, expressive, and everyone knows it. However, not all computations can be expressed in SQL.</li>
 <li><em>Functional.</em> Frameworks like Dryad and Spark provide users with a set of built-in operators which they chain together. This is more flexible that SQL.</li>
@@ -40,7 +40,7 @@
 <li>Fault Tolerance: If the producer of a stream fails, the consumer is not affected. This failure independence becomes increasingly useful at scale.</li>
 <li>Fault Tolerance: Recovery can be faster because only nodes need to be replaced.</li>
 <li>Fault Tolerance: Multiple identical downstream nodes can be run to improve fault-tolerance.</li>
-<li>Performance: Different nodes can have different read and write latencies. The system doesn’t propagate back pressure to slow down the system.</li>
+<li>Performance: Different nodes can have different read and write latencies. The system doesn't propagate back pressure to slow down the system.</li>
 <li>Ease of Use: The ability to replay messages makes debugging easier.</li>
 <li>Ease of Use: Storing messages in Scribe makes monitoring and alerting easier.</li>
 <li>Ease of Use: Having Scribe as a common substrate lets different frameworks communicate with one another.</li>
@@ -83,7 +83,7 @@
 <ul>
 <li>Running new jobs on old data is great for debugging.</li>
 <li>Sometimes, we need to run a new metric on old data to generate historical metrics.</li>
-<li>If a node has a bug, we’d like to re-run the node on the data.</li>
+<li>If a node has a bug, we'd like to re-run the node on the data.</li>
 </ul>
 <p>To re-run processing on old data, we have three choices:</p>
 <ul>

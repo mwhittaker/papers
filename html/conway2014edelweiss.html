@@ -38,7 +38,7 @@
 <p>where <code>s</code> is a scratch. If we can determine that removing <code>t</code> from <code>X</code> will not affect any other rules, then we can remove tuples like <code>t</code> from it using a rule like the following:</p>
 <pre><code>X &lt;- X intersect Y</code></pre>
 <h2 id="range-compression.">Range Compression.</h2>
-<p>Say we have a persistent table <code>Y</code> that contains ids. <code>chn_ack</code> is one such table. These tables can grow without bound. We can compactly represent <code>Y</code> as a set of ranges. For example, the relation <code>Y = {0, 1, 2, 3, 5, 6, 7, 9, 10}</code> can be represented as <code>{[0, 3], [5,7], [9, 10]}</code>. Assuming that <code>Y</code> doesn’t have too many holes, this representation will be compact.</p>
+<p>Say we have a persistent table <code>Y</code> that contains ids. <code>chn_ack</code> is one such table. These tables can grow without bound. We can compactly represent <code>Y</code> as a set of ranges. For example, the relation <code>Y = {0, 1, 2, 3, 5, 6, 7, 9, 10}</code> can be represented as <code>{[0, 3], [5,7], [9, 10]}</code>. Assuming that <code>Y</code> doesn't have too many holes, this representation will be compact.</p>
 <h2 id="punctuations.">Punctuations.</h2>
 <p>Consider a rule of the following form:</p>
 <pre><code>chn &lt;~ (X join Y) - Z</code></pre>

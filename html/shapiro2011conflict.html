@@ -23,16 +23,16 @@
 <li><code>m: S -&gt; S -&gt; S</code> is a merge method.</li>
 </ul>
 <p>All process begin with the initial state <code>s^0</code>. Clients can query the value of the object with <code>q</code> (i.e. <code>s.q()</code>) and update the object with <code>u</code> (e.g. <code>s.u(a)</code>). When processes communicate state, they are merged with <code>m</code> (e.g. <code>s_i.m(s_j)</code>).</p>
-<p>Method invocations (i.e. invocations of <code>q</code>, <code>u</code>, or <code>m</code>) are totally ordered on each process and sequentially numbered starting from 1. States are similarly ordered and numbered, updating with every method invocation:</p>
+<p>Method invocations (i.e. invocations of <code>q</code>, <code>u</code>, or <code>m</code>) are totally ordered on each process and sequentially numbered starting from 1. States are similarly ordered and numbered, updating with every method invocation:</p>
 <pre><code>s^0 . f^1 . s^1 . f^2 . s^2 . ...</code></pre>
-<p>An object’s <em>state-based causal history</em> traces its updates over logical time. Formally, a causal history <code>C = [c_1, ..., c_n]</code> is an <code>n</code>-tuple of versioned sets <code>c_i^0, c_i^1, c_i^2, ...</code> (one for each process) where each set contains updates (e.g. <code>u_i^k(a)</code>). A causal history is updated at a process <code>i</code> as follows:</p>
+<p>An object's <em>state-based causal history</em> traces its updates over logical time. Formally, a causal history <code>C = [c_1, ..., c_n]</code> is an <code>n</code>-tuple of versioned sets <code>c_i^0, c_i^1, c_i^2, ...</code> (one for each process) where each set contains updates (e.g. <code>u_i^k(a)</code>). A causal history is updated at a process <code>i</code> as follows:</p>
 <ul>
 <li>When <code>i</code> issues a query, <code>c_i</code> is unchanged. That is, <code>c_i^k = c_i^{k+1}</code>.</li>
 <li>When <code>i</code> issues an update, it is added to <code>c_i</code>. That is, <code>c_i^{k+1} = c_i^k   \cup {u_i^k}</code>.</li>
 <li>When <code>i</code> merges another state <code>s_j</code>, <code>c_i</code> and <code>c_j</code> are merged. That is, <code>c_i^{k+1} = c_i^k \cup c_j^k</code>.</li>
 </ul>
 <p>An update is <em>delivered</em> at <code>i</code> when it enters <code>c_i</code>. An update <code>u</code> <em>happens before</em> another update <code>v_i^k</code> when <code>u</code> is in <code>c_i^k</code>. Two updates are <em>concurrent</em> if neither happens before the other.</p>
-<p>These definitions are notationally dense but are a simple formalization of Lamport’s notions of logical time. Here is an illustration of how causal history evolves over time for a three process system.</p>
+<p>These definitions are notationally dense but are a simple formalization of Lamport's notions of logical time. Here is an illustration of how causal history evolves over time for a three process system.</p>
 <pre><code>p_0: {} -[u(a)]-&gt; {u(a)} -.
                            \
 p_1: {} -[q]----&gt; {} -------`-[m]-&gt; {u(a)}---.-[m]-&gt; {u(a), v(b)}

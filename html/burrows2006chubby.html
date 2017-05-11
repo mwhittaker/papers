@@ -12,18 +12,18 @@
   </div>
   <div id="container">
 <h2 id="the-chubby-lock-service-for-loosely-coupled-distributed-systems-2006"><a href="https://scholar.google.com/scholar?cluster=14281901705280588674&amp;hl=en&amp;as_sdt=0,5">The Chubby lock service for loosely-coupled distributed systems (2006)</a></h2>
-<p>Chubby is Google’s distributed lock service, implemented using consensus, that allows clients to synchronize and agree on values. Chubby is like a file system in which clients read and write entire files, but it also supports advisory locks, event notification and more. Chubby’s main goals are reliability, availability, and easy-to-understand semantics. It’s secondary goals are throughput and storage capacity.</p>
+<p>Chubby is Google's distributed lock service, implemented using consensus, that allows clients to synchronize and agree on values. Chubby is like a file system in which clients read and write entire files, but it also supports advisory locks, event notification and more. Chubby's main goals are reliability, availability, and easy-to-understand semantics. It's secondary goals are throughput and storage capacity.</p>
 <p><strong>Rationale.</strong> Chubby is a centralized lock service that internally uses Paxos. There are a number of advantages to implementing a lock service rather than providing a Paxos library that clients can use directly:</p>
 <ol style="list-style-type: decimal">
 <li>Programs are often not written like state machines which makes it difficult to integrate something like Paxos. It is significantly easier to use change code to use a lock service.</li>
 <li>Often, when Chubby is used for leader election, the elected leader has to advertise its address. Thus, it makes sense to add data serving functionality into the lock service.</li>
 <li>Locks are more familiar to programmers than state machines.</li>
-<li>To be fault tolerant and available, consensus algorithms require a minimum number of servers. By using a lock service, the need for multiple servers is centralized. Clients don’t have to run their own clusters.</li>
+<li>To be fault tolerant and available, consensus algorithms require a minimum number of servers. By using a lock service, the need for multiple servers is centralized. Clients don't have to run their own clusters.</li>
 </ol>
 <p>Moreover, there are a number of other features that are useful to have in Chubby including event notification, consistent file caching, and security</p>
 <p>Also note that Chubby is designed for coarse, as opposed to fine, grained locking. That is to say, clients hold locks for minutes to hours instead of seconds or less. This reduces the load on Chubby and makes clients less susceptible to Chubby crashes. Finer grained locking can also be implemented on top of Chubby.</p>
-<p><strong>System Structure.</strong> Chubby consists of a client library linked into applications and a small cluster (typically 5) of servers called <em>replicas</em>. Replicas use consensus to elect a master for the duration of a master lease which can be renewed by the master. The master handles reads and writes which are copied to the replicas using consensus. DNS is used to find replicas, and replicas forward clients to the current master. If a replica is down for too long (e.g. multiple hours), then it is replaced, the DNS entries are updated to point at the new server, the new server receives data from backups and other replicas, and finally the master introduces it into the cluster.</p>
-<p><strong>Files, directories, and handles.</strong> Files in Chubby are identified by a path <code>ls/cell/dir1/dir2/.../dirn/filename</code> where <code>ls</code> (lock service) identifies a Chubby file, <code>cell</code> is the name of a cell, and the rest of the path is a usual path. This naming structure integrates well into Google’s existing file libraries and tools. Chubby makes a couple of simplifying assumptions about files:</p>
+<p><strong>System Structure.</strong> Chubby consists of a client library linked into applications and a small cluster (typically 5) of servers called <em>replicas</em>. Replicas use consensus to elect a master for the duration of a master lease which can be renewed by the master. The master handles reads and writes which are copied to the replicas using consensus. DNS is used to find replicas, and replicas forward clients to the current master. If a replica is down for too long (e.g. multiple hours), then it is replaced, the DNS entries are updated to point at the new server, the new server receives data from backups and other replicas, and finally the master introduces it into the cluster.</p>
+<p><strong>Files, directories, and handles.</strong> Files in Chubby are identified by a path <code>ls/cell/dir1/dir2/.../dirn/filename</code> where <code>ls</code> (lock service) identifies a Chubby file, <code>cell</code> is the name of a cell, and the rest of the path is a usual path. This naming structure integrates well into Google's existing file libraries and tools. Chubby makes a couple of simplifying assumptions about files:</p>
 <ul>
 <li>Files cannot be moved between directories.</li>
 <li>Directories do not maintain last modified times.</li>
@@ -68,9 +68,9 @@
 <li>Recreates old handles when necessary.</li>
 <li>Deletes ephemeral files after some delay.</li>
 </ol>
-<p><strong>DB.</strong> Originally, Chubby used BerkeleyDB (BDB), but BDB’s replication support was young. Moreover, Chubby didn’t need all of the functionality. Ultimately, Chubby threw out BDB and implemented a persistence layer itself.</p>
+<p><strong>DB.</strong> Originally, Chubby used BerkeleyDB (BDB), but BDB's replication support was young. Moreover, Chubby didn't need all of the functionality. Ultimately, Chubby threw out BDB and implemented a persistence layer itself.</p>
 <p><strong>Backup.</strong> Periodically, Chubby masters back up their state in another cell in GFS.</p>
-<p><strong>Mirroring.</strong> Chubby’s event notifications make it easy to mirror directories.</p>
+<p><strong>Mirroring.</strong> Chubby's event notifications make it easy to mirror directories.</p>
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>

@@ -14,7 +14,7 @@
 <h2 id="analysis-and-evolution-of-journaling-file-systems-2005"><a href="TODO">Analysis and Evolution of Journaling File Systems (2005)</a></h2>
 <p><strong>Summary.</strong> The authors develop and apply two file system analysis techniques dubbed <em>Semantic Block-Level Analysis</em> (SBA) and <em>Semantice Trace Playback</em> (STP) to four journaled file systems: ext3, ReiserFS, JFS, and NTFS.</p>
 <ul>
-<li>Benchmarking a file system can tell you for <em>which</em> workloads it is fast and for which it is slow. But, these benchmarks don’t tell you <em>why</em> the file system performs the way it does. By leveraging semantic information about block traces, SBA aims to identify the cause of file system behavior.</li>
+<li>Benchmarking a file system can tell you for <em>which</em> workloads it is fast and for which it is slow. But, these benchmarks don't tell you <em>why</em> the file system performs the way it does. By leveraging semantic information about block traces, SBA aims to identify the cause of file system behavior.</li>
 </ul>
 <p>Users install an SBA driver into the OS and mount the file system of interest on to the SBA driver. The interposed driver intercepts and logs all block-level requests and responses to and from the disk. Moreover, the SBA driver is specialized to each file system under consideration so that it can interpret each block operation, categorizing it as a read/write to a journal block or regular data block. Implementing an SBA driver is easy to do, guarantees that no operation goes unlogged, and has low overhead. - Deciding the effectiveness of new file system policies is onerous. For example, to evaluate a new journaling scheme, you would traditionally have to implement the new scheme and evaluate it on a set of benchmarks. If it performs well, you keep the changes; otherwise, you throw them away. STP uses block traces to perform a light-weight simulation to analyze new file system policies without implementation overhead.</p>
 <p>STP is a user-level process that reads in block traces produced by SBA and file system operation logs and issues direct I/O requests to the disk. It can then be used to evaluate small, simple modifications to existing file systems. For example, it can be used to evaluate the effects of moving the journal from the beginning of the file system to the middle of the file system.</p>
@@ -28,7 +28,7 @@
 <ul>
 <li>The fastest journaling mode depends heavily on the workload.</li>
 <li>Compound transactions can lead to <em>tangled synchrony</em> in which asynchronous operations are made synchronous when placed in a transaction with synchronous operations.</li>
-<li>In ordered journaling, ext3 doesn’t concurrently write to the journal and the disk.</li>
+<li>In ordered journaling, ext3 doesn't concurrently write to the journal and the disk.</li>
 </ul>
 <p>SPT was also used to analyze the effects of</p>
 <ul>

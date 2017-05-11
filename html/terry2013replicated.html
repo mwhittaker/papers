@@ -128,10 +128,10 @@ CP BS MR RMW
 </table>
 <p><strong>Read Requirements for Participants.</strong> Different users of the baseball database have different consistency requirements:</p>
 <ul>
-<li><em>Official scorekeeper.</em> The official scorekeeper is the sole person responsible for updating the scores (e.g. `Write(“visitors”, Read(“visitors”)</li>
+<li><em>Official scorekeeper.</em> The official scorekeeper is the sole person responsible for updating the scores (e.g. `Write(&quot;visitors&quot;, Read(&quot;visitors&quot;)</li>
 <li>1)`). The scorekeeper requires strongly consistent writes, but since they are the only one writing, they can get by with RMW instead of SC.</li>
 <li><em>Umpire.</em> The umpire reads the score after the top of the 9th inning to see if the home team is winning. This requires SC.</li>
-<li><em>Radio reporter.</em> The radio reporter reports the current score of the game every 30 minutes. The score doesn’t have to be fresh, but it should be a score that existed at some point. Moreover, the score should not time travel backwards. We can accomplish this with CP and MR. Alternatively, we can use 30-minute BS.</li>
+<li><em>Radio reporter.</em> The radio reporter reports the current score of the game every 30 minutes. The score doesn't have to be fresh, but it should be a score that existed at some point. Moreover, the score should not time travel backwards. We can accomplish this with CP and MR. Alternatively, we can use 30-minute BS.</li>
 <li><em>Sports writer.</em> The sports writer writes a report of the game one hour after the game is over. 1 hour BS suffices.</li>
 <li><em>Statistician.</em> The statistician maintains the total yearly runs. They require SC to read the daily runs but only RMW to read the yearly runs.</li>
 <li><em>Stat watcher.</em> Stat watchers read the stats every day or so. Eventual consistency suffices.</li>
