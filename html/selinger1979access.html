@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="access-path-selection-in-a-relational-database-management-system-1979"><a href="https://scholar.google.com/scholar?cluster=102545501597608314">Access Path Selection in a Relational Database Management System (1979)</a></h1>
+<p>SQL queries declaratively describe some subset of the tuples in a database, but they do not specify the method by which these tuples should be retrieved. The same SQL query can be implemented in <em>many</em> different ways. For example, a single-relation query can be implemented with a full table scan, with an index scan, with an index-only scan, etc. Each of these different methods of accessing tuples is called an <strong>access path</strong>, and it's the job of the query optimizer to select the most efficient access path. This paper explores how System R's query optimizer selects access paths.</p>
+<h2 id="processing-of-a-sql-statement">Processing of a SQL Statement</h2>
+<p>A SQL query goes through four phases: parsing, optimization, code generation, and execution. First, the query is <strong>parsed</strong> where it is decomposed into a set of SELECT-FROM-WHERE <strong>query blocks</strong>. Then, it is <strong>optimized</strong>. The optimizer first typechecks the query against type information in the catalog. It then chooses an order to evaluate the blocks and for each block chooses an access path. Each access path is expressed in the <strong>Access Specification Language</strong> (ASL). Then, the ASL plans are <strong>compiled</strong> to machine code by a table-driven code generator that maps specific forms of joins to precompiled machine code. Subqueries are treated as subroutines. Finally, the query is ready to be <strong>executed</strong>.</p>
+<h2 id="research-storage-system">Research Storage System</h2>
+<p>The <strong>Research Storage System</strong> (RSS) is System R's storage subsystem that is responsible for managing the physical layout and physical access of relations. Tuples are stored in 4KB pages, and pages are logically organized into segments. Tuples from different relations can share the same pages (each tuple is annotated with the id of its relation), but each relation is sequestered to a single segment. Tuples are accessed through the tuple-oriented Relation Storage Interface (RSI) which supports an OPEN/NEXT/CLOSE scan interface. The RSI supports full segment scans as well as B-tree backed index scans (including range scans). Moreover, the RSI accepts a set of <strong>search arguments</strong> or (SARGS)&#8212;a collection of predicates of the form <code>column op value</code> in disjunctive normal form&#8212;to filter the returned tuples. If a predicate is in the form <code>column op value</code>, we say it's a <strong>sargable predicate</strong>.</p>
+<h2 id="costs-for-single-relation-access-paths">Costs for Single Relation Access Paths</h2>
+<p>System R's query optimizer tries to select an access path which minimizes cost as defined by the following formula:</p>
+<pre><code>COST = PAGE_FETCHES + w*RSI_CALLS</code></pre>
+<p><code>PAGE_FETCHES</code> (the number of page fetches) is a measure of the amount of I/O a query has to perform, and <code>RSI_CALLS</code> (the number of calls to the RSI) is a measure of the amount of CPU a query has to perform. <code>RSI_CALLS</code> also approximates the number of tuples a query returns.</p>
+<p>The System R catalog maintains the following statistics which are used by the query optimizer. They are updated periodically.</p>
+<ul>
+<li><strong><code>NCARD(T)</code></strong>: the cardinality of relation <code>T</code>.</li>
+<li><strong><code>TCARD(T)</code></strong>: the number of pages that hold tuples from relation <code>T</code>.</li>
+<li><strong><code>P(T)</code></strong>: <code>TCARD(T)</code> divided by the number of pages in <code>T</code>'s segment.</li>
+<li><strong><code>ICARD(I)</code></strong>: The number of distinct keys in index <code>I</code>.</li>
+<li><strong><code>NINDX(I)</code></strong>: the number of pages in index <code>I</code>.</li>
+</ul>
+<p>The WHERE clause of a query is considered in conjunctive normal form, and each conjunct is called a <strong>boolean factor</strong>. The query optimizer estimates a <strong>selectivity factor</strong> <code>F</code> for each boolean factor with the following rules.</p>
+<table>
+  <tr>
+    <td>
+<code>column = value</code>
+</td>
+    <td>
+<code>F = 1 / ICARD(column index)</code>
+</td>
+    <td>
+If there exists an index.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column = value</code>
+</td>
+    <td>
+<code>F = 1 / 10</code>
+</td>
+    <td>
+If there does not exist an index.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column1 = column2</code>
+</td>
+    <td>
+<code>F = 1 / MAX(ICARD(columnn1 index), ICARD(columnn2 index))</code>
+</td>
+    <td>
+If there exists two indexes.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column1 = column2</code>
+</td>
+    <td>
+<code>F = 1 / ICARD(columnni index)</code>
+</td>
+    <td>
+If there exists one index.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column1 = column2</code>
+</td>
+    <td>
+<code>F = 1 / 10</code>
+</td>
+    <td>
+If there does not exist an index.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column &gt; value</code>
+</td>
+    <td>
+<code>F = (high key - value) / (high key - low key)</code>
+</td>
+    <td>
+If <code>column</code> is arithmetic.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column &gt; value</code>
+</td>
+    <td>
+<code>F = 1/3</code>
+</td>
+    <td>
+If <code>column</code> is not arithmetic.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column BETWEEN value1 AND value2</code>
+</td>
+    <td>
+<code>F = (value2 - value1) / (high key - low key)</code>
+</td>
+    <td>
+If <code>column</code> is not arithmetic.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column BETWEEN value1 AND value2</code>
+</td>
+    <td>
+<code>F = 1/4</code>
+</td>
+    <td>
+If <code>column</code> is not arithmetic.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column IN (list of values)</code>
+</td>
+    <td>
+<code>F = (number of items in list) * (F for column=value)</code>
+</td>
+    <td>
+Capped at <code>1/2</code>.
+</td>
+  </tr>
+  <tr>
+    <td>
+<code>column IN subquery</code>
+</td>
+    <td>
+<code>F = (expected cardinality of subquery result) /              (product of subquery FROM cardinalities)</code>
+</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>
+<code>a OR b</code>
+</td>
+    <td>
+<code>F = F(a) + F(b) - F(a)*F(b)</code>
+</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>
+<code>a AND b</code>
+</td>
+    <td>
+<code>F = F(a)*F(b)</code>
+</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>
+<code>NOT a</code>
+</td>
+    <td>
+<code>F = 1 - F(a)</code>
+</td>
+    <td></td>
+  </tr>
+</table>
+
+<p>The cardinality of query (QCARD) is the product of the sizes of the relations in the FROM clause multiplied by the selectivity factor of every boolean factor in the WHERE clause. The number of RSI calls (RSICARD) is the product of the sizes of the relations in the FROM clause multiplied by the selectivity of the sargable boolean factors.</p>
+<p>Some access paths produce tuples in a particular order. For example, an index scan produces tuples in the order of the index key. If this order is consistent with the order of a GROUP BY or ORDER BY clause, we say it is an <strong>interesting order</strong>. The query optimizer computes the minimum cost unordered plan and the minimum cost plan for every interesting order. After taking into account the (potential) additional overhead of sorting unordered tuples for a GROUP BY or ORDER BY, the least cost plan is selected.</p>
+<table>
+  <tr>
+    <td>
+Unique index matching an equal predicate.
+</td>
+    <td>
+<code>1 + 1 + W</code>
+</td>
+  </tr>
+  <tr>
+    <td>
+Clustered index <code>I</code> matching one or more boolean factors.
+</td>
+    <td>
+<code>F(preds)*(NINDX(I) + TCARD) + W*RSICARD</code>
+</td>
+  </tr>
+  <tr>
+    <td>
+Non-clustered index <code>I</code> matching one or more boolean factors.
+</td>
+    <td>
+<code>F(preds)*(NINDX(I) + NCARD) + W*RSICARD</code>
+</td>
+  </tr>
+  <tr>
+    <td>
+Clustered index <code>I</code> not matching any boolean factors
+</td>
+    <td>
+<code>NINDX(I) + TCARD + W*RSICARD</code>
+</td>
+  </tr>
+  <tr>
+    <td>
+Non-clustered index <code>I</code> not matching any boolean factors
+</td>
+    <td>
+NINDX(I) + NCARD + W*RSICARD
+</td>
+  </tr>
+  <tr>
+    <td>
+Segment scan.
+</td>
+    <td>
+TCARD/P + W*RSICARD
+</td>
+  </tr>
+</table>
+
+
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
