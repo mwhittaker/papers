@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="the-volcano-optimizer-generator-extensibility-and-efficient-search-1993"><a href="https://scholar.google.com/scholar?cluster=23045311511264775115">The Volcano Optimizer Generator: Extensibility and Efficient Search (1993)</a></h1>
+<p>Query optimizers take in a query (e.g. <code>SELECT x FROM Foo WHERE x = 10 ORDER BY x</code>) and output a plan to efficiently execute the query (e.g. Perform a B+ tree index only scan on <code>Foo</code>). <strong>Optimizer generators</strong> take in a model of queries and plans and output a query optimizer that performs the actual optimization. This paper describes the Volcano optimizer generator which is an improved version of the authors' previous work on the EXODUS optimizer generator.</p>
+<h2 id="optimizer-generator-input-and-optimizer-output">Optimizer Generator Input and Optimizer Output</h2>
+<p>The Volcano optimizer generator takes as input the following things.</p>
+<ol style="list-style-type: decimal">
+<li><strong>A set of logical operators</strong> (and their arities) that compose the <strong>logical algebra</strong> in which queries are written. For example, the logical algebra of a relational database is the relational algebra, and the operators include things like select, project, and join.</li>
+<li><strong>A set of physical algorithms</strong> (and their arities) that compose the <strong>physical algebra</strong> in which plans are formed. For example, the physical operators of a relational database would be things like sort-merge join, hash join, nested loop join, full table scan, etc.</li>
+<li><strong>A set of algebraic transformation rules</strong> which transform a logical algebra expression into another logical algebra expression. These rules are written like the rules you'd see in a match expression in a functional programming language. For example, <code>a JOIN b -&gt; b JOIN a</code> is a rule which says joining is commutative.</li>
+<li><strong>A set of implementation rules</strong> which define how a logical algebra expression can be mapped to a physical algebra expression. For example, <code>a    JOIN b -&gt; a TNLJ b</code> is a rule which says that a join can be implemented using a tuple-nested loop join.</li>
+<li>Some algorithms have no corresponding logical algebra operator. For example, the sort algorithm has no corresponding logical relational operator. These algorithms are called <strong>enforcers</strong> and are used to enforce certain physical properties without affecting logical semantics.</li>
+<li><strong>An abstract cost data type</strong> and <strong>a cost function</strong> for each algorithm and enforcer. Volcano generated query optimizers try to find a plan with minimum cost, but the definition of cost is left to the database implementor. For example, a cost function for a relational database could count the number of I/Os. A System R style cost function might take into consideration the number of I/Os and the expected CPU cost. The cost function assigns a cost to each algorithm and enforcer.</li>
+<li><strong>An abstract data type for logical and physical properties.</strong> Logical properties describe logical algebra expressions (technically, equivalence classes of logical algebra expressions). For example, a logical property might be the number of output tuples or the schema of the output. Physical properties describe physical algebra expressions. For example, a physical property might be the sort order. Users must also supply a <strong>property function</strong> for each operator, algorithm, and enforcer.</li>
+<li><strong>An applicability function for each algorithm and enforcer</strong> which returns whether or not an algorithm or enforcer can implement a logical algebra expression and provide a certain set of physical properties. The applicability function also outputs the physical properties required of its inputs. For example, the sort merge join algorithm can implement a logical join with the requirement that the output is sorted on the join columns with the requirements that both of its inputs are sorted on the join columns.</li>
+</ol>
+<h2 id="design-principles">Design Principles</h2>
+<p>The Volcano optimizer generator follows the following design principles:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Lots of domains can be modelled with algebras.</strong> Here, the term algebra is used a bit loosely and roughly refers to things that look like relational algebra.</li>
+<li><strong>Patterns and rules are great for specifying transformations.</strong></li>
+<li><strong>Don't use intermediate representations.</strong> Just compile straight from queries to plans. This simplifies the life of a database implementer as they no longer have to specify a bunch of intermediate representations.</li>
+<li><strong>Compile plans, don't interpret them.</strong></li>
+<li><strong>Use dynamic programming in the search algorithm.</strong></li>
+</ol>
+<h2 id="the-search-engine">The Search Engine</h2>
+<p>The algorithm used by Volcano generated query optimizers uses backwards-chaining and dynamic programming.</p>
+<p>The algorithm takes as input (1) a logical expression to optimize, (2) a set of physical properties to satisfy (e.g. a sort order specified by a query), and (3) a cost limit. The cost limit can be set to infinity, but can also be set to some smaller number to ensure that no outrageously expensive plan is generated.</p>
+<p>The algorithm maintains a memoization table mapping pairs of (logical expression equivalence class, set of physical properties) to the most efficient physical plan found so far.</p>
+<p>For example, consider (1) the following input query with (2) no physical properties to satisfy and (3) an infinite cost limit.</p>
+<div id="tree1" style="width: 100%; height: 150pt;">
+
+</div>
+<p>The algorithm considers three <strong>moves</strong> it can perform. <em>First</em>, it can apply a logical transformation rule to convert the query to an equivalent query. For example, we might rewrite the query to reorder the join, as shown below. After we transform the query, we recurse.</p>
+<div id="tree2" style="width: 100%; height: 150pt;">
+
+</div>
+<p><em>Second</em>, we can instantiate a logical operator which a physical algorithm. We use the applicability function to determine whether the algorithm can implement the operator and satisfy the physical properties. We then recurse on the children of the algorithm using the required physical properties generated by the applicability function. If we ever bust the cost limit, we bail out early. Here, we instantiate the top join with a sort merge join.</p>
+<div id="tree3" style="width: 100%; height: 150pt;">
+
+</div>
+<p>Then, we recurse on the children. Here, we show the left child with the requirement that the output of this child is sorted on the join column of the sort merge join.</p>
+<div id="tree4" style="width: 100%; height: 75pt;">
+
+</div>
+<p><em>Third</em>, we can apply an enforcer. For example, we could apply a sort enforcer for this child and recurse on the same logical algebra expression but without the requirement that the output is sorted (it will be sorted by the sort enforcer).</p>
+<p>See the paper for a full description of the algorithm and an overview of some small tricks to speed things up.</p>
+<h2 id="comparison-to-the-exodus-optimizer-generator">Comparison to the EXODUS Optimizer Generator</h2>
+<p>The EXODUS code was messy and slow. Here are the main differences between EXODUS and Volcano.</p>
+<ol style="list-style-type: decimal">
+<li>EXODUS did not distinguish logical from physical algebra which led to some inefficiencies.</li>
+<li>EXODUS had no notion of physical properties.</li>
+<li>EXODUS did not use a top-down search strategy and ended up re-analyzing a lot of things. In particular, it would optimize the root of the tree then change the leaves and end up having to re-optimize the roots.</li>
+<li>EXODUS did not have a generic cost function.</li>
+<li>It is easier to modify Volcano's generated search strategy.</li>
+</ol>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.1.0/cytoscape.min.js"></script>
+<script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.js"></script>
+<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script>
+<script type="text/javascript">
+  function main() {
+    var style = [
+      {
+        selector: "node",
+        style: {
+          "background-color": "white",
+          "text-halign": "center",
+          "text-valign": "center",
+          "label": "data(label)",
+        }
+      },
+      {
+        selector: "edge",
+        style: {
+          "width": 2,
+          "line-color": "#ccc",
+        }
+      }
+    ];
+
+    var layout = {
+      name: "dagre",
+      padding: 0,
+      nodeSep: 20,
+      edgeSep: 20,
+      rankSep: 20,
+    };
+
+    var tree1 = cytoscape({
+      container: document.getElementById("tree1"),
+      elements: [
+        {data: {id: "j1", label: "JOIN"}},
+        {data: {id: "j2", label: "JOIN"}},
+        {data: {id: "a",  label: "A"}},
+        {data: {id: "b",  label: "B"}},
+        {data: {id: "c",  label: "C"}},
+        {data: {source: "j1", target: "j2"}},
+        {data: {source: "j1", target: "c"}},
+        {data: {source: "j2", target: "a"}},
+        {data: {source: "j2", target: "b"}},
+      ],
+      style: style,
+      layout: layout,
+    });
+
+    var tree2 = cytoscape({
+      container: document.getElementById("tree2"),
+      elements: [
+        {data: {id: "j1", label: "JOIN"}},
+        {data: {id: "j2", label: "JOIN"}},
+        {data: {id: "a",  label: "A"}},
+        {data: {id: "b",  label: "B"}},
+        {data: {id: "c",  label: "C"}},
+        {data: {source: "j1", target: "j2"}},
+        {data: {source: "j1", target: "b"}},
+        {data: {source: "j2", target: "a"}},
+        {data: {source: "j2", target: "c"}},
+      ],
+      style: style,
+      layout: layout,
+    });
+
+    var tree3 = cytoscape({
+      container: document.getElementById("tree3"),
+      elements: [
+        {data: {id: "j1", label: "SMJ"}},
+        {data: {id: "j2", label: "JOIN"}},
+        {data: {id: "a",  label: "A"}},
+        {data: {id: "b",  label: "B"}},
+        {data: {id: "c",  label: "C"}},
+        {data: {source: "j1", target: "j2"}},
+        {data: {source: "j1", target: "b"}},
+        {data: {source: "j2", target: "a"}},
+        {data: {source: "j2", target: "c"}},
+      ],
+      style: style,
+      layout: layout,
+    });
+
+    var tree4 = cytoscape({
+      container: document.getElementById("tree4"),
+      elements: [
+        {data: {id: "j1", label: "JOIN"}},
+        {data: {id: "a",  label: "A"}},
+        {data: {id: "c",  label: "C"}},
+        {data: {source: "j1", target: "a"}},
+        {data: {source: "j1", target: "c"}},
+      ],
+      style: style,
+      layout: layout,
+    });
+
+    var trees = [tree1, tree2, tree3, tree4];
+    for (var i = 0; i < trees.length; ++i) {
+      var tree = trees[i];
+      tree.panningEnabled(false);
+      tree.userPanningEnabled(false);
+      tree.zoomingEnabled(false);
+      tree.userZoomingEnabled(false);
+      tree.boxSelectionEnabled(false);
+      tree.nodes().ungrabify();
+    }
+  }
+
+  window.onload = main;
+</script>
+
+
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
