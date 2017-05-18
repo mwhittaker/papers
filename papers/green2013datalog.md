@@ -353,5 +353,5 @@ each negated predicate as if it were in the EDB.  Moreover, if a rule is linear
 recursive, we can simplify the algorithm even further (see book for details).
 
 <script type="text/javascript" async
-  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
