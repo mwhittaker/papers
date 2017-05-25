@@ -9,9 +9,9 @@
 - [x] `saltzer1984end.md`
 - [x] `agrawal1987concurrency.md`
 - [x] `stonebraker1987design.md`
-- [ ] `herlihy1990linearizability.md`
-- [ ] `stonebraker1991postgres.md`
-- [ ] `golub1992microkernel.md`
+- [x] `herlihy1990linearizability.md`
+- [x] `stonebraker1991postgres.md`
+- [x] `golub1992microkernel.md`
 - [ ] `carriero1994linda.md`
 - [ ] `waldspurger1994lottery.md`
 - [ ] `berenson1995critique.md`

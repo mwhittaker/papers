@@ -11,30 +11,30 @@
     <a href="../">Papers</a>
   </div>
   <div id="container">
-<h2 id="microkernel-operating-system-architecture-and-mach-1992"><a href="https://scholar.google.com/scholar?cluster=1074648542567860981&amp;hl=en&amp;as_sdt=0,5">Microkernel Operating System Architecture and Mach (1992)</a></h2>
-<p><strong>Summary.</strong> A <em>microkernel</em> is a very minimal, very low-level piece of code that interfaces with hardware to implement the functionality needed for an operating system. Operating systems implemented using a microkernel architecture, rather than a monolithic kernel architecture, implement most of the operating system in user space on top of the microkernel. This architecture affords many advantages including:</p>
+<h1 id="microkernel-operating-system-architecture-and-mach-1992"><a href="https://scholar.google.com/scholar?cluster=1074648542567860981">Microkernel Operating System Architecture and Mach (1992)</a></h1>
+<p>A <strong>microkernel</strong> is a very minimal, very low-level piece of code that interfaces with hardware to implement the functionality needed for an operating system. Operating systems implemented using a microkernel architecture, rather than a monolithic kernel architecture, implement most of the operating system in user space on top of the microkernel. This architecture affords many advantages including:</p>
 <ul>
-<li><em>tailorability</em>: many operating systems can be run on the same microkernel</li>
-<li><em>portability</em>: most hardware-specific code is in the microkernel</li>
-<li><em>network accessibility</em>: operating system services can be provided over the network</li>
-<li><em>extensibility</em>: new operating system environments can be tested along side existing ones</li>
-<li><em>real-time</em>: the kernel does not hold locks for very long</li>
-<li><em>multiprocessor support</em>: microkernel operations can be parallelized across processors</li>
-<li><em>multicomputer support</em>: microkernel operations can be parallelized across computers</li>
-<li><em>security</em>: a microkernel is a small trusted computing base</li>
+<li><strong>tailorability</strong>: many operating systems can be run on the same microkernel</li>
+<li><strong>portability</strong>: most hardware-specific code is in the microkernel</li>
+<li><strong>network accessibility</strong>: operating system services can be provided over the network</li>
+<li><strong>extensibility</strong>: new operating system environments can be tested along side existing ones</li>
+<li><strong>real-time</strong>: the kernel does not hold locks for very long</li>
+<li><strong>multiprocessor support</strong>: microkernel operations can be parallelized across processors</li>
+<li><strong>multicomputer support</strong>: microkernel operations can be parallelized across computers</li>
+<li><strong>security</strong>: a microkernel is a small trusted computing base</li>
 </ul>
 <p>This paper describes various ways in which operating systems can be implemented on top of the Mach microkernel. Mach's key features include:</p>
 <ul>
-<li><em>task and thread management</em>: Mach supports tasks (i.e. processes) and threads. Mach implements a thread scheduler, but privileged user level programs can alter the thread scheduling algorithms.</li>
-<li><em>interprocess communication</em>: Mach implements a capabilities based IPC mechanism known as ports. Every object in Mach (e.g. tasks, threads, memory) is managed by sending message to its corresponding port.</li>
-<li><em>memory object management</em>: Memory is represented as memory objects managed via ports.</li>
-<li><em>system call redirection</em>: Mach allows a number of system calls to be caught and handled by user level code.</li>
-<li><em>device support</em>: Devices are represented as ports.</li>
-<li><em>user multiprocessing</em>: Tasks can use a user-level threading library.</li>
-<li><em>multicomputer support</em>: Mach abstractions can be transparently implemented on distributed hardware.</li>
-<li><em>Continuations</em>: In a typical operating system, when a thread blocks, all of its registers are stored somewhere before another piece of code starts to run. Its stack is also left intact. When the blocking thread is resumed, its stored registers are put back in place and the thread starts running again. This can be wasteful if the thread doesn't need all of the registers or its stack. In Mach, threads can block with a continuation: an address and a bunch of state. This can be more efficient since the thread only saves what it needs to keep executing.</li>
+<li><strong>task and thread management</strong>: Mach supports tasks (i.e. processes) and threads. Mach implements a thread scheduler, but privileged user level programs can alter the thread scheduling algorithms.</li>
+<li><strong>interprocess communication</strong>: Mach implements a capabilities based IPC mechanism known as ports. Every object in Mach (e.g. tasks, threads, memory) is managed by sending message to its corresponding port.</li>
+<li><strong>memory object management</strong>: Memory is represented as memory objects managed via ports.</li>
+<li><strong>system call redirection</strong>: Mach allows a number of system calls to be caught and handled by user level code.</li>
+<li><strong>device support</strong>: Devices are represented as ports.</li>
+<li><strong>user multiprocessing</strong>: Tasks can use a user-level threading library.</li>
+<li><strong>multicomputer support</strong>: Mach abstractions can be transparently implemented on distributed hardware.</li>
+<li><strong>Continuations</strong>: In a typical operating system, when a thread blocks, all of its registers are stored somewhere before another piece of code starts to run. Its stack is also left intact. When the blocking thread is resumed, its stored registers are put back in place and the thread starts running again. This can be wasteful if the thread doesn't need all of the registers or its stack. In Mach, threads can block with a continuation: an address and a bunch of state. This can be more efficient since the thread only saves what it needs to keep executing.</li>
 </ul>
-<p>Many different operating systems can be built on top of Mach. It's ideal that applications built for these operating systems can continue to run unmodified even when the underlying OS is implemented on top of Mach. A key part of this virtualization is something called an <em>emulation library</em>. An emulation library is a piece of code inserted into an application's address space. When a program issues system call, Mach immediately redirects control flow to the emulation library to process it. The emulation library can then handle the system call by, for example, issuing an RPC to an operating system server.</p>
+<p>Many different operating systems can be built on top of Mach. It's ideal that applications built for these operating systems can continue to run unmodified even when the underlying OS is implemented on top of Mach. A key part of this virtualization is something called an <strong>emulation library</strong>. An emulation library is a piece of code inserted into an application's address space. When a program issues system call, Mach immediately redirects control flow to the emulation library to process it. The emulation library can then handle the system call by, for example, issuing an RPC to an operating system server.</p>
 <p>Operating systems built on Mach can be architected in one of three ways:</p>
 <ol style="list-style-type: decimal">
 <li>The entire operating system can be baked into the emulation library.</li>
