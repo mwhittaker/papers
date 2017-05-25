@@ -84,7 +84,7 @@ primary and backup. When a node fails, reads are redirected to the backup.
 Moreover, requests can be smeared across the non-failed nodes in a clever way
 to balance requests; see paper for details.
 
-Other shared-nothing databases implement **interleaved*declustering**. With
+Other shared-nothing databases implement **interleaved declustering**. With
 interleaved declustering, the `n` disks are partitioned into logical clusters.
 Partition `i`'s primary is stored on disk `i`, and partition `i`'s secondary is
 partitioned among the other nodes in the cluster. This scheme cannot tolerate
