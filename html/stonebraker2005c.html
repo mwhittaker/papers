@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="c-store-a-column-oriented-dbms-2005"><a href="https://scholar.google.com/scholar?cluster=12924804892742402591">C-store: A Column-oriented DBMS (2005)</a></h1>
+<p>Row-oriented databases---databases that store data a row at a time---are write-optimized and suitable for OLTP workloads. Column-oriented databases---databases that store data a column at a time---are read-optimized and are suitable for OLAP workloads. This paper presents C-Store: a distributed shared-nothing column-oriented database.</p>
+<p>C-Store has a number of notable features which make it super fast. First, C-Store physically physically stores relations as sets of compressed columns called projections. Second, projections are divided between large read-optimized storage (RS) and smaller writable-storage (WS). A tuple mover periodically moves tuples from WS to RS. Finally, read-only queries can be run on a past snapshot of the data.</p>
+<h2 id="data-model">Data Model</h2>
+<p>Consider a table <code>R(a,b,c)</code>. A <strong>projection</strong> anchored on R is a subset of the columns of <code>R</code> (without deduplication) sorted on some subset of the columns called the <strong>sort key</strong>. For example <code>R1(a,b)</code> sorted on <code>a</code>, <code>R2(b,c)</code> sorted on <code>c</code> and <code>R3(a,c)</code> sorted on <code>c,a</code> are all projections anchored on <code>R</code>. C-Store a table as a set of projections that cover the table.</p>
+<p>Projections are stored column-wise and are horizontally range-partitioned on their sort key into a set of <strong>segments</strong>. Segments distributed across the nodes in a C-Store cluster. Moreover, the same column can appear in multiple projections. Projections can include columns from other relations as well so long as the two tables are linked by a foreign key.</p>
+<p>Column entries in a projection is assigned a logical <strong>storage key</strong> that is unique within a projection (but not across projections). Column entries with the same storage key belong to the same logical tuple. Column entries in WS explicitly store their storage keys whereas tuples in RS compute them when necessary based on entry offsets.</p>
+<p>C-Store uses <strong>join indexes</strong> to combine multiple projections together. A join index from one projection <code>P1</code> to another <code>P2</code> is a two-columned relation that is the exact same size as <code>P1</code>. The ith row of the join index is a tuple <code>(s,sk)</code> which says that the ith tuple in <code>P1</code> corresponds to the tuple in segment <code>s</code> of <code>P2</code> with storage key <code>sk</code>. Note that join indexes are difficult to maintain in the face of updates.</p>
+<h2 id="read-optimized-storage">Read-Optimized Storage</h2>
+<p>Columns in RS are compressed in one of four ways depending on (a) whether the column is part of the sort key (<strong>self-ordered</strong>) or not (<strong>foreign-ordered</strong>) and (b) how many distinct values are in the column.</p>
+<ul>
+<li><em>Self-ordered and few distinct values.</em> A column is stored as set of <code>(v,f,n)</code> tuples where value <code>v</code> appears <code>n</code> times at index <code>f</code>. A dense B+ tree is stored on the <code>v</code> field.</li>
+<li><em>Foreign-ordered and few distinct values.</em> A column is stored as a set of <code>(v,b)</code> tuples where <code>b</code> is a bitmap indicating which entries have value <code>v</code>. A dense B+ tree maps indexes to values.</li>
+<li><em>Self-ordered and many distinct values.</em> A column is stored as blocks of <code>value,delta,delta,delta</code>. For example, the sequence <code>0,3,7,7,9</code> is stored as <code>0,3,3,0,2</code>.</li>
+<li><em>Foreign-ordered and many distinct values.</em> Here, a column is not compressed.</li>
+</ul>
+<h2 id="writable-storage">Writable Storage</h2>
+<p>WS has the same physical design as RS; relations are stored as a collection of projections. Moreover, WS is horizontally partitioned exactly like RS, so that each segment in RS is co-located with its corresponding segment in WS.</p>
+<p>WS does not compress its projections. Whenever a tuple is inserted into WS, it is assigned a storage key larger than any in RS, and each column entry explicitly stores its storage key. Each column has a B+ tree mapping storage key to value, and a single B+ tree maps sort keys to storage key.</p>
+<h2 id="updates-and-transactions">Updates and Transactions</h2>
+<p>C-Store stratifies time into a sequence of <strong>epochs</strong> and supports historical queries at a particular epoch. C-Store maintains a lower and upper bound on the epochs at which a query can be run dubbed the <strong>low water mark</strong> and <strong>high water mark</strong>.</p>
+<p>In order to support historical queries, tuples are not updated in place. Instead, updates are represented as deletion followed by an insertion. Thus, a historical query at epoch <code>t</code> must determine the tuples which were inserted before <code>t</code> and deleted after <code>t</code>. To do, WS maintains an <strong>insertion vector</strong> and <strong>deleted record vector</strong> which contain the epoch during which each tuple was inserted and deleted. Tuples in RS are guaranteed to have been inserted before the low water mark.</p>
+<p>To maintain the high water mark, C-Store designates one node as the <strong>timestamp authority</strong>. Periodically, the timestamp authority sends a message to all other nodes telling them to increment their epoch. When a node receives this message, it increments its epoch and waits for all pending transactions to finish before responding to the timestamp authority. Once the timestamp authority hears back from all nodes, it increments the high water mark.</p>
+<p>C-Store uses strict two-phase locking, write ahead logging, a recovery mechanism similar to ARIES, and a distributed commit protocol similar to two-phase commit. See the paper for more details.</p>
+<!-- TODO(mwhittaker): Understand this section more deeply. -->
+
+<h2 id="tuple-mover">Tuple Mover</h2>
+<p>Periodically, a tuple mover moves tuples from WS into RS. It first selects all the tuples that were inserted before the low watermark. The ones that were deleted before the low watermark are thrown away. The others are merged into RS.</p>
+<p>The tuple mover creates a new segment <code>S'</code> for a segment <code>S</code> in RS. It moves any tuples from <code>S</code> into <code>S'</code> that were not deleted and also merges in the tuples from WS. After finishing the merge and updating join indexes, <code>S</code> and <code>S'</code> are swapped.</p>
+<h2 id="query-execution">Query Execution</h2>
+<p>Query plans in C-Store are built with the following operators:</p>
+<ul>
+<li><strong><code>Decompress</code></strong> decompresses a compressed column.</li>
+<li><strong><code>Select</code></strong> produces a bitmap for a selection.</li>
+<li><strong><code>Mask</code></strong> applies a bitmap to a projection.</li>
+<li><strong><code>Project</code></strong> projects column.</li>
+<li><strong><code>Sort</code></strong> sorts a projection by a sort key.</li>
+<li><strong><code>Aggregation Operators</code></strong> aggregate.</li>
+<li><strong><code>Concat</code></strong> concatenates multiple projections sorted on the same key.</li>
+<li><strong><code>Permute</code></strong> permutes a projection according to a join index.</li>
+<li><strong><code>Join</code></strong> joins.</li>
+<li><strong><code>Bitstring Operators</code></strong> performs bitwise operations.</li>
+</ul>
+<p>The work-in-progress C-Store query optimizer differs from a traditional row-oriented query optimizer because it has to take into account (a) the cost of decompressing data vs operating on compressed data and (b) which projections to use to implement a query.</p>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
