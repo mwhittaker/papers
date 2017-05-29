@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="calvin-fast-distributed-transactions-for-partitioned-database-systems-2012"><a href="https://scholar.google.com/scholar?cluster=11098336506858442351">Calvin: Fast Distributed Transactions for Partitioned Database Systems (2012)</a></h1>
+<p>Some distributed data stores do not support transactions at all (e.g. Dynamo, MongoDB). Some restrict transactions to a single row (e.g. BigTable). Some support ACID transactions but only single-partition transactions (e.g. H-Store). Calvin---when combined with an underlying storage system---is a distributed database that supports distributed ACID transactions without incurring the overhead of protocols like Paxos or two-phase commit.</p>
+<h2 id="deterministic-database-systems">Deterministic Database Systems</h2>
+<p>In a traditional distributed database, a node executes a transaction by acquiring some locks, reading and writing data, and then participating in a distributed commit protocol like two-phase commit. Because these distributed commit protocols are slow, the node ends up holding locks for a long period of time, a period of time called the <strong>contention footprint</strong>. As contention footprints increase, more and more transactions block and the throughput of the system goes down.</p>
+<p>Calvin shrinks contention footprints by having nodes agree to commit a transaction <em>before</em> they acquire locks. Once they agree, they <em>must</em> execute the transaction as planned. They cannot abort.</p>
+<p>To understand how to prevent aborts, we first recall why protocols like two-phase commit abort in the first place. Traditionally, there are two reasons:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Nondeterministic events</strong> like a node failure.</li>
+<li><strong>Deterministic events</strong> like a transaction with an explicit abort.</li>
+</ol>
+<p>Traditional commit protocols abort in the face of nondeterministic events, but fundamentally don't have to. In order to avoid aborting a transaction in the face of node failure, Calvin runs the same transaction on multiple nodes. If any one of the nodes fail, the others are still alive to carry the transaction to fruition. When the failed node recovers, it can simply recover from another replica.</p>
+<p>However, if we execute the same batch of transactions on multiple nodes, it's possible they may execute in different orders. For example, one node might serialize a transaction <code>T1</code> before another transaction <code>T2</code> while some other node might serialize <code>T2</code> before <code>T1</code>. To prevent replicas from diverging, Calvin implements a deterministic concurrency control scheme which ensures that all replicas serialize all transactions in the same way. In short, Calvin predetermines a global order in which transactions should commit.</p>
+<!-- TODO(mwhittaker): Understand this part of the paper. -->
+<p>The paper also argues that deterministic events can be handled in a one-phase protocol, though I don't understand the details.</p>
+<h2 id="system-architecture">System Architecture</h2>
+<p>Calvin is not a stand-alone database. Rather, it is a piece of software that you layer on to an existing storage system. Calvin, along with a storage system, has three main layers:</p>
+<ol style="list-style-type: decimal">
+<li>The <strong>sequencing layer</strong> globally orders all transactions. Nodes execute transactions in a way that is equivalent to this global serial order.</li>
+<li>The <strong>scheduling layer</strong> executes transactions.</li>
+<li>The <strong>storage layer</strong> stores data.</li>
+</ol>
+<h2 id="sequencing-and-replication">Sequencing and Replication</h2>
+<p>Clients submit transactions to one of the many sequencing nodes in Calvin. Calvin windows the transactions into 10 millisecond epochs. At the end of each epoch, a sequencing node will (asynchronously or synchronously) replicate the batch of transactions. Then, it will send the relevant transactions to the other partitions in its replica. Once a sequencing node receives all the transactions during a given epoch, it orders them by unique sequencing node id.</p>
+<p>Sequencing nodes can replicate transactions in one of two ways. First, a sequencing node can immediately send transactions to other sequencing nodes and replicate transactions asynchronously. This makes recovery very complex. Second, sequencing nodes in the same <strong>replication group</strong> can run Paxos.</p>
+<h2 id="scheduling-and-concurrency-control">Scheduling and Concurrency Control</h2>
+<p>Calvin transactions are written in C++, and each transaction must provide its read and write set up front (more on this momentarily). Each scheduling node acquires locks locally and runs two-phase locking with a minor variant:</p>
+<ul>
+<li>If transaction <code>A</code> is scheduled before transaction <code>B</code> in the global order, then <code>A</code> must acquire any locks that conflict with <code>B</code> before <code>B</code> acquires them.</li>
+</ul>
+<p>Transaction execution proceeds as follows.</p>
+<ol style="list-style-type: decimal">
+<li>A node analyzes the read and write set of a transaction to determine which reads and writes are remote.</li>
+<li>A node performs all local reads.</li>
+<li>A node sends its local reads to the other nodes that need them.</li>
+<li>A node collects remote reads sent by other nodes.</li>
+<li>A node runs the transaction and performs local writes.</li>
+</ol>
+<p>Transactions must specify their read and write sets ahead of time, but the read and write set of some transactions---dubbed <strong>dependent transactions</strong>---depend on values read. To support these transactions, Calvin implements <strong>optimistic lock location prediction</strong> (OLLP). First, the transaction is run unreplicated and the read and write set is recorded. Then, the transaction is issued again with this read and write set. Once the transaction acquires locks, it checks that the read set has not changed.</p>
+<h2 id="calvin-with-disk-based-storage">Calvin with Disk-Based Storage</h2>
+<p>Deterministic scheduling means that transactions execute less concurrently. If transaction <code>A</code> precedes and conflicts with transaction <code>B</code>, then <code>B</code> has to wait for <code>A</code> to finish before acquiring locks, fetching data from disk, and then executing. Fetching data from disks while holding locks increases the contention footprint of the transaction.</p>
+<p>To overcome this, a sequencing node does not immediately send a transaction to a scheduler if it knows the transaction will end up blocking. Instead, it delays sending the transaction and notifies the scheduler to fetch all the needed pages into memory. To do this effectively, Calvin must (a) estimate disk IO latencies and (b) record which pages have been fetched into memory. The mechanism to do this are future work.</p>
+<h2 id="checkpointing">Checkpointing</h2>
+<p>Calvin supports three forms of checkpointing for recovery:</p>
+<ol style="list-style-type: decimal">
+<li>Naively, Calvin can freeze one replica and snapshot it allowing the other replicas to continue processing.</li>
+<li>Calvin implements a variant of the Zig-Zag algorithm in which a certain point in the global transaction order is marked for checkpoint. All transactions that execute after the point write to new versions of the data. The old versions are checkpointed.</li>
+<li>If the underlying storage system supports multiple versions, Calvin can leverage that for checkpointing.</li>
+</ol>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
