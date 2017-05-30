@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="spanner-googles-globally-distributed-database-2012"><a href="https://scholar.google.com/scholar?cluster=3523173873845838643">Spanner: Google's Globally Distributed Database (2012)</a></h1>
+<p>Spanner is Google's globally distributed, linearizable, semi-relational database. It supports full linearizable read-write transactions, read-only transaction, and snapshot read transactions. It implements linearizable transactions using TrueTime.</p>
+<h2 id="implementation">Implementation</h2>
+<p>A (global) Spanner instance called a <strong>universe</strong> (e.g. test, dev, prod). Each universe contains multiple databases, and the data within a database is replicated across multiple <strong>zones</strong>. Each zone has</p>
+<ul>
+<li>hundreds of <strong>span servers</strong> which store and serve data,</li>
+<li>a <strong>zone master</strong> which assigns data to span servers, and</li>
+<li>multiple <strong>location proxies</strong> that the span servers use to find the zone master.</li>
+</ul>
+<p>A universe also has a single <strong>universe master</strong> that's used to debug a universe and a single <strong>placement driver</strong> which moves data between zones.</p>
+<p>Each span server manages 100-1000 <strong>tablets</strong> where each tablet is dictionary of type <code>(key: string, timestamp: int64) -&gt; string</code>. Tablets are stored in B+ trees and write-ahead logs which are stored in Colossus. Each tablet is replicated across multiple span servers in multiple zones using Paxos. This group of span servers is called a <strong>Paxos group</strong>.</p>
+<p>One member of each Paxos group is designated as leader. The leader maintains a lock table for pessimistic concurrency control. It also implements a transaction manager and acts as a <strong>participant leader</strong>; the other members of the Paxos group are <strong>participant slaves</strong>. The participant leader performs two-phase commit with other participant leaders. The leader of the two-phase commit is the <strong>coordinator leader</strong>; the other participant leaders are <strong>coordinator slaves</strong>.</p>
+<p>Each tablet contains multiple directories. A <strong>directory</strong> is a contiguous range of rows prefixed by the same key. Data is moved between Paxos groups directory by directory (e.g. to reduce load on a Paxos group, to co-locate directories commonly accessed together, to place a directly geographically closer to a reader).</p>
+<p>Spanner supports a hierarchical relational model in which certain relations are nested under parent relations. Every table <em>must</em> have a primary key and the primary key of a child table is prefixed by the primary key of the parent table. A row of a root table is stored contiguously with the rows of its children forming a directory.</p>
+<h2 id="truetime">TrueTime</h2>
+<p>TrueTime is a library for getting bounds on the actual global time. It provides a function <code>TT.now()</code> which returns a tuple <code>(earliest, latest)</code> with the guarantee that the actual time is somewhere between <code>earliest</code> and <code>latest</code>.</p>
+<p>The TrueTime API is implemented with a combination of GPS clocks and atomic clocks spread across multiple <strong>time masters</strong> within a data center. Periodically, time masters synchronize with one another. Time masters also check against their local clock, evicting themselves if there is too much drift. TrueTime clients poll multiple time masters and run Marzullo's algorithm.</p>
+<h2 id="concurrency-control">Concurrency Control</h2>
+<p>Spanner labels every transaction with a timestamp. It supports four types of transactions:</p>
+<ol style="list-style-type: decimal">
+<li>(Linearizable) read-write transactions.</li>
+<li>(Linearizable) read-only transactions.</li>
+<li>Snapshot read transactions at a user specified timestamp.</li>
+<li>Snapshot read transactions with a user specified staleness bound.</li>
+</ol>
+<p>Spanner guarantees that transactions are linearizable, so if a transaction <code>T1</code> commits before transaction <code>T2</code> starts, then the timestamp of <code>T1</code> must be less than the timestamp of <code>T2</code>. To do so, it ensures that the timestamp of a transaction is between the actual start time and the actual end time. Here's how it does that:</p>
+<ul>
+<li><strong>Start</strong> When a transaction arrives at Spanner, Spanner retrieves an interval <code>(earliest, latest)</code> using TrueTime. It then ensures that the transaction's timestamp is greater than <code>latest</code>.</li>
+<li><strong>Commit</strong> When Spanner is about to commit a transaction, it retrieves an interval <code>(earliest, latest)</code> using TrueTime and waits until <code>earliest</code> is greater than the timestamp.</li>
+</ul>
+<p>Spanner implements Paxos with long-lived leaders. Leaders establish disjoint leases during which they are leader. A Paxos group assigns timestamps in monotonically increasing fashion.</p>
+<p>Read-only transactions at time <code>t</code> can be serviced by any partition that is up-to-date enough with respect to <code>t</code>. To know whether a partition is up to date, each partition maintains a <code>t_safe</code> high watermark. <code>t_safe</code> is the minimum of a safe Paxos timestamp <code>t_Paxos</code> and a safe two-phase commit timestamp <code>t_TM</code>. <code>t_Paxos</code> is the timestamp of the oldest Paxos write, and since Paxos writes are processed in order, so no write will precede <code>t_Paxos</code>. <code>t_TM</code> is a lower bound on the commit time of pending transactions.</p>
+<p>Clients buffer reads and writes as they execute a transaction. To read, they contact a replica leader to acquire read locks and use keepalives to hold on to their locks. When they are done with their transaction, they send their buffered writes to a coordinator leader to initiate two-phase commit.</p>
+<p>Spanner also implements atomic schema change.</p>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
