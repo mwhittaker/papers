@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="building-efficient-query-engines-in-a-high-level-language-2014"><a href="https://scholar.google.com/scholar?cluster=11118963220228843116">Building Efficient Query Engines in a High-Level Language (2014)</a></h1>
+<p>Traditionally, query compilation is done using <strong>template expansion</strong>. Fragments of a SQL query are pattern matched and substituted with one of a set of hand-written machine code fragments. Template expansion</p>
+<ul>
+<li>prevents inter-operator optimizations,</li>
+<li>is very brittle and hard to implement, and</li>
+<li>prevents re-compilation based on runtime information.</li>
+</ul>
+<p>LegoBase is a query engine written in Scala that avoids these pitfalls. LegoBase compiles the heck out of a query plan (also written in Scala) into a C program that can execute the query plan. LegoBase performs a number of optimizations that other query compilers do not do. Plus, it's written in a high-level language!</p>
+<h2 id="an-example-query">An Example Query</h2>
+<p>Consider the following SQL query:</p>
+<pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">SELECT</span> *
+<span class="kw">FROM</span> (<span class="kw">SELECT</span> S.D,
+             <span class="fu">SUM</span>(<span class="dv">1</span>-S.B) <span class="kw">AS</span> E,
+             <span class="fu">SUM</span>(S.A*(<span class="dv">1</span>-S.B)),
+             <span class="fu">SUM</span>(S.A*(<span class="dv">1</span>-S.B)*(<span class="dv">1</span>+S.C))
+      <span class="kw">FROM</span> S
+      <span class="kw">GROUP</span> <span class="kw">BY</span> S.D) T, R
+<span class="kw">WHERE</span> R.Z = T.E <span class="kw">AND</span> R.B = <span class="dv">3</span></code></pre>
+<p>A traditional query compiler will likely miss the following optimization opportunities:</p>
+<ul>
+<li>There are many common subexpressions (e.g. <code>1-S.B</code>, <code>S.A*(1-S.B)</code>) which can be eliminated.</li>
+<li>A naive implementation of this query will first create a hash table to store the aggregates of <code>T</code>. Then, if the join is a hash join, another hash table will be created to store <code>T</code>. We can materialize <code>T</code> into a single hash table rather than materializing it twice.</li>
+<li>Instead of storing <code>T</code> into a hash table, we can play some tricks and use an array instead.</li>
+</ul>
+<h2 id="staged-compilation-and-lms">Staged Compilation and LMS</h2>
+<p>LegoBase makes heavy use of <strong>Lightweight Modular Staging</strong> (LMS): a library for compiling and optimizing (at runtime) high-level Scala fragments into lower-level Scala fragments. For example, this Scala code:</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> <span class="fu">snippet</span>(x: Rep[Int]) = {
+  <span class="kw">def</span> <span class="fu">compute</span>(b: Boolean): Rep[Int] = {
+    <span class="kw">if</span> (b) <span class="dv">1</span> <span class="kw">else</span> x
+  }
+  <span class="fu">compute</span>(<span class="kw">true</span>)+<span class="fu">compute</span>(<span class="dv">1</span>==<span class="dv">1</span>)
+}</code></pre>
+<p>is compiled to this:</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> <span class="fu">snippet</span>(x1:Int): Int = {
+  <span class="dv">2</span>
+}</code></pre>
+<p>and this code:</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> <span class="fu">snippet</span>(x: Rep[Int]) = {
+  <span class="kw">def</span> <span class="fu">compute</span>(b: Rep[Boolean]): Rep[Int] = {
+    <span class="kw">if</span> (b) <span class="dv">1</span> <span class="kw">else</span> x
+  }
+  <span class="fu">compute</span>(x==<span class="dv">1</span>)
+}</code></pre>
+<p>is compiled to this:</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> <span class="fu">apply</span>(x3:Int): Int = {
+  <span class="kw">val</span> x4 = x3 == <span class="dv">1</span>
+  <span class="kw">val</span> x5 = <span class="kw">if</span> (x4) { <span class="dv">1</span> } <span class="kw">else</span> { x3 }
+  x5
+}</code></pre>
+<p>In short, LMS partially evaluates as much of the Scala code as it can while leaving the expressions of <code>Rep[T]</code> to be computed by the compiled code.</p>
+<p>LMS compiles Scala to Scala. LegoBase extends LMS by compiling LMS-produces Scala into C code. Moreover, LegoBase introduces a set of database-specific optimizations.</p>
+<h2 id="general-execution-workflow">General Execution Workflow</h2>
+<p>A LegoBase-equipped database begins by converting a SQL query into a query plan using an off-the-shelf query optimizer. It then takes the query plan and replaces each operator with a LegoBase operator. It then compiles the heck out of the query plan using LMS and other tricks to produce a C program which can execute the query.</p>
+<p>This architecture also allows LegoBase to re-compile queries based on changing runtime information. For example, the compiled code does not need to have any conditionals checking whether a <code>log</code> flag is set. Instead, LegoBase can recompile the code every time the <code>log</code> flag is toggled.</p>
+<h2 id="generating-efficient-c-code">Generating Efficient C Code</h2>
+<p>Lowering and compiling LMS-produced Scala code is reasonably straightforward. High-level features like objects and inheritance are compiled away, while low-level features like loops and conditionals are translated in the obvious way. There are two bits of complication though:</p>
+<ol style="list-style-type: decimal">
+<li>If the Scala code calls into a Scala library (e.g. it uses a hash map from the standard library), the corresponding C code has to call into an appropriate library. LegoBase compiles data structure library calls into calls to GLib.</li>
+<li>Scala has a garbage collector and C doesn't. LegoBase requires that source Scala code manually annotates allocations and deallocations.</li>
+</ol>
+<h2 id="optimizations">Optimizations</h2>
+<p>Next, we take a look at the optimizations LegoBase provides.</p>
+<h3 id="pull-to-push">Pull to Push</h3>
+<p>Some have argued that a Volcano-style pull based model of execution incurs unnecessary overhead. A faster approach is for data to be repeatedly pushed upwards through a tree until it is materialized (e.g. in a hash table somewhere). LegoBase converts pull based operators into push based operators.</p>
+<p>First, callees have to be converted to callers. Instead of the <code>next</code> method returning a single tuple, <code>next</code> instead repeatedly (i.e. in a while loop) generates a tuple <code>t</code> and calls <code>parent.next(t)</code>. Second, callers have to be converted to callees. The <code>next</code> method is converted to a <code>next(t: Record)</code> method which accepts a tuple pushed by a child.</p>
+<h3 id="eliminating-redundant-materializations">Eliminating Redundant Materializations</h3>
+<p>As mentioned earlier, naive implementations of certain query plans can unnecessarily materialize a tuple in multiple places. LegoBase allows you to pattern match on a query plan and eliminate redundant materializations. For example, one pattern might match hash joins whose left child is an aggregate and replace it with a single operator that only materializes the aggregates once.</p>
+<h3 id="data-structure-specialization">Data Structure Specialization</h3>
+<p>It's convenient to write operators using hash tables, but hash tables sometimes be a bit slow. LegoBase can convert hash tables to arrays whose size is set based on runtime estimates of query size. It can also inline hash and equality functions used by the hash table.</p>
+<h3 id="changing-data-layout">Changing Data Layout</h3>
+<p>LegoBase can automatically convert operators that use a row-oriented data layout into operators that use a column-oriented data layout. If all queries are known ahead of time, the optimizer can even remove unneeded columns.</p>
+<link href='../css/default_highlight.css' rel='stylesheet'>
+<script src="../js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
