@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="the-madlib-analytics-library-or-mad-skills-the-sql-2012"><a href="https://scholar.google.com/scholar?cluster=2154261383124050736">The MADlib Analytics Library or MAD Skills, the SQL (2012)</a></h1>
+<p>MADlib is a library of machine learning and statistics functions that integrates into a relational database. For example, you can store labelled training data in a relational database and run logistic regression over it like this:</p>
+<pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">SELECT</span> madlib.logregr_train(
+&#160;&#160;<span class="st">&#39;patients&#39;</span>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- source table</span>
+&#160;&#160;<span class="st">&#39;patients_logregr&#39;</span>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- output table</span>
+&#160;&#160;<span class="st">&#39;second_attack&#39;</span>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- labels</span>
+&#160;&#160;<span class="st">&#39;ARRAY[1, treatment, trait_anxiety]&#39;</span>,&#160;<span class="co">-- features</span>
+&#160;&#160;NULL,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- grouping columns</span>
+&#160;&#160;<span class="dv">20</span>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- max number of iterations</span>
+&#160;&#160;<span class="st">&#39;irls&#39;</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- optimizer</span>
+);</code></pre>
+<p>MADlib programming is divided into two conceptual types of programming: macro-programming and micro-programming. <strong>Macro-programming</strong> deals with partitioning matrices across nodes, moving matrix partitions, and operating on matrices in parallel. <strong>Micro-programming</strong> deals with writing efficient code which operates on a single chunk of a matrix on one node.</p>
+<h2 id="macro-programming">Macro-Programming</h2>
+<p>MADlib leverages user-defined aggregates to operate on matrices in parallel. A user defined-aggregate over a set of type <code>T</code> comes in three pieces.</p>
+<ul>
+<li>A <strong>transition function</strong> of type <code>A -&gt; T -&gt; A</code> folds over the set.</li>
+<li>A <strong>merge function</strong> of type <code>A -&gt; A -&gt; A</code> merges intermediate aggregates.</li>
+<li>A <strong>final function</strong> <code>A -&gt; B</code> translates the final aggregate.</li>
+</ul>
+<p>Standard user-defined aggregates aren't sufficient to express a lot of machine learning algorithms. They suffer two main problems:</p>
+<ol style="list-style-type: decimal">
+<li>User-defined aggregates cannot easily iterate over the same data multiple times. Some solutions involve counted iteration by joining with virtual tables, window aggregates, and recursion. MADlib elects to express iteration using small bits of Python driver code that stores state between iterations in temporary tables.</li>
+<li>User-defined aggregates are not polymorphic. Each aggregate must explicitly declare the type of its input, but some aggregates are pretty generic. MADlib uses Python UDFs which generate SQL based on input type.</li>
+</ol>
+<h2 id="micro-programming">Micro-Programming</h2>
+<p>MADlib user-defined code calls into fast linear algebra libraries (e.g. Eigen) for dense linear algebra. MADlib implements its own sparse linear algebra library in C. MADlib also provides a C++ abstraction for writing low-level linear algebra code. Notably, it translates C++ types into database types and integrates nicely with libraries like Eigen.</p>
+<h2 id="examples">Examples</h2>
+<p>Least squares regression can be computed in a single pass of the data. Logistic regression and k-means clustering require a Python driver to manage multiple iterations.</p>
+<h2 id="university-research">University Research</h2>
+<p>Wisconsin implemented stochastic gradient descent in MADlib. Berkeley and Florida implemented some statistic text analytics features including text feature expansion, approximate string matching, Viterbi inference, and MCMC inference (though I don't know what any of these are).</p>
+<link href='../css/default_highlight.css' rel='stylesheet'>
+<script src="../js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
