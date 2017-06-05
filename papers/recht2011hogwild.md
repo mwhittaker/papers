@@ -1,9 +1,9 @@
 # [Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent (2011)](https://scholar.google.com/scholar?cluster=15767443633562170558)
-Hogwild! is a lock-free algorithm that implements stochastic gradient descent
-on a multi-core machine. Sparsity is defined formally later, but intuitively if
-each step of a stochastic gradient descent only updates a small part of the
-weight vector, we say it is sparse. The authors also provide a theoretical
-analysis of Hogwild!.
+Hogwild! is a lock-free algorithm that implements sparse stochastic gradient
+descent on a multi-core machine. Sparsity is defined formally later, but
+intuitively if each step of a stochastic gradient descent only updates a small
+part of the weight vector, we say it is sparse. The authors also provide a
+theoretical analysis of Hogwild!.
 
 ## Sparse Separable Cost Functions
 Hogwild! performs stochastic gradient descent on cost functions $f: \reals^n

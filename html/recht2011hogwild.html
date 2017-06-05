@@ -12,7 +12,7 @@
   </div>
   <div id="container">
 <h1 id="hogwild-a-lock-free-approach-to-parallelizing-stochastic-gradient-descent-2011"><a href="https://scholar.google.com/scholar?cluster=15767443633562170558">Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent (2011)</a></h1>
-<p>Hogwild! is a lock-free algorithm that implements stochastic gradient descent on a multi-core machine. Sparsity is defined formally later, but intuitively if each step of a stochastic gradient descent only updates a small part of the weight vector, we say it is sparse. The authors also provide a theoretical analysis of Hogwild!.</p>
+<p>Hogwild! is a lock-free algorithm that implements sparse stochastic gradient descent on a multi-core machine. Sparsity is defined formally later, but intuitively if each step of a stochastic gradient descent only updates a small part of the weight vector, we say it is sparse. The authors also provide a theoretical analysis of Hogwild!.</p>
 <h2 id="sparse-separable-cost-functions">Sparse Separable Cost Functions</h2>
 Hogwild! performs stochastic gradient descent on cost functions $f: \reals^n \to \reals$ of the following form:
 <div class="math">
