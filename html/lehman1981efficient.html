@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<div hidden="">
+
+</div>
+<h1 id="efficient-locking-for-concurrent-operations-on-b-trees-1981"><a href="https://scholar.google.com/scholar?cluster=4919657903329720293">Efficient Locking for Concurrent Operations on B-Trees (1981)</a></h1>
+<p>This paper introduces the <strong>B-link tree</strong>: a variant of a B+ tree (the paper says B* tree, but they mean B+ tree) which allows for concurrent searches, insertions, and deletions. Operations on a B-link tree lock at most three nodes at any given time, and searches are completely lock free.</p>
+<h2 id="storage-model">Storage Model</h2>
+<p>We assume that every node of a B+ tree or B-link tree is stored on disk. Threads read nodes from disk into memory, modify them in memory, and then write them back to disk. Threads can also lock a specific node which will block other threads trying to acquire a lock on the same node. However, we'll also see that threads performing a search will not acquire locks at all and may read a node which is locked by another thread.</p>
+<h2 id="concurrent-b-trees">Concurrent B+ Trees</h2>
+<p>Let's see what goes wrong when we concurrently search and insert into a B+ tree without any form of concurrency control. Consider a fragment of a B+ tree shown below with two nodes <code>x</code> and <code>y</code>. Imagine a thread is searching for the value 2 and reads the pointer to <code>y</code> from <code>x</code>.</p>
+<pre><code>            +-------+
+          x | 5 |   |
+            +-------+
+           /    |
+  +-------+    ...
+y | 1 | 2 |
+  +-------+</code></pre>
+<p>Then, another thread inserts the value <code>3</code> which reorganizes the tree like this:</p>
+<pre><code>            +-------+
+          x | 2 | 5 |
+            +-------+
+           /    |    \
+  +-------+ +-------+ ...
+y | 1 |   | | 2 | 3 |
+  +-------+ +-------+</code></pre>
+<p>Next, the searching thread reads from <code>y</code> but cannot find the value 2!</p>
+<p>Clearly, concurrently searching and inserting into a B+ tree requires some sort of locking. There are already a number of locking protocols:</p>
+<ul>
+<li>The simplest protocol requires searches and insertions to lock every node along their path from root to leaf. This protocol is correct, but limits concurrency.</li>
+<li>Smarter protocols have insertions place write intention locks along a path and upgrade those locks to exclusive locks when performing a write. Searches can read nodes with write intention locks on them but not with exclusive locks on them.</li>
+<li>Even smarter protocols lock a subsection of the tree and bubble this subsection upwards through the tree. B-link trees will do something similar but will guarantee that at most three nodes are locked at any given point in time.</li>
+</ul>
+<h2 id="b-link-trees">B-link Trees</h2>
+<p>B-link trees are B+ trees with two small twists:</p>
+<ol style="list-style-type: decimal">
+<li>Typically, an internal node in a B+ tree with $n$ keys has $n + 1$ pointers. For example, if an internal node has keys $(5, 10, 15)$, then it has four pointers for values in the range $[-\infty, 5)$, $[5, 10)$, $[10, 15)$, and $[15, \infty)$. Internal nodes in a B-link tree with $n$ keys have $n$ pointers where the last key is known as the <strong>high key</strong>. For example, if an internal node has keys $(5, 10, 15)$ then it has three pointers for values in the range $[-\infty, 5)$, $[5, 10)$, and $[10, 15)$.</li>
+<li>In a B+ tree, leaves are linked together, but internal nodes are not. In a B-link tree, all sibling nodes (internal nodes and leaves) are linked together left to right.</li>
+</ol>
+<h2 id="search-algorithm">Search Algorithm</h2>
+<p>The search algorithm for a B-link tree is very similar to the search algorithm for a B+ tree. To search for a key $k$, we traverse the tree from root to leaf. At every internal node, we compare $k$ against the internal node's keys to determine which child to visit next.</p>
+<p>However, unlike with a B+ tree, we might have to walk rightward along the B-link tree to find the correct child pointer. For example, imagine we are searching for the key $20$ at an internal node $(5, 10, 15)$. Because $20 \gt 15$, we have to walk rightward to the next internal node which might have keys $(22, 27, 35)$. We do something similar at leaves as well to find the correct value.</p>
+<p>Note that searching does not acquire any locks.</p>
+<h2 id="insertion-algorithm">Insertion Algorithm</h2>
+<p>To insert a key $k$ into a B-link tree, we begin by traversing the tree from root to leaf in exactly the same way as we did for the search algorithm. We walk downwards and rightwards and do not acquire locks. One difference is that we maintain a stack of the rightmost visited node in each level of the tree. Later, we'll use the stack to walk backwards up the tree.</p>
+<p>One we reach a leaf node, we acquire a lock on it and crab rightward until we reach the correct leaf node $a$. If $a$ is not full, then we insert $k$ and unlock $a$. If $a$ is full, then we split it into $a'$ (previously $a$) and $b'$ (freshly allocated). We flush $b'$ to disk and then flush $a'$ to disk. Next, we have to adjust the parent of $a'$ (formerly $a'$). We acquire a lock on the parent node and then crab rightward until we reach the correct parent node. At this point, we repeat our procedure upwards through the tree.</p>
+<p>At worst, we hold three locks at a time.</p>
+<h2 id="correctness-proof">Correctness Proof</h2>
+<p>To prove that the B-link tree works as we intend, we have to prove three things:</p>
+<ol style="list-style-type: decimal">
+<li>First, we have to prove that multiple threads operating on a B-link tree cannot deadlock. This is straightforward. If we totally order nodes bottom-to-top and left-to-right, then threads always acquire locks according to this total order.</li>
+<li>Second, we have to prove that whenever a node modifies a B-link tree, the B-link tree still appears like a valid tree to all nodes except the modifying thread. Again, this is straightforward. The insertion procedure only makes three writes to disk.
+<ul>
+<li>Writing to a node that is not full clearly does not invalidate the tree.</li>
+<li>Writing a newly allocated $b'$ node does not affect the tree because there are not any pointers to it.</li>
+<li>Writing $a'$ atomically transitions the tree from one legal state to another.</li>
+</ul></li>
+<li>Finally, we have to ensure that concurrently executing operations do not interfere with one another. See paper for proof (it's complicated).</li>
+</ol>
+<h2 id="deletion">Deletion</h2>
+<p>B-link trees punt on deletion. They simply let leaf nodes get underfull and periodically lock the whole tree and reorganize it if things get too sparse.</p>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
