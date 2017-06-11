@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="improved-query-performance-with-variant-indexes-1997"><a href="https://scholar.google.com/scholar?cluster=3279297021955127822">Improved Query Performance with Variant Indexes (1997)</a></h1>
+<p>This paper surveys three types of indexes: value-list indexes (old), bit-sliced indexes (new), and projection indexes (new). It then shows how to compute aggregates, range predicates, and OLAP queries using these three types of indexes.</p>
+<h2 id="value-list-indexes">Value-List Indexes</h2>
+<p>A <strong>Value-List index</strong> is a B+ tree index. Each leaf of a Value-List index either stores a list of record ids (RIDs) or a bitmap.</p>
+<p>A <strong>bitmap</strong> on a set $T$ of $n$ tuples compactly represents a subset of $T$. It is implemented as an $M$-length bitstring and a mapping $m: T \to [0, M-1]$. If $t_i$ is present in the subset, then the $m(t_i)$th bit in the bitstring is set. Note that $m(t_i)$ does not have to be $i$. Often times, if a tuple $t$ is the $i$th tuple on page $p$, then $m(t)$ is a number $j$ where the high order bits of $j$ are $p$ and the low order bits of $j$ are $i$.</p>
+<p>The leaf entry for key $k$ in a bitmap Value-List index is a bitmap indicating which tuples have key $k$. If the index key of the B+ tree has only a few values, then a bitmap B+ tree can take up less space than an RID B+ tree.</p>
+<p>Moreover, bitwise operations over a bitmap can be computed very efficiently. This comes in handy. For example, imagine we have the query <code>SELECT * FROM R WHERE a and b</code>. If we compute two bitmaps $f_a$ and $f_b$ indicating which tuples of <code>R</code> satisfy <code>a</code> and <code>b</code>, then we can quickly compute the bitwise AND of $f_a$ and $f_b$.</p>
+<p>Imagine that we can fit 1000 bits on a single page. We can segment the rows of a table into sets of 1000. This lets us compress RID lists and also avoid some bitstring operations (see paper for details).</p>
+<h2 id="projection-indexes">Projection Indexes</h2>
+<p>A <strong>projection index</strong> on a column is just that column stored contiguously. For example, if we had the following table <code>R(a, b, c)</code>:</p>
+<pre><code>+---+---+---+
+| a | b | c |
++---+---+---+
+| 1 | 2 | 3 |
+| 2 | 3 | 4 |
+| 3 | 4 | 5 |
+| 4 | 5 | 6 |
+| 5 | 6 | 7 |
++---+---+---+</code></pre>
+<p>then a projection index on <code>b</code> would be</p>
+<pre><code>+---+
+| b |
++---+
+| 2 |
+| 3 |
+| 4 |
+| 5 |
+| 6 |
++---+</code></pre>
+<h2 id="bit-sliced-indexes">Bit-Sliced Indexes</h2>
+<p>Imagine a column of integers that looks something like this:</p>
+<pre><code>+---+
+| 0 |
+| 1 |
+| 2 |
+| 3 |
+| 4 |
++---+</code></pre>
+<p>We can view each integer as a bitstring:</p>
+<pre><code>+-----+
+| 000 |
+| 001 |
+| 010 |
+| 011 |
+| 100 |
++-----+</code></pre>
+<p>A <strong>bit-sliced index</strong> stores a bitstring for every column of bits. For example, a bit-sliced index on the column above would store <code>00001</code> (first column), <code>00110</code> (second column), and <code>01010</code> (third column).</p>
+<h2 id="computing-aggregates-with-indexes">Computing Aggregates with Indexes</h2>
+<p>Imagine we want to compute the query <code>SELECT SUM(c) FROM R WHERE p</code> for some predicate <code>p</code>. Imagine we have already computed a bitmap $f_p$ indicating which tuples satisfy <code>p</code>. Here's how compute the query with the various indexes:</p>
+<ol style="list-style-type: decimal">
+<li><strong>No index.</strong> Without any index, we're forced to read through <code>R</code>. Assuming that only a fraction of the tuples in <code>R</code> satisfy <code>p</code>, some pages of <code>R</code> end up not having any satisfied tuples, so we don't have to read those.</li>
+<li><strong>Value-List bitmap index.</strong> We iterate over every key $k$ to retrieve a bitamap $f_k$ and compute the bitwise AND of $f_k$ and $f_p$. We compute the popcount of this AND, multiply it by $k$, and add it to our running sum.</li>
+<li><strong>Projection index.</strong> We iterate through the projection index and add any value with a bit set in $f_p$.</li>
+<li><strong>Bit-sliced index.</strong> For each column $c_i$, we add $\text{popcount}(i) * 2^i$ to our sum.</li>
+</ol>
+<p>There are other algorithms to compute other aggregate functions as well (see paper). Here is a summary of the best index for each aggregate:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Aggregate</th>
+<th align="left">Best Index</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">sum</td>
+<td align="left">bit-sliced</td>
+</tr>
+<tr class="even">
+<td align="left">count</td>
+<td align="left">no index needed</td>
+</tr>
+<tr class="odd">
+<td align="left">average</td>
+<td align="left">bit-sliced</td>
+</tr>
+<tr class="even">
+<td align="left">max/min</td>
+<td align="left">value-list</td>
+</tr>
+<tr class="odd">
+<td align="left">median</td>
+<td align="left">value-list</td>
+</tr>
+</tbody>
+</table>
+<h2 id="computing-range-predicates-with-indexes">Computing Range Predicates with Indexes</h2>
+<p>Imagine we want to compute the query <code>SELECT * FROM c &gt; 100 AND p</code> where for some arbitrary predicate <code>p</code>. Given a bitmap $f_p$ indicating which tuples satisfy <code>p</code>, we want to compute a bitmap $f$ indicating which tuples satisfy <code>p</code> and the range predicate <code>c &gt; 100</code>.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Value-List bitmap index.</strong> We OR together every bitmap $b$ for every key $k$ that satisfies the range predicate and then AND it with $f_p$.</li>
+<li><strong>Projection index.</strong> We iterate through the values indicated by $f_p$ and see which satisfy the range predicate.</li>
+<li><strong>Bit-sliced index.</strong> We perform some intense bit tricks (see paper).</li>
+</ol>
+<p>In summary, Value-List indexes are best for narrow ranges and bit-sliced indexes are best for wide ranges.</p>
+<p>TODO(mwhittaker): Read and summarize the last three sections of this paper. They are pretty dense and a little boring.</p>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
