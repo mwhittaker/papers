@@ -31,22 +31,45 @@
 # [TaPP 2015](https://www.usenix.org/conference/tapp15)
 - **Capture**
     - [**Retrospective Provenance Without a Runtime Provenance Recorder**](https://www.usenix.org/system/files/tapp15-mcphillips.pdf)
-    - [**Provenance of Publications: A PROV Style for LaTeX**](https://www.usenix.org/system/files/tapp15-moreau.pdf)
+      This paper discusses the YesWorkflow system which lets people add
+      in-comment annotations to Python files to generate workflow diagrams.
+      This paper focues on adding provenance to a script without having to
+      collect any runtime information; this only works some of the time. They
+      use something called URI templates which look at directory structure and
+      file names. Look at citations [LAB+06, WHF+13, FKCS14] for scientific
+      workflow systems.
+    - ~~[Provenance of Publications: A PROV Style for LaTeX](https://www.usenix.org/system/files/tapp15-moreau.pdf)~~
     - [**Decoupling Provenance Capture and Analysis from Execution**](https://www.usenix.org/system/files/tapp15-stamatogiannakis.pdf)
-    - [**Provenance Tipping Point**](https://www.usenix.org/system/files/tapp15-gammack.pdf)
+      If you want to query the provenance of a system, you have to log some
+      provenance information while it runs. You have decide up front what to
+      log and this will determine what you can query. This paper talks about
+      logging literally everything, then replaying stuff with more specific
+      instrumentation.
+    - ~~[**Provenance Tipping Point**](https://www.usenix.org/system/files/tapp15-gammack.pdf)~~
 - **Query and System**
-    - [**Towards a Unified Query Language for Provenance and Versioning**](https://www.usenix.org/system/files/tapp15-chavan.pdf)
-    - [**Interoperability for Provenance-aware Databases using PROV and JSON**](https://www.usenix.org/system/files/tapp15-niu.pdf)
-    - [**Take Only What You Need: Leveraging Mandatory Access Control Policy to Reduce Provenance Storage Costs**](https://www.usenix.org/system/files/tapp15-bates.pdf)
-    - [**Recent Advances in Computer Architecture: The Opportunities and Challenges for Provenance**](https://www.usenix.org/system/files/tapp15-balakrishnan.pdf)
+    - ~~[Towards a Unified Query Language for Provenance and Versioning](https://www.usenix.org/system/files/tapp15-chavan.pdf)~~
+    - ~~[Interoperability for Provenance-aware Databases using PROV and JSON](https://www.usenix.org/system/files/tapp15-niu.pdf)~~
+    - [**Take Only What You Need: Leveraging Mandatory Access Control Policy to Reduce Provenance Storage Costs**](https://www.usenix.org/system/files/conference/tapp15/tapp15-bates.pdf)
+      This paper references a lot of automatic provenance collection systems
+      which use low-level traces for provenance. They cite "Issues in Automatic
+      Provenance Collection" which seems relevant. They leverage Mandatory
+      Access Control to record less provenance stuff.
+    - ~~[Recent Advances in Computer Architecture: The Opportunities and Challenges for Provenance](https://www.usenix.org/system/files/tapp15-balakrishnan.pdf)~~
 - **Scientific Applications**
     - [**How Much Domain Data Should Be in Provenance Databases?**](https://www.usenix.org/system/files/tapp15-de-oliveira.pdf)
+      Cites Pegasus [1], Swift/T [2] and SciCumulus [3] as scientific workflow
+      management systems that execute workflows in parallel. Don't really
+      understand this paper, but it doesn't seem relevant.
     - [**Collecting and Analyzing Provenance on Interactive Notebooks: When IPython Meets noWorkflow**](https://www.usenix.org/system/files/tapp15-pimentel.pdf)
+      noWorkflow + IPython. Just read noWorkflow.
     - [**Linking Prospective and Retrospective Provenance in Scripts**](https://www.usenix.org/system/files/tapp15-dey.pdf)
+      Systems like noWorkflow produce way too much information (might be good
+      to cite this). This system focuses on how to combine script annotations
+      from YesWorkflow and merge them with output fron noWorkflow.
 - **Foundations**
-    - [**Language-integrated Provenance in Links**](https://www.usenix.org/system/files/tapp15-fehrenbach.pdf)
-    - [**Towards Constraint-based Explanations for Answers and Non-Answers**](https://www.usenix.org/system/files/tapp15-glavic.pdf)
-    - [**Cell-based Causality for Data Repairs**](https://www.usenix.org/system/files/tapp15-debosschere.pdf)
+    - ~~[Language-integrated Provenance in Links](https://www.usenix.org/system/files/tapp15-fehrenbach.pdf)~~
+    - ~~[Towards Constraint-based Explanations for Answers and Non-Answers](https://www.usenix.org/system/files/tapp15-glavic.pdf)~~
+    - ~~[Cell-based Causality for Data Repairs](https://www.usenix.org/system/files/tapp15-debosschere.pdf)~~
 
 # [TaPP 2014](https://www.usenix.org/conference/tapp14)
 - **Usage**
