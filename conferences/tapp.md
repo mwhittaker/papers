@@ -73,20 +73,29 @@
 
 # [TaPP 2014](https://www.usenix.org/conference/tapp14)
 - **Usage**
-    - [**Reorganizing Workflow Evolution Provenance**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_koop.pdf)
-    - [**Influence Factor: Extending the PROV Model With a Quantitative Measure of Influence**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_gamble.pdf)
-    - [**Model-based Abstraction of Data Provenance**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_probst.pdf)
+    - ~~[Reorganizing Workflow Evolution Provenance](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_koop.pdf)~~
+    - ~~[Influence Factor: Extending the PROV Model With a Quantitative Measure of Influence](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_gamble.pdf)~~
+    - ~~[Model-based Abstraction of Data Provenance](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_probst.pdf)~~
 - **Capture**
     - [**Approximated Provenance for Complex Applications**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_ainy.pdf)
+      Cites "Putting Lipstick on Pig: Enabling Database-style Workflow
+      Provenance." Discusses approximating lineage but from a very theoretical
+      perspective.
     - [**RDataTracker: Collecting Provenance in an Interactive Scripting Environment**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_lerner.pdf)
-    - [**Provenance Capture Disparities Highlighted through Datasets**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_coe.pdf)
+      Users add a little bit of code to their R scripts and get provenance out
+      of it. The authors argue that automatic lineage is too low-level, sort of
+      like us.
+    - ~~[Provenance Capture Disparities Highlighted through Datasets](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_coe.pdf)~~
     - [**UP & DOWN: Improving Provenance Precision by Combining Workflow- and Trace-Level Information**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_dey.pdf)
+      Coarse-grained scientific workflow provenance can say there are
+      dependencies when there are not. The system combines lower-level traces
+      with higher-level workflows to guess the correct provenance.
 - **Theory**
-    - [**Immutably Answering Why-Not Questions for Equivalent Conjunctive Queries**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_bidoit.pdf)
-    - [**Towards Constraint Provenance Games**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_riddle.pdf)
-    - [**Regular Expressions for Provenance**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_luttenberger.pdf)
+    - ~~[Immutably Answering Why-Not Questions for Equivalent Conjunctive Queries](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_bidoit.pdf)~~
+    - ~~[Towards Constraint Provenance Games](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_riddle.pdf)~~
+    - ~~[Regular Expressions for Provenance](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_luttenberger.pdf)~~
 - **Practice**
-    - [**Provenance-Only Integration**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_gehani.pdf)
-    - [**A Generic Provenance Middleware for Queries, Updates, and Transactions**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_arab.pdf)
-    - [**Start Smart and Finish Wise: The Kiel Marine Science Provenance-Aware Data Management Approach**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_brauer.pdf)
-    - [**Report From the CoalFace: Lessons Learnt Building A General-Purpose Always-On Provenance System**](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_balakrishnan.pdf)
+    - ~~[Provenance-Only Integration](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_gehani.pdf)~~
+    - ~~[A Generic Provenance Middleware for Queries, Updates, and Transactions](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_arab.pdf)~~
+    - ~~[Start Smart and Finish Wise: The Kiel Marine Science Provenance-Aware Data Management Approach](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_brauer.pdf)~~
+    - ~~[Report From the CoalFace: Lessons Learnt Building A General-Purpose Always-On Provenance System](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_balakrishnan.pdf)~~
