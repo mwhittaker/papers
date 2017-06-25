@@ -1,6 +1,6 @@
 # [USENIX Workshop on the Theory and Practice of Provenance (TaPP)](https://www.usenix.org/conferences/byname/186)
 
-# [TaPP 2016](https://www.usenix.org/conference/tapp16)
+## [TaPP 2016](https://www.usenix.org/conference/tapp16)
 - **Provenance in Relational Databases**
     - ~~[Fine-grained Provenance for Linear Algebra Operators](https://www.usenix.org/system/files/conference/tapp16/tapp16-paper-yan.pdf)~~
     - ~~[Quantifying Causal Effects on Query Answering in Databases](https://www.usenix.org/system/files/conference/tapp16/tapp16-paper-salimi.pdf)~~
@@ -28,7 +28,7 @@
     - ~~[Provenance-aware Versioned Dataworkspaces](https://www.usenix.org/system/files/conference/tapp16/tapp16-paper-niu.pdf)~~
     - ~~[The Data, They Are A-Changin'](https://www.usenix.org/system/files/conference/tapp16/tapp16-paper-missier.pdf)~~
 
-# [TaPP 2015](https://www.usenix.org/conference/tapp15)
+## [TaPP 2015](https://www.usenix.org/conference/tapp15)
 - **Capture**
     - [**Retrospective Provenance Without a Runtime Provenance Recorder**](https://www.usenix.org/system/files/tapp15-mcphillips.pdf)
       This paper discusses the YesWorkflow system which lets people add
@@ -71,7 +71,7 @@
     - ~~[Towards Constraint-based Explanations for Answers and Non-Answers](https://www.usenix.org/system/files/tapp15-glavic.pdf)~~
     - ~~[Cell-based Causality for Data Repairs](https://www.usenix.org/system/files/tapp15-debosschere.pdf)~~
 
-# [TaPP 2014](https://www.usenix.org/conference/tapp14)
+## [TaPP 2014](https://www.usenix.org/conference/tapp14)
 - **Usage**
     - ~~[Reorganizing Workflow Evolution Provenance](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_koop.pdf)~~
     - ~~[Influence Factor: Extending the PROV Model With a Quantitative Measure of Influence](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_gamble.pdf)~~
@@ -99,3 +99,20 @@
     - ~~[A Generic Provenance Middleware for Queries, Updates, and Transactions](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_arab.pdf)~~
     - ~~[Start Smart and Finish Wise: The Kiel Marine Science Provenance-Aware Data Management Approach](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_brauer.pdf)~~
     - ~~[Report From the CoalFace: Lessons Learnt Building A General-Purpose Always-On Provenance System](https://www.usenix.org/system/files/conference/tapp2014/tapp14_paper_balakrishnan.pdf)~~
+
+## [TaPP 2013](https://www.usenix.org/conference/tapp13)
+- **Reproducibility and Audits**
+    - [**ReproZip: Using Provenance to Support Computational Reproducibility**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final16.pdf)
+    - [**Using Provenance for Repeatability**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final18.pdf)
+    - [**Supporting Undo and Redo in Scientiﬁc Data Analysis**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final8.pdf)
+    - [**Android Provenance: Diagnosing Device Disorders**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final11.pdf)
+- **Provenance Capture and Analysis**
+    - [**Provenance for Data Mining**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final14.pdf)
+    - [**Provenance Analyzer: Exploring Provenance Semantics with Logic Rules**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final15.pdf)
+    - [**Declaratively Processing Provenance Metadata**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final6.pdf)
+    - [**OPUS: A Lightweight System for Observational Provenance in User Space**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final5.pdf)
+- **Provenance Models and Applications**
+    - [**D-PROV: Extending the PROV Provenance Model with Workﬂow Structure**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final3.pdf)
+    - [**IPAPI: Designing an Improved Provenance API**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final4.pdf)
+    - [**HadoopProv: Towards Provenance as a First Class Citizen in MapReduce**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final7.pdf)
+    - [**A Provenance Model for Key-value Systems**](https://www.usenix.org/system/files/conference/tapp13/tapp13-final10.pdf)
