@@ -1,5 +1,22 @@
 # [USENIX Workshop on the Theory and Practice of Provenance (TaPP)](https://www.usenix.org/conferences/byname/186)
 
+## [TaPP 2017](https://www.usenix.org/conference/tapp17)
+
+- **Algorithms and Methods**
+    - [**Integrating Approximate Summarization with Provenance Capture**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_lee.pdf)
+    - [**Expressiveness Benchmarking for System-Level Provenance**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_chan.pdf)
+    - [**Corroboration via Provenance Patterns**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_barakat.pdf)
+    - [**Answering Historical What-if Queries with Provenance, Reenactment, and Symbolic Execution**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_arab.pdf)
+- **Systems and Performance**
+    - [**Automated Provenance Analytics: A Regular Grammar Based Approach with Applications in Security**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_lemay.pdf)
+    - [**Provenance in DISC Systems: Reducing Space Overhead at Runtime**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_diestelkamper.pdf)
+    - [**ACCESSPROV: Tracking the Provenance of Access Control Decisions**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_capobianco.pdf)
+- **New Applications**
+    - [**Provenance-based Recommendations for Visual Data Exploration**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_lahmar.pdf)
+    - [**Applying Provenance in APT Monitoring and Analysis: Practical Challenges for Scalable, Efficient and Trustworthy Distributed Provenance**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_jenkinson.pdf)
+    - [**Dataflow Notebooks: Encoding and Tracking Dependencies of Cells**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_koop.pdf)
+    - [**Visualizing Provenance using Comics**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_schreiber.pdf)
+
 ## [TaPP 2016](https://www.usenix.org/conference/tapp16)
 - **Provenance in Relational Databases**
     - ~~[Fine-grained Provenance for Linear Algebra Operators](https://www.usenix.org/system/files/conference/tapp16/tapp16-paper-yan.pdf)~~
