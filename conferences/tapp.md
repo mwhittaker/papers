@@ -3,19 +3,33 @@
 ## [TaPP 2017](https://www.usenix.org/conference/tapp17)
 
 - **Algorithms and Methods**
-    - [**Integrating Approximate Summarization with Provenance Capture**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_lee.pdf)
+    - ~~[Integrating Approximate Summarization with Provenance Capture](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_lee.pdf)~~
     - [**Expressiveness Benchmarking for System-Level Provenance**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_chan.pdf)
-    - [**Corroboration via Provenance Patterns**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_barakat.pdf)
+      Argues that system-level provenance tracing is really hard to use and
+      proposed a benchmark to help evaluate how useful various systems are.
+      Cites PASS, Hi-Fi, SPADE, OPUS, LPM.
+    - ~~[Corroboration via Provenance Patterns](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_barakat.pdf)~~
     - [**Answering Historical What-if Queries with Provenance, Reenactment, and Symbolic Execution**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_arab.pdf)
+      This paper focues on answering historical what-if questions like "If I
+      had changed this thing in the past, what would be different now?". Not
+      relevant, but seems cool.
 - **Systems and Performance**
     - [**Automated Provenance Analytics: A Regular Grammar Based Approach with Applications in Security**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_lemay.pdf)
+      Uses grammars to check for anomalous provenance graphs. Relevant for
+      future work.
     - [**Provenance in DISC Systems: Reducing Space Overhead at Runtime**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_diestelkamper.pdf)
+      Reduces the space overheads of provenance collections in DISC systems
+      like Spark. Maybe relevant for future work, but it would require a more
+      careful reading.
     - [**ACCESSPROV: Tracking the Provenance of Access Control Decisions**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_capobianco.pdf)
+      A Java bytecode analyzer which detects provenance for access-control
+      decisions. Might be relevanlt black-box lineage, but it would require a
+      more careful reading.
 - **New Applications**
-    - [**Provenance-based Recommendations for Visual Data Exploration**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_lahmar.pdf)
-    - [**Applying Provenance in APT Monitoring and Analysis: Practical Challenges for Scalable, Efficient and Trustworthy Distributed Provenance**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_jenkinson.pdf)
-    - [**Dataflow Notebooks: Encoding and Tracking Dependencies of Cells**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_koop.pdf)
-    - [**Visualizing Provenance using Comics**](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_schreiber.pdf)
+    - ~~[Provenance-based Recommendations for Visual Data Exploration](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_lahmar.pdf)~~
+    - ~~[Applying Provenance in APT Monitoring and Analysis: Practical Challenges for Scalable, Efficient and Trustworthy Distributed Provenance](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_jenkinson.pdf)~~
+    - ~~[Dataflow Notebooks: Encoding and Tracking Dependencies of Cells](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_koop.pdf)~~
+    - ~~[Visualizing Provenance using Comics](https://www.usenix.org/system/files/conference/tapp2017/tapp17_paper_schreiber.pdf)~~
 
 ## [TaPP 2016](https://www.usenix.org/conference/tapp16)
 - **Provenance in Relational Databases**
