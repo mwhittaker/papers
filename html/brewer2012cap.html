@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="cap-twelve-years-later-how-the-rules-have-changed-2012"><a href="https://scholar.google.com/scholar?cluster=17642052422667212790">CAP Twelve Years Later: How the &quot;Rules&quot; Have Changed (2012)</a></h1>
+<p>The CAP theorem dictates that in the face of network partitions, replicated data stores must choose between high availability and strong consistency. In this 12 year retrospective, Eric Brewer takes a look back at the CAP theorem and provides some insights.</p>
+<h2 id="why-2-of-3-is-misleading">Why 2 of 3 is Misleading</h2>
+<p>The CAP theorem is misleading for three reasons.</p>
+<ol style="list-style-type: decimal">
+<li>Partitions are rare, and when a system is not partitioned, the system can have both strong consistency and high availability.</li>
+<li>Consistency and availability can vary by subsystem or even by operation. The granularity of consistency and availability doest not have to be an entire system.</li>
+<li>There are various degrees of consistency and various levels of consistency.</li>
+</ol>
+<h2 id="cap-latency-connection">CAP-Latency Connection</h2>
+<p>After a node experiences a delay when communicating with another node, it has to make a choice between (a) aborting the operation and sacrificing consistency of (b) continuing with the operation anyway and sacrificing consistency. Essentially, a partition is a time bound on communication. Viewing partitions like this leads to three insights:</p>
+<ol style="list-style-type: decimal">
+<li>There is no global notion of a partition.</li>
+<li>Nodes can detect partitions and enter a special partition mode.</li>
+<li>Users can vary the time after which they consider the system partitioned.</li>
+</ol>
+<h2 id="managing-partitions">Managing Partitions</h2>
+<p>Systems should take three steps to handle partitions.</p>
+<ol style="list-style-type: decimal">
+<li>Detect the partition.</li>
+<li>Enter a special partition mode in which nodes either (a) limit the operations which can proceed thereby decreasing availability or (b) continue with the operations decreasing consistency, making sure to log enough information to recover after the partition.</li>
+<li>Recover from the partition once communication resumes.</li>
+</ol>
+<h2 id="which-operations-should-proceed">Which Operations Should Proceed</h2>
+<p>The operations which a node permits during a partition depends on the invariants it is willing to sacrifice. For example, nodes may temporarily violate unique id constraints during a partition since they are easy to detect and resolve. Other invariants are too important to violate, so operations that could potentially violate them are stalled.</p>
+<h2 id="partition-recovery">Partition Recovery</h2>
+<p>Once a system recovers from a partition it has to</p>
+<ol style="list-style-type: decimal">
+<li>make the state consistent again, and</li>
+<li>compensate any mistakes made during the partition.</li>
+</ol>
+<p>Sometimes a system is unable to automatically make the state consistent and depends on manual intervention. Sometimes, the system can automatically restore the state because it carefully rejected some operations during the partition. Other systems can automatically restore consistency because they use clever data structures like CRDTs.</p>
+<p>Some systems, especially those which externalize actions (e.g. ATMs), must sometimes issue compensations (e.g. emailing users).</p>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
