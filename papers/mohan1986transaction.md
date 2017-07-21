@@ -161,11 +161,28 @@ has forgotten about it.
 
 Coordinator action on restart:
 
-- TODO
+- In the **red state**, the coordinator aborts the transaction.
+- The **green state**, the **blue state**, and the **orange state** are
+  indistinguishable. In this state, the coordinator sends abort messages to all
+  subordinates (which are written in the collecting log entry) and awaits their
+  acknowledgement. The coordinator can not forget about the aborted transaction
+  until has received acknowledgements from all the subordinates.
+- In the **brown state**, the coordinator commits the transaction. If it stores
+  the addresses of all subordinates in the commit log entry, it can send commit
+  messages to the subordinates. Otherwise, if a subordinates contacts the
+  coordinator in the brown state, the coordinator will have forgotten about the
+  transaction and respond with a commit message.
 
 Subordinate action on restart:
 
-- TODO
+- The **red state** and **orange state** are indistinguishable. The subordinate
+  aborts the transaction.
+- The **green state** and the **blue state** are indistinguishable. The
+  subordinate is unsure of the fate of the transaction and contacts the
+  coordinator or another subordinate. Note that if subordinates force-write
+  commit entries, they could avoid contacting other nodes in the blue state.
+- In the **brown state**, the subordinate aborts the transaction and must
+  ensure that the coordinator has received its acknowledgement.
 
 <center>
   <div class="shrink">
@@ -186,7 +203,7 @@ Subordinate action on restart:
   <caption>Figure 9. Subordinate votes no; transaction aborts.</caption>
 </center>
 
-TODO: deadlock detection.
+TODO: deadlock detection section.
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg.js"></script>
 <script type="text/javascript">
@@ -458,7 +475,7 @@ TODO: deadlock detection.
 
     var r1 = bold(leftJustify(s.text(rightx, 70, "force-write prepare")));
     var r2 = leftJustify(s.text(rightx, 80, "send yes"));
-    var r3 = leftJustify(s.text(rightx, 130, "force-write abort"));
+    var r3 = bold(leftJustify(s.text(rightx, 130, "force-write abort")));
     var r4 = leftJustify(s.text(rightx, 140, "send ack"));
     var r5 = leftJustify(s.text(rightx, 150, "abort"));
 

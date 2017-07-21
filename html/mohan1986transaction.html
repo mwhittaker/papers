@@ -119,7 +119,9 @@ Figure 6. Subordinate votes no; transaction aborts.
 <p>Presumed abort acks commits but not aborts. Ideally, commits are more common than aborts, so we'd like to instead ack aborts but not commits. In order to do so, the coordinator will have to presume that a transaction is committed if it has forgotten about it.</p>
 <p>Coordinator action on restart:</p>
 <ul>
-<li>TODO</li>
+<li>In the <strong>red state</strong>, the coordinator aborts the transaction.</li>
+<li>The <strong>green state</strong>, the <strong>blue state</strong>, and the <strong>orange state</strong> are indistinguishable. In this state, the coordinator sends abort messages to all subordinates (which are written in the collecting log entry) and awaits their acknowledgement. The coordinator can not forget about the aborted transaction until has received acknowledgements from all the subordinates.</li>
+<li>In the <strong>brown state</strong>, the coordinator commits the transaction. If it stores the addresses of all subordinates in the commit log entry, it can send commit messages to the subordinates. Otherwise, if a subordinates contacts the coordinator in the brown state, the coordinator will have forgotten about the transaction and respond with a commit message.</li>
 </ul>
 <p>Subordinate action on restart:</p>
 <ul>
@@ -421,7 +423,7 @@ Figure 9. Subordinate votes no; transaction aborts.
 
     var r1 = bold(leftJustify(s.text(rightx, 70, "force-write prepare")));
     var r2 = leftJustify(s.text(rightx, 80, "send yes"));
-    var r3 = leftJustify(s.text(rightx, 130, "force-write abort"));
+    var r3 = bold(leftJustify(s.text(rightx, 130, "force-write abort")));
     var r4 = leftJustify(s.text(rightx, 140, "send ack"));
     var r5 = leftJustify(s.text(rightx, 150, "abort"));
 
