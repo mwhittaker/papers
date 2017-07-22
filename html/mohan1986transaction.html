@@ -125,7 +125,9 @@ Figure 6. Subordinate votes no; transaction aborts.
 </ul>
 <p>Subordinate action on restart:</p>
 <ul>
-<li>TODO</li>
+<li>The <strong>red state</strong> and <strong>orange state</strong> are indistinguishable. The subordinate aborts the transaction.</li>
+<li>The <strong>green state</strong> and the <strong>blue state</strong> are indistinguishable. The subordinate is unsure of the fate of the transaction and contacts the coordinator or another subordinate. Note that if subordinates force-write commit entries, they could avoid contacting other nodes in the blue state.</li>
+<li>In the <strong>brown state</strong>, the subordinate aborts the transaction and must ensure that the coordinator has received its acknowledgement.</li>
 </ul>
 <center>
   <div class="shrink">
@@ -152,7 +154,7 @@ Figure 9. Subordinate votes no; transaction aborts.
 </caption>
 </center>
 
-<p>TODO: deadlock detection.</p>
+<p>TODO: deadlock detection section.</p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg.js"></script>
 <script type="text/javascript">
   function x(element) {
