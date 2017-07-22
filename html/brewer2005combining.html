@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="combining-systems-and-databases-a-search-engine-retrospective-2005"><a href="https://scholar.google.com/scholar?cluster=15869287167041695406">Combining Systems and Databases: A Search Engine Retrospective (2005)</a></h1>
+<p>Search engines are big data systems. So are databases. It's natural then to wonder if search engines can be efficiently implemented using a relational database. Unfortunately, search engines written from scratch can exploit a number of assumptions that databases cannot. For example, search engines typically focus on availability over consistency, they deal with a large number of relatively homogeneous read-only queries, updates are rare and can be done offline, etc.</p>
+<p>In this paper, Brewer argues that even if a search engine cannot be efficiently implementing using a database, it should be implemented with database principles such as data independence and declarative query languages. Brewer presents the design of a search engine that exploits many database principles.</p>
+<h2 id="search-engine-overview">Search Engine Overview</h2>
+<p>In this paper, we consider a simple search engine with the following design. Users write queries consisting of <strong>words</strong> (e.g. &quot;java list sort&quot;) and <strong>properties</strong> (e.g. &quot;language:english filetype:pdf&quot;). The search engine then finds every document that contains the words and satisfies the properties. Each document is scored based on the search, and the top results are returned. The score of a document $d$ for a query $Q$ with words $w_1, \ldots, w_k$ is computed as follows:</p>
+<div class="math">
+$$ Score(Q, d) \defeq Quality(d) + \sum_{i=1}^k Score(w_i, d) $$
+</div>
+<p>Here, $Quality$ determines the quality of a document irrespective of query (e.g. how long is it, what is its page rank). $Score(w, d)$ assigns a score to each word and document pair based on the location and frequency of the word. For example, if the title of a page is &quot;Java List Sort&quot; and its body contains the word &quot;list&quot; 49 times, it will probably receive a higher score for word &quot;list&quot; than a page titled &quot;How to Wax a Llama&quot; that includes the word &quot;list&quot; once.</p>
+<p>A <strong>crawler</strong> periodically crawls the web looking for pages. An <strong>indexer</strong> indexes these pages and computes an inverted index mapping words to the documents that contain the word (also annotated with scores). Finally, a <strong>server</strong> parses, optimizes, and executes queries and returns results back to the user.</p>
+<h2 id="logical-query-plan">Logical Query Plan</h2>
+<p>We store documents and inverted indexes as relational tables with the following schema:</p>
+<ul>
+<li><code>Document(DocId, URL, Date, Size, Abstract)</code></li>
+<li><code>Word(WordId, DocId, Score, PositionInfo)</code></li>
+<li><code>Property(WordId, DocId)</code></li>
+<li><code>Term(String, WordId, Stats)</code></li>
+</ul>
+<p>Every document is assigned a <code>DocId</code>. Every word and property is assigned a <code>WordId</code>. The <code>Document</code> tables contains a row for every document. The <code>Word</code> and <code>Property</code> tables are inverted indexes from words and properties to documents. The <code>Term</code> table maps words to their <code>WordId</code>s. For example, imagine the following documents:</p>
+<pre><code>echo &quot;foo foo foo bar&quot; &gt;&gt; foo.html
+echo &quot;bar bar bar&quot; &gt;&gt; bar.html</code></pre>
+<p>We would have the following tables:</p>
+<center>
+<table>
+<thead>
+<tr class="header">
+<th align="left">DocId</th>
+<th align="left">URL</th>
+<th align="left">Date</th>
+<th align="left">Size</th>
+<th align="left">Abstract</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">13048</td>
+<td align="left">foo.html</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">91481</td>
+<td align="left">bar.html</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">WordId</th>
+<th align="left">DocId</th>
+<th align="left">Score</th>
+<th align="left">PositionInfo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">13048</td>
+<td align="left">100</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">13048</td>
+<td align="left">10</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">91481</td>
+<td align="left">100</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">String</th>
+<th align="left">WordId</th>
+<th align="left">Stats</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">foo</td>
+<td align="left">0</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left">bar</td>
+<td align="left">1</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
+</center>
+
+<p>With these tables, we can express a search engine query as a relational algebra query which joins together quality scores, word scores, and documents (see Figure 2 in the paper). The meat of the query involves finding all the documents that match a given query. For this, we use a custom query language:</p>
+<pre><code>expr ::= expr AND expr
+       | expr OR expr
+       | expr FILTER prop
+       | word
+
+prop ::= prop AND prop
+       | prop OR prop
+       | NOT prop
+       | NOT expr
+       | property</code></pre>
+<h2 id="query-implementation">Query Implementation</h2>
+<p>Logical queries are transformed into physical query plans with the following four physical operators:</p>
+<ul>
+<li><code>OR($\bar{e}$) -&gt; expr</code> performs an outer join (with scoring) on the subexpressions.</li>
+<li><code>ORp($\bar{p}$) -&gt; prop</code> performs an outer join (without scoring) on the subexpressions.</li>
+<li><code>ANDp($\bar{p}$) -&gt; prop</code> performs an inner join (without scoring) on the subexpressions.</li>
+<li><code>FILTER($\bar{e}$)($\bar{p}$) -&gt; expr</code> performs an inner join on the subexpressions with scoring only using $\bar{e}$.</li>
+</ul>
+<p>Admittedly, I don't really understand this section of the paper. The operators are described as joins, but it seems like they're just unions and intersections. The distinction between <code>expr</code>s and <code>prop</code>s is also a bit unclear to me here.</p>
+<p>The query optimizer transforms logical queries into physical query plans using these four operators. The queries are evaluated without any pipelining and all intermediate values are cached. For example, if a query computes all the documents which contain the words &quot;foo&quot; and &quot;bar&quot;, then this is cached for later queries. Moreover, the plan is implemented with as many multiway joins as possible.</p>
+<p>The query optimizer uses a top-down Cascades style approach. It begins by flattening physical plans as much as possible and then tries to re-use cached results as much as possible. For example, if we have the query <code>OR(a, b, c, d, e, f, g)</code> and we have <code>OR(a, c, d)</code> and <code>OR(f, g)</code> cached, then the plan will generate <code>OR(OR(a, c, d), b, e, OR(f, g))</code>.</p>
+<p>These physical query plans are then executed on multiple nodes. The documents, words, and properties table are horizontally partitioned into units called <strong>chunks</strong>. Each chunk contains the entries for a subset of the documents. Each node is assigned a couple of chunks. The terms table is replicated on all the nodes. A master node receives a query and optimizes it. It then sends this query to a set of followers which execute the query on the documents in their chunks. They each send back their local top $k$ results, and the master computes the global top $k$ results.</p>
+<p>As further optimizations, search engines can compress the inverted indexes. For example, instead of storing a sequence of document ids like <code>134134134134135, 13513852492452, 13859138519359135, 845294589139851</code>, you can store a set of differences like <code>135135135,+19214,-1931341,+245991231,-134</code>. The master can also compute a local top $k$ results and use its $k$th score as a lower bound on the followers to allow them to prune bad results.</p>
+<h2 id="updates">Updates</h2>
+<p>Updates occur at the granularity of chunks. That is, tuples are never inserted or deleted from chunks. Instead, chunks are atomically swapped out between queries. The chunks of a database are also divided into a set of partitions where each partition can specify policies for thinks like how often to refresh chunks or how many times to replicate a chunk.</p>
+<p>Periodically, the crawler will create a new chunk with refreshed values of all the documents in an old chunk. The crawler will also create chunks for newly discovered web pages.</p>
+<p>All chunks are assigned monotonically increasing ids. Every node maintains a version vector indicating the id of every chunk it owns. In order to atomically swap out a chunk for a new chunk, a node will load the new chunk into memory and then atomically swap out the version vector to include the id of the new chunk. Moreover, a cache is created for each chunk. Whenever a chunk is upgraded, its cache is cleared.</p>
+<p>In order to support real-time deletions (e.g. for illegal results), each node maintains a small deletion table that is part of the right hand side of an anti-join. Administrators can insert tuples into this table to remove them from search results.</p>
+<p>For system-wide updates (e.g. to the scoring algorithm), every node can load in the update and then in a couple of minutes of down time can transition over to the new stuff.</p>
+<h2 id="fault-tolerance">Fault Tolerance</h2>
+<p>If a disk on a node fails and an unreplicated chunk is lost, the chunk is just reloaded on another node. If the chunk is replicated and the primary's disk fails, the secondary becomes the primary. If the master detects that a follower has failed (via a timeout), then it simply continues the query without chunks on the failed follower. If a master fails, the web server retries with a different master, potentially on a different data center.</p>
+<p>Sometimes events like natural disasters or touchdowns in the superbowl cause an influx in queries. In these events, a search engine has to handle the extra load by gracefully degrading (throughput remains saturated and latency increases proportional to the number of requests). In order to do so, queries can start looking at fewer chunks, and expensive queries can be outright rejected.</p>
+<p>When an entire data center fails, web server will start redirecting the queries to other data centers which can handle the failover load using graceful degradation. Important chunks will be replicated on multiple data centers.</p>
+<h2 id="other-topics">Other Topics</h2>
+<ul>
+<li><strong>Personalization.</strong> Search engines can store user personalization information in a cookie, or it can store a user id in the cookie and store the information in a database. Storing the information in a database makes it much easier to do things like schema evolution.</li>
+<li><strong>Logging.</strong> Search engines produce a lot of logs and require custom logging frameworks.</li>
+<li><strong>Query rewriting.</strong> Sometimes queries can be rewritten with things like the preferred language or some words on the current page being looked at.</li>
+<li><strong>Phrase queries.</strong> In order to support phrase queries (e.g. &quot;New York&quot;), search engines can measure the nearness of words in a document or can straight up search for whole sequences of words.</li>
+</ul>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
