@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="tag-a-tiny-aggregation-service-for-ad-hoc-sensor-networks-2002"><a href="https://scholar.google.com/scholar?cluster=15109435484888639161">TAG: A Tiny AGgregation Service for Ad-Hoc Sensor Networks (2002)</a></h1>
+<p>People deploy networks of itty-bitty sensors and compute aggregates over the data read by each of these sensors (e.g. average temperature). Previously, people would implement this aggregation using low-level C. This paper proposes TAG: a system which (a) allows users to express aggregation using a declarative query language and (b) implements the aggregation efficiently using tree aggregation and a handful of optimizations.</p>
+<h2 id="motes-and-ad-hoc-networks">Motes and Ad-Hoc Networks</h2>
+<p>TAG runs on small battery-powered sensors called motes which run TinyOS. Every mote has a very weak processor and a very small amount of memory. Each mote has a half-duplex mote (i.e. they can send and receive messages but not at the same time).</p>
+<p>Motes communicate using a CSMA protocol over a shared backbone in which messages are broadcast to all motes. To achieve point-to-point communication, every mote is assigned a unique id and every message is prefixed with the id its recipient. Though motes receive every message sent, the ignore the ones that are not destined for them.</p>
+<p>In order to route messages and compute aggregates, motes for a routing tree. A root node broadcasts a message with its current level (i.e. 0). When a mote receives a routing message for the first time, it sets its level, increments the level and broadcasts the message. Later, during aggregation, children send messages up the tree to the root.</p>
+<h2 id="query-model-and-environment">Query Model and Environment</h2>
+<p>TAG employs a SQL-like query language. For example, the following query returns the average volume of all rooms on the sixth floor that are louder than some threshold.</p>
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">SELECT</span> <span class="fu">AVG</span>(volume), room
+<span class="kw">FROM</span> sensors
+<span class="kw">WHERE</span> floor=<span class="dv">6</span>
+<span class="kw">GROUP</span> <span class="kw">BY</span> room
+<span class="kw">HAVING</span> <span class="fu">AVG</span>(volume) &gt; threshold
+EPOCH DURATION 30s;</code></pre></div>
+<p>TAG queries deviate from SQL queries only in that they are streaming. For example, the query above will generate an average volume every 30 seconds. This epoch must be enough time for aggregates to be computed by the sensor network.</p>
+<p>Tag computes aggregates using a tree reduction parameterized by a merge function <code>f</code>, an initializer <code>i</code>, and an evaluator <code>e</code>. Leaves generate intermediate records with <code>i</code> which they send to their parents. Inner nodes merge intermediate records with <code>f</code> to create new intermediate records. Running <code>e</code> on the final intermediate records produces the final aggregate.</p>
+<p>There are four dimensions by which we can taxonomize aggregates:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Duplicate Sensitivity.</strong> Some operators like <code>MAX</code> are not sensitive to duplicates while some like <code>AVERAGE</code> are.</li>
+<li><strong>Exemplary vs Summary.</strong> Some operators like <code>MAX</code> return one of the input data points while some like <code>AVERAGE</code> may return a value that did not appear in the input.</li>
+<li><strong>Monotonic.</strong> An aggregate is monotonic (or increasing) if for every intermediate record <code>s</code> and <code>s'</code>, <code>e(f(s, s')) &gt;= MAX(e(s), e(s'))</code>. In words, merging two records produces an output larger than the two inputs.</li>
+<li><strong>Amount of State.</strong>
+<ul>
+<li><strong>Distributive.</strong> The intermediate records are the final records. That is, <code>e</code> is the identity function.</li>
+<li><strong>Algebraic.</strong> The intermediate records have the same size as the final records. That is <code>e</code> preserves size.</li>
+<li><strong>Holistic.</strong> The intermediate records' size is proportional to the amount of data being aggregated.</li>
+<li><strong>Unique.</strong> The intermediate records' size is proportional to the number of unique values in the input.</li>
+<li><strong>Context-Sensitive.</strong> The intermediate records' size is proportional to statistical property of the input data.</li>
+</ul></li>
+</ol>
+<p>Motes also maintain a catalog of their available attributes which is cached by the querier. A mote returns NULL if it is queried for an attribute it doesn't have.</p>
+<h2 id="in-network-aggregates">In Network Aggregates</h2>
+<p>When the root receives a query with epoch duration <code>d</code>, it propagates the query down through the tree. Whenever a parent forwards the query down towards its children, it includes a deadline by which it expects its children to return a response. When a child receives such a message, it decreases the deadline before propagating to its children. If all nodes know the depth of the network, dividing the epoch by the diameter is a good heuristic for setting deadlines. Nodes could potentially pipeline messages, but that is not implemented by this paper.</p>
+<p>For GROUP BY queries, nodes annotate every intermediate record with the group that it belongs to. Nodes maintain a table mapping group ids to intermediate records. If the node runs out of memory, it evicts some of these entries upwards through the tree. Monotonic aggregates with a HAVING clause can be pruned early.</p>
+<h2 id="optimizations">Optimizations</h2>
+<p>Since all messages are broadcast, motes can snoop messages sent by other motes and potentially use the information to avoid sending messages. For example, if a node snoops the MAX value sent by another node and it is higher than its current value, then it does not need to propagate its value upwards.</p>
+<p>Similarly, motes can propagate information down the tree that motes can use to prune some messages. The paper describes this strategy as <strong>hypothesis testing</strong>. For example, imagine the root sends an estimated average and an error bounds. If a node's intermediate average is within the error bounds, it does not have to send it upwards.</p>
+<h2 id="fault-tolerance">Fault Tolerance</h2>
+<p>In order to tolerate faults, nodes automatically reorganize themselves in the face of mote failure. Every mote measures the link quality to all of its neighbors. If there is some mote <code>p'</code> with better link quality than the parent <code>p</code> that is higher in the tree, then the node replaces <code>p</code> with <code>p'</code>. A node does a similar thing when it detects its parent has failed.</p>
+<p>The basic TAG algorithm is not super resilient to message loss. To handle losses better, the paper proposes two optimizations. First, nodes can maintained a cache of their children's values. If they do not hear from their children in a given epoch, they can report the cached values. If we clear cache more frequently than it takes for a mote to re-join the network, then we don't have to worry about double counting aggregates. Second, motes can send their aggregates to more than one parent. For example, with a duplicate-insensitive aggregate, motes can send heir intermediate record to all parents. For other aggregates, intermediate records can sometimes be divided nicely (e.g. sending <code>c/2</code> to two parents for a COUNT).</p>
+<link href='../css/default_highlight.css' rel='stylesheet'>
+<script src="../js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
