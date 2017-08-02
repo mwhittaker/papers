@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="the-cql-continuous-query-language-semantic-foundations-and-query-execution-2006"><a href="https://scholar.google.com/scholar?cluster=17215743948117955326">The CQL Continuous Query Language: Semantic Foundations and Query Execution (2006)</a></h1>
+<p>Relational database management systems (DBMSs) manage a static collection of relations. If you sit there and don't do anything to the database, the data isn't going to change. You can also run ad-hoc queries against the static database and get back a static answer.</p>
+<p><strong>Data stream management systems</strong> (DSMSs) manage streams of data. You register a set of <strong>continuous queries</strong> ahead of time and then throw streams of data at it. The DSMS automatically executes your continuous queries as stream data pours in. For example, your stream might consist of sensor readings reporting the speed and location of cars on a highway, and your DSMS stream out toll information for the cars (more on this later).</p>
+<p>In what language should we write continuous queries? Can we just take SQL and replace all the relations with streams? Not really; it's a bit more complicated than that. This paper presents a (somewhat) formal semantics for an abstract continuous query language and instantiate the abstract query language with a concrete query language CQL which the authors have implemented in their DSMS STREAM.</p>
+<h2 id="running-example">Running Example</h2>
+<p>As a running example, imagine we have $L$ bi-directional 100-mile long highways that are divided into 100 1-mile long segments. Every car that drives on these highways is fitted with a sensor that reports the speed and position (highway number, $x$ position, direction) of the car every 30 seconds. Our goal is to assign a toll to each car in a congested segment of highway. We say a segment is congested if the average speed of the cars in the segment over the last 5 minutes is less than 40 mph. The toll we apply is $basetoll \times (numvehicles - 150)^2$. Our goal is to take in the sensor reading stream and stream out tolls.</p>
+<h2 id="streams-and-relations">Streams and Relations</h2>
+<p>We assume that we have a countable totally ordered time domain $\mathcal{T}$. A <strong>stream</strong> $S$ is a multiset of pairs of the form $(s, \tau)$ where $s$ is a tuple that obeys the schema of $S$ and $\tau \in \mathcal{T}$ is the timestamp of the tuple. We also require that there is a finite number of tuples associated with each timestamp. A <strong>relation</strong> $R$ is a function from the time domain $\mathcal{T}$ to multisets of tuples that obey the schema of $R$. $R(\tau)$ is the value of a relation at time $\tau$.</p>
+<p>A bit of terminology:</p>
+<ul>
+<li>$S$ up to $\tau$ is the multiset $\setst{(s, \tau') \in S}{\tau' \leq \tau}$.</li>
+<li>$S$ at $\tau$ is the multiset $\setst{(s, \tau') \in S}{\tau' = \tau}$.</li>
+<li>$R$ up to $\tau$ is the sequence $[R(\tau')]_{\tau' \leq \tau}$.</li>
+<li>$R$ at $\tau$ is $R(\tau)$.</li>
+</ul>
+<h2 id="abstract-semantics">Abstract Semantics</h2>
+<p>We now describe the semantics of an abstract continuous query language in terms of three types of operators: <strong>stream-to-relation</strong>, <strong>relation-to-relation</strong>, and <strong>relation-to-stream</strong>. The semantics are abstract because we will not describe concrete instantiations of these operators.</p>
+<ul>
+<li>A stream-to-relation operator produces a relation $R$ from a stream $S$ with the same schema as $S$. At every time $\tau$, $R(\tau)$ should depend only on $S$ up to $\tau$. That is, $R(\tau)$ should not depend on values in the stream at time greater than $\tau$.</li>
+<li>A relation-to-relation operator maps a number of relations $R_1$, $\ldots$, $R_n$ to a single relation $R$. At every time $\tau$, $R(\tau)$ should be a function only of $R_1(\tau)$, $\ldots$, $R_n(\tau)$.</li>
+<li>A relation-to-stream operator produces a stream $S$ from a relation $R$ with the same schema as $R$. At every time $\tau$, $S$ at $\tau$ should only depend on $R$ up to $\tau$. That is, $S$ at $\tau$ should not depend on values in relation at time greater than $\tau$.</li>
+</ul>
+<p>Refer to definition 5.1 of the paper for a description of continuous semantics. Admittedly, I don't understand it, and the next section makes way more sense.</p>
+<h2 id="continuous-query-language">Continuous Query Language</h2>
+<p>The <strong>Continuous Query Language</strong> (CQL) is an instantiation of the abstract query language from the previous section. CQL provides few stream-to-relation and relation-to-stream operators and a large number of relation-to-relation operators. This allows CQL to reuse a lot of existing work on query optimization.</p>
+<h3 id="stream-to-relation">Stream-To-Relation</h3>
+<p>All CQL stream-to-relation operators are based on windowing:</p>
+<ul>
+<li><strong>Time-based windowing.</strong> Syntactically, we represent a time-based windowing of stream $S$ as <code>S[Range t]</code>. Semantically, <code>S[Range t]</code> produces a relation $R$ such that $R(\tau)$ consists of all tuples in $S$ with timestamp within <code>t</code> time units of $\tau$. <code>S[Now]</code> and <code>S[Range Unbounded]</code> represent <code>t</code> equal to zero and infinity respectively.</li>
+<li><strong>Tuple-based windowing.</strong> Syntactically, we represent a tuple-based windowing of stream $S$ as <code>S[Rows n]</code>. Semantically, <code>S[Rows n]</code> produces a relation $R$ such that $R(\tau)$ consists of the <code>n</code> most recent tuples in $S$ as of time $\tau$. Ties are broken non-deterministically.</li>
+<li><strong>Partition-based windowing.</strong> Syntactically, we represent a partition-based windowing of stream $S$ on attributes $A_1$, $\ldots$, $A_k$ as <code>S[Partition   By A1, ..., Ak Rows n]</code>. Semantically, this produces a relation $R$ such that $R(\tau)$ consists of the union of the <code>n</code> most recent tuples for each group with group key $A_1$, $\ldots$, $A_k$.</li>
+</ul>
+<h3 id="relation-to-relation">Relation-To-Relation</h3>
+<p>CQL includes most standard SQL operators. For example, consider the following CQL query</p>
+<pre><code>SELECT DISTINCT vehicleId
+FROM PosSpeedStr[Range 30 Seconds];</code></pre>
+<p>which returns a list of all the distinct vehicle ids that have reported a position and speed in the last 30 seconds.</p>
+<h3 id="relation-to-stream">Relation-To-Stream</h3>
+<p>There are three relation-to-stream operators:</p>
+<ul>
+<li><strong><code>Istream</code> (insert stream).</strong> <code>Istream</code>$(R)$ produces a stream $S$ such that $S$ at $\tau$ contains all the tuples in $R(\tau) - R(\tau - 1)$. Essentially, it streams all the insertions to $R$.</li>
+<li><strong><code>Dstream</code> (delete stream).</strong> <code>Istream</code>$(R)$ produces a stream $S$ such that $S$ at $\tau$ contains all the tuples in $R(\tau - 1) - R(\tau)$. Essentially, it streams all the deletions from $R$.</li>
+<li><strong><code>Rstream</code> (relation stream).</strong> <code>Rstream</code>$(R)$ produces a stream $S$ such that $S$ at $\tau$ contains all the tuples in $R(\tau)$. <code>Rstream</code> subsumes the other two, but having all three is convenient.</li>
+</ul>
+<p>The following queries are equivalent:</p>
+<pre><code>SELECT Istream(*)
+FROM PosSpeedStr[Range Unbounded]
+WHERE speed &gt; 65;</code></pre>
+<pre><code>SELECT Rstream(*)
+FROM PosSpeedStr [Now]
+WHERE speed &gt; 65;</code></pre>
+<h3 id="syntactic-sugar">Syntactic Sugar</h3>
+<p>As syntactic sugar, <code>Istream</code> is added to monotonic queries and an <code>[Range Unbounded]</code> clause is added to streams. This allows to write the above query like this:</p>
+<pre><code>SELECT *
+FROM PosSpeedStr
+WHERE speed &gt; 65;</code></pre>
+<h2 id="linear-road">Linear Road</h2>
+<p>The paper discusses how to implement the running example from above using CQL. It involves six relatively simple queries. Refer to the paper for details.</p>
+<h2 id="time-management">Time Management</h2>
+<p>In order to produce a relation or stream at time $\tau$, STREAM has to have received all tuples with timestamp $\leq \tau$. To do this, STREAM uses <strong>heartbeats</strong> (or punctuations, or low watermarks). A heartbeat at time $\tau$ indicates that no other tuples will arrive with timestamp $\leq \tau$. There are a couple of ways to inject heartbeats:</p>
+<ul>
+<li>If tuples are timestamped by a centralized DSMS, then the DSMS can generate the hearbeats.</li>
+<li>If all inputs sources deliver tuples in timestamp order, then the input sources can send heartbeats and the minimum of all heartbeats is the true heartbeat.</li>
+<li>If all input sources have access to a global clock and there is a bounded message delivery delay, then heartbeats can be inferred.</li>
+</ul>
+<h2 id="equivalences">Equivalences</h2>
+<p>A couple of CQL query equivalences are useful for query optimizations. Note that all equivalences used for standard SQL queries and materialized view maintenance apply to CQL as well.</p>
+<ul>
+<li><strong>Window Reduction.</strong> <code>SELECT Istream(L) FROM S[Range Unbounded] WHERE C</code> is equivalent to <code>SELECT Rstream(L) FROM S[Now] WHERE C</code>.</li>
+<li><strong>Filter-Window Commutativity.</strong> <code>(SELECT L FROM S WHERE C)[Range t]</code> is equivalent to <code>SELECT L FROM S[Range t] WHERE C</code>.</li>
+</ul>
+<h2 id="comparison-with-other-languages">Comparison with Other Languages</h2>
+<p>CQL subsumes a lot of existing continuous query languages including those used by Tapestry, Tribeca, Gigascope, and Aurora. CQL is also similar to TelegraphCQ. One notable difference with TelegraphCQ is that TelegraphCQ's query language is stream-only whereas CQL includes both streams and relations.</p>
+<p>However, it is easy to construct a stream-only variant of CQL which we can translate to CQL with relations. For example, for every relation-to-relation operator $O$ in CQL, we introduce a new operator $O_s$ where $O_s(S_1, \ldots, S_n)$ translates to $Rstream(O(S_1[Now], \ldots, S_n[Now]))$. Similarly, every stream-to-relation operator $S[W_s]$ can translate to $Rstream(S[W])$.</p>
+<h2 id="stream">STREAM</h2>
+<p>CQL is implemented in STREAM. STREAM represents both streams and relations as streams in which each timestamped tuple is also annotated as an insertion or a deletion. Query plans are graphs in which</p>
+<ul>
+<li>each vertex is an <strong>operator</strong>,</li>
+<li>each edge is a <strong>queue</strong>, and</li>
+<li>each operator maintains its state in a <strong>synopsis</strong>.</li>
+</ul>
+<p>Queues and synopses are kept in memory, but tuples are not copied whenever possible. Moreover, multiple queries will share the same query plan. See the paper for some concrete examples of query plans.</p>
+<p>Concretely, STREAM implements all stream-to-relation operators as a <code>seq-window</code> operator. All relation-to-relation operators are implement in an incremental fashion. STREAM supports binary and multi-way joins. There is one operator for each of <code>Istream</code>, <code>Dstream</code>, and <code>Rstream</code>. There are also <strong>system operators</strong> which handle things like receiving tuples from over the network. Each operator is sure to output tuples with the correct timestamp based on the tuples it used to generate it.</p>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+</body>
+</html>
