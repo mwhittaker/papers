@@ -14,7 +14,6 @@
 <p hidden>
 $\newcommand{\fire}{\textsf{fire}}$ $\newcommand{\next}{\textsf{next}}$ $\newcommand{\rin}{\textsf{in}}$ $\newcommand{\rout}{\textsf{out}}$
 </p>
-
 <h1 id="declarative-datalog-debugging-for-mere-mortals-2012"><a href="https://scholar.google.com/scholar?cluster=15263235670415505934">Declarative Datalog Debugging for Mere Mortals (2012)</a></h1>
 <p>Debugging datalog programs is hard. Given a buggy model $M = P(I)$ of a datalog program $P$ run on database instance $I$, we might want to know why certain tuples in $M$ appear that shouldn't. This paper presents a technique to rewrite $P$ to a modified program $\hat{P}$ which computes a modified model $\hat{M}$ which includes the provenance of every tuple in $M$.</p>
 <h2 id="overview">Overview</h2>
@@ -81,10 +80,17 @@ $\newcommand{\fire}{\textsf{fire}}$ $\newcommand{\next}{\textsf{next}}$ $\newcom
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-
-
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

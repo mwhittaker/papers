@@ -24,222 +24,222 @@
 <table>
 <thead>
 <tr class="header">
-<th align="left">Code</th>
-<th align="left">Name</th>
-<th align="left">History</th>
+<th>Code</th>
+<th>Name</th>
+<th>History</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">P0</td>
-<td align="left">Dirty Write</td>
-<td align="left"><code>w1[x] w2[x] {c1/a1}x{c2/a2}</code></td>
+<td>P0</td>
+<td>Dirty Write</td>
+<td><code>w1[x] w2[x] {c1/a1}x{c2/a2}</code></td>
 </tr>
 <tr class="even">
-<td align="left">P1</td>
-<td align="left">Dirty Read</td>
-<td align="left"><code>w1[x] r2[x] {c1/a1}x{c2/a2}</code></td>
+<td>P1</td>
+<td>Dirty Read</td>
+<td><code>w1[x] r2[x] {c1/a1}x{c2/a2}</code></td>
 </tr>
 <tr class="odd">
-<td align="left">P2</td>
-<td align="left">Non-repeatable or Fuzzy Read</td>
-<td align="left"><code>r1[x] w2[x] {c1/a1}x{c2/a2}</code></td>
+<td>P2</td>
+<td>Non-repeatable or Fuzzy Read</td>
+<td><code>r1[x] w2[x] {c1/a1}x{c2/a2}</code></td>
 </tr>
 <tr class="even">
-<td align="left">P3</td>
-<td align="left">Phantom</td>
-<td align="left"><code>r1[P] w2[y in P] {c1/a1}x{c2/a2}</code></td>
+<td>P3</td>
+<td>Phantom</td>
+<td><code>r1[P] w2[y in P] {c1/a1}x{c2/a2}</code></td>
 </tr>
 <tr class="odd">
-<td align="left">P4</td>
-<td align="left">Lost Update</td>
-<td align="left"><code>r1[x] w2[x] w1[x] c1</code></td>
+<td>P4</td>
+<td>Lost Update</td>
+<td><code>r1[x] w2[x] w1[x] c1</code></td>
 </tr>
 <tr class="even">
-<td align="left">P4C</td>
-<td align="left">Cursor Lost Update</td>
-<td align="left"><code>rc1[x] w2[x] w1[x] c1</code></td>
+<td>P4C</td>
+<td>Cursor Lost Update</td>
+<td><code>rc1[x] w2[x] w1[x] c1</code></td>
 </tr>
 <tr class="odd">
-<td align="left">A1</td>
-<td align="left">Dirty Read</td>
-<td align="left"><code>w1[x] r2[x] {a1}x{c2}</code></td>
+<td>A1</td>
+<td>Dirty Read</td>
+<td><code>w1[x] r2[x] {a1}x{c2}</code></td>
 </tr>
 <tr class="even">
-<td align="left">A2</td>
-<td align="left">Non-repeatable or Fuzzy Read</td>
-<td align="left"><code>r1[x] w2[x] c2 r1[x] c1</code></td>
+<td>A2</td>
+<td>Non-repeatable or Fuzzy Read</td>
+<td><code>r1[x] w2[x] c2 r1[x] c1</code></td>
 </tr>
 <tr class="odd">
-<td align="left">A3</td>
-<td align="left">Phantom</td>
-<td align="left"><code>r1[P] w2[y in P] c2 r1[P] c1</code></td>
+<td>A3</td>
+<td>Phantom</td>
+<td><code>r1[P] w2[y in P] c2 r1[P] c1</code></td>
 </tr>
 <tr class="even">
-<td align="left">A5A</td>
-<td align="left">Read Skew</td>
-<td align="left"><code>r1[x] w2[x] w2[y] c2 r1[y] {c1/a1}</code></td>
+<td>A5A</td>
+<td>Read Skew</td>
+<td><code>r1[x] w2[x] w2[y] c2 r1[y] {c1/a1}</code></td>
 </tr>
 <tr class="odd">
-<td align="left">A5B</td>
-<td align="left">Write Skew</td>
-<td align="left"><code>r1[x] r2[y] w1[y] w2[x] {c1}x{c2}</code></td>
+<td>A5B</td>
+<td>Write Skew</td>
+<td><code>r1[x] r2[y] w1[y] w2[x] {c1}x{c2}</code></td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
 <tr class="header">
-<th align="left">Name</th>
-<th align="left">History</th>
+<th>Name</th>
+<th>History</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">H1</td>
-<td align="left"><code>r1[x=50] w1[x=10] r2[x=10] r2[y=50] c2 r1[y=50] w1[y=90] c1</code></td>
+<td>H1</td>
+<td><code>r1[x=50] w1[x=10] r2[x=10] r2[y=50] c2 r1[y=50] w1[y=90] c1</code></td>
 </tr>
 <tr class="even">
-<td align="left">H1.SI</td>
-<td align="left"><code>r1[x0=50] w1[x1=10] r2[x0=50] r2[y0=50] c2 r1[y0=50] w1[y1=90] c1</code></td>
+<td>H1.SI</td>
+<td><code>r1[x0=50] w1[x1=10] r2[x0=50] r2[y0=50] c2 r1[y0=50] w1[y1=90] c1</code></td>
 </tr>
 <tr class="odd">
-<td align="left">H1.SI.SV</td>
-<td align="left"><code>r1[x=50] r1[y=50] r2[x=50] r2[y=50] c2 w1[x=10] w1[y=90] c1</code></td>
+<td>H1.SI.SV</td>
+<td><code>r1[x=50] r1[y=50] r2[x=50] r2[y=50] c2 w1[x=10] w1[y=90] c1</code></td>
 </tr>
 <tr class="even">
-<td align="left">H2</td>
-<td align="left"><code>r1[x=50] r2[x=50] w2[x=10] r2[y=50] w2[y=90] c2 r1[y=90] c1</code></td>
+<td>H2</td>
+<td><code>r1[x=50] r2[x=50] w2[x=10] r2[y=50] w2[y=90] c2 r1[y=90] c1</code></td>
 </tr>
 <tr class="odd">
-<td align="left">H3</td>
-<td align="left"><code>r1[P] w2[insert y to P] r2[z] w2[z] c2 r1[z] c1</code></td>
+<td>H3</td>
+<td><code>r1[P] w2[insert y to P] r2[z] w2[z] c2 r1[z] c1</code></td>
 </tr>
 <tr class="even">
-<td align="left">H4</td>
-<td align="left"><code>r1[x=100] r2[x=100] w2[x=120] c2 w1[x=130] c1</code></td>
+<td>H4</td>
+<td><code>r1[x=100] r2[x=100] w2[x=120] c2 w1[x=130] c1</code></td>
 </tr>
 <tr class="odd">
-<td align="left">H5</td>
-<td align="left"><code>r1[x=50] r1[y=50] r2[x=50] r2[y=50] w1[y=40] w2[x=40] c1 c2</code></td>
+<td>H5</td>
+<td><code>r1[x=50] r1[y=50] r2[x=50] r2[y=50] w1[y=40] w2[x=40] c1 c2</code></td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
 <tr class="header">
-<th align="left">Isolation Level</th>
-<th align="left">P1/A1 Dirty Read</th>
-<th align="left">P2/A2 Fuzzy Read</th>
-<th align="left">P3/A3 Phantom</th>
+<th>Isolation Level</th>
+<th>P1/A1 Dirty Read</th>
+<th>P2/A2 Fuzzy Read</th>
+<th>P3/A3 Phantom</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">ANSI READ UNCOMMITTED</td>
-<td align="left">✓</td>
-<td align="left">✓</td>
-<td align="left">✓</td>
+<td>ANSI READ UNCOMMITTED</td>
+<td>&#10003;</td>
+<td>&#10003;</td>
+<td>&#10003;</td>
 </tr>
 <tr class="even">
-<td align="left">ANSI READ COMMITTED</td>
-<td align="left"></td>
-<td align="left">✓</td>
-<td align="left">✓</td>
+<td>ANSI READ COMMITTED</td>
+<td></td>
+<td>&#10003;</td>
+<td>&#10003;</td>
 </tr>
 <tr class="odd">
-<td align="left">ANSI REPEATABLE READ</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left">✓</td>
+<td>ANSI REPEATABLE READ</td>
+<td></td>
+<td></td>
+<td>&#10003;</td>
 </tr>
 <tr class="even">
-<td align="left">ANOMALY SERIALIZABLE</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
+<td>ANOMALY SERIALIZABLE</td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
 <tr class="header">
-<th align="left">Consistency Level</th>
-<th align="left">Read Locks</th>
-<th align="left">Write Locks</th>
+<th>Consistency Level</th>
+<th>Read Locks</th>
+<th>Write Locks</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Degree 0</td>
-<td align="left">none</td>
-<td align="left">short</td>
+<td>Degree 0</td>
+<td>none</td>
+<td>short</td>
 </tr>
 <tr class="even">
-<td align="left">Degree 1 = Locking READ UNCOMMITTED</td>
-<td align="left">none</td>
-<td align="left">long</td>
+<td>Degree 1 = Locking READ UNCOMMITTED</td>
+<td>none</td>
+<td>long</td>
 </tr>
 <tr class="odd">
-<td align="left">Degree 2 = Locking READ COMMITTED</td>
-<td align="left">short</td>
-<td align="left">long</td>
+<td>Degree 2 = Locking READ COMMITTED</td>
+<td>short</td>
+<td>long</td>
 </tr>
 <tr class="even">
-<td align="left">Cursor Stability</td>
-<td align="left">cursor lock</td>
-<td align="left">long</td>
+<td>Cursor Stability</td>
+<td>cursor lock</td>
+<td>long</td>
 </tr>
 <tr class="odd">
-<td align="left">Locking REPEATABLE READ</td>
-<td align="left">long item; short predicate</td>
-<td align="left">long</td>
+<td>Locking REPEATABLE READ</td>
+<td>long item; short predicate</td>
+<td>long</td>
 </tr>
 <tr class="even">
-<td align="left">Degree 3 = Locking SERIALIZABLE</td>
-<td align="left">long</td>
-<td align="left">long</td>
+<td>Degree 3 = Locking SERIALIZABLE</td>
+<td>long</td>
+<td>long</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
 <tr class="header">
-<th align="left">Isolation Level</th>
-<th align="left">P0 Dirty Write</th>
-<th align="left">P1 Dirty Read</th>
-<th align="left">P2 Fuzzy Read</th>
-<th align="left">P3 Phantom</th>
+<th>Isolation Level</th>
+<th>P0 Dirty Write</th>
+<th>P1 Dirty Read</th>
+<th>P2 Fuzzy Read</th>
+<th>P3 Phantom</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">READ UNCOMMITTED</td>
-<td align="left"></td>
-<td align="left">✓</td>
-<td align="left">✓</td>
-<td align="left">✓</td>
+<td>READ UNCOMMITTED</td>
+<td></td>
+<td>&#10003;</td>
+<td>&#10003;</td>
+<td>&#10003;</td>
 </tr>
 <tr class="even">
-<td align="left">READ COMMITTED</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left">✓</td>
-<td align="left">✓</td>
+<td>READ COMMITTED</td>
+<td></td>
+<td></td>
+<td>&#10003;</td>
+<td>&#10003;</td>
 </tr>
 <tr class="odd">
-<td align="left">REPEATABLE READ</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left">✓</td>
+<td>REPEATABLE READ</td>
+<td></td>
+<td></td>
+<td></td>
+<td>&#10003;</td>
 </tr>
 <tr class="even">
-<td align="left">SERIALIZABLE</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
+<td>SERIALIZABLE</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -257,5 +257,14 @@
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

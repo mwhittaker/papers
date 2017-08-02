@@ -30,59 +30,58 @@
 <table>
 <thead>
 <tr class="header">
-<th align="left"></th>
-<th align="left">IS</th>
-<th align="left">IX</th>
-<th align="left">S</th>
-<th align="left">SIX</th>
-<th align="left">X</th>
+<th></th>
+<th>IS</th>
+<th>IX</th>
+<th>S</th>
+<th>SIX</th>
+<th>X</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">IS</td>
-<td align="left">&#10003;</td>
-<td align="left">&#10003;</td>
-<td align="left">&#10003;</td>
-<td align="left">&#10003;</td>
-<td align="left"></td>
+<td>IS</td>
+<td>&#10003;</td>
+<td>&#10003;</td>
+<td>&#10003;</td>
+<td>&#10003;</td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left">IX</td>
-<td align="left">&#10003;</td>
-<td align="left">&#10003;</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
+<td>IX</td>
+<td>&#10003;</td>
+<td>&#10003;</td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left">S</td>
-<td align="left">&#10003;</td>
-<td align="left"></td>
-<td align="left">&#10003;</td>
-<td align="left"></td>
-<td align="left"></td>
+<td>S</td>
+<td>&#10003;</td>
+<td></td>
+<td>&#10003;</td>
+<td></td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left">SIX</td>
-<td align="left">&#10003;</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
+<td>SIX</td>
+<td>&#10003;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left">X</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
+<td>X</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 </center>
-
 <p>More specifically, these are the rules for acquiring locks:</p>
 <ol style="list-style-type: decimal">
 <li>If a transaction wants an S or IS lock on a node, it must acquire an IX or IS lock on its parent.</li>
@@ -123,10 +122,17 @@
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-
-
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

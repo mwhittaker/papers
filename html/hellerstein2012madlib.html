@@ -13,7 +13,7 @@
   <div id="container">
 <h1 id="the-madlib-analytics-library-or-mad-skills-the-sql-2012"><a href="https://scholar.google.com/scholar?cluster=2154261383124050736">The MADlib Analytics Library or MAD Skills, the SQL (2012)</a></h1>
 <p>MADlib is a library of machine learning and statistics functions that integrates into a relational database. For example, you can store labelled training data in a relational database and run logistic regression over it like this:</p>
-<pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">SELECT</span> madlib.logregr_train(
+<div class="sourceCode"><pre class="sourceCode sql"><code class="sourceCode sql"><span class="kw">SELECT</span> madlib.logregr_train(
 &#160;&#160;<span class="st">&#39;patients&#39;</span>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- source table</span>
 &#160;&#160;<span class="st">&#39;patients_logregr&#39;</span>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- output table</span>
 &#160;&#160;<span class="st">&#39;second_attack&#39;</span>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- labels</span>
@@ -21,7 +21,7 @@
 &#160;&#160;NULL,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- grouping columns</span>
 &#160;&#160;<span class="dv">20</span>,&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- max number of iterations</span>
 &#160;&#160;<span class="st">&#39;irls&#39;</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="co">-- optimizer</span>
-);</code></pre>
+);</code></pre></div>
 <p>MADlib programming is divided into two conceptual types of programming: macro-programming and micro-programming. <strong>Macro-programming</strong> deals with partitioning matrices across nodes, moving matrix partitions, and operating on matrices in parallel. <strong>Micro-programming</strong> deals with writing efficient code which operates on a single chunk of a matrix on one node.</p>
 <h2 id="macro-programming">Macro-Programming</h2>
 <p>MADlib leverages user-defined aggregates to operate on matrices in parallel. A user defined-aggregate over a set of type <code>T</code> comes in three pieces.</p>
@@ -44,10 +44,17 @@
 <link href='../css/default_highlight.css' rel='stylesheet'>
 <script src="../js/highlight.pack.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
-
-
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

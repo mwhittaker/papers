@@ -36,15 +36,14 @@ svg text {
     fill: transparent;
 }
 </style>
-
 <h1 id="the-r-tree-an-efficient-and-robust-access-method-for-points-and-rectangles-1990"><a href="https://scholar.google.com/scholar?cluster=12598191799855638408">The R*-tree: An Efficient and Robust Access Method for Points and Rectangles (1990)</a></h1>
 <p>This paper introduces the R*-tree: an optimized variant of an R-tree. The authors show that the R*-tree outperforms all other R-tree variants on point queries, rectangle intersection queries, rectangle enclosure queries, and spatial join queries (e.g. select all overlapping objects).</p>
 <h2 id="r-trees">R-trees</h2>
 <p>An R-tree is a map from rectangles (or points) to values. You can insert a rectangle and corresponding value and then search for regions that contain a point, regions that intersect a rectangle, or regions that enclose a rectangle.</p>
 <p>R-trees are implemented as a slight variant of a B+-tree. Internal nodes have between $m$ and $M$ child pointers indexed by a bounding box. Similarly, leaf nodes store between $m$ and $M$ entries and their associated bounding box. See <a href="http://pages.cs.wisc.edu/~dbbook/">Database Management Systems</a> for a good introduction on implementing R-trees.</p>
 <p>Below is an illustration of a simple R-tree.</p>
-<svg id="rtree" viewBox="0 0 1000 500"></svg>
-
+<svg id="rtree" viewBox="0 0 1000 500">
+</svg>
 <p>R-trees can try to achieve some combination of the following things.</p>
 <ol style="list-style-type: decimal">
 <li>Minimize rectangle area.</li>
@@ -58,12 +57,12 @@ svg text {
 <p>At every internal node, the <strong>original ChooseSubtree method</strong> selects the child which requires the least amount of enlargement to accommodate the rectangle being inserted, choosing the smallest child in the event of a tie. This method aims to minimize the area of every rectangle in the R-tree.</p>
 <p>The <strong>original Split method</strong> partitions $M + 1$ entries in two in a way that minimizes the area of the two bounding boxes. An exact minimization takes exponential time, but there are approximations that run in linear and quadratic time.</p>
 <p>The quadratic approximation begins by selecting two of the $M + 1$ rectangles as seeds; one of the seeds goes in one partition, and the other seed goes in the other partition. The two seeds are the two rectangles with the sparsest bounding box. In the example below, <code>R2</code> and <code>R3</code> would be chosen as seeds.</p>
-<svg id="seed" viewBox="0 0 1000 500"></svg>
-
+<svg id="seed" viewBox="0 0 1000 500">
+</svg>
 <p>Then, for each entry, we compute the enlargement required to insert the entry into both groups. The entry with the biggest difference between these two enlargements is chosen and inserted into the group which requires less enlargement.</p>
 <p><strong>Greene's Split method</strong> selects seeds in the same way. It then determines the axis along which the seeds are most distant, and divides the entries in half along this axis. In the example below, the $x$-axis is selected and the nodes are divided into a group of <code>R1</code>-<code>R4</code> and a group of <code>R5</code>-<code>R8</code>.</p>
-<svg id="greene" viewBox="0 0 1000 300"></svg>
-
+<svg id="greene" viewBox="0 0 1000 300">
+</svg>
 <h2 id="r-tree">R*-tree</h2>
 <p>Given a node with entries $E_1, \ldots, E_n$ define the overlap of $E_k$ to be $$\sum_{i=1, i \neq k}^n \text{area}(E_k \cap E_i)$$</p>
 <p>The <strong>R*-tree ChooseSubtree method</strong> selects the child which increases overlap the least. Ties are broken by least area increase and then least area.</p>
@@ -125,14 +124,20 @@ svg text {
 
   window.onload = main;
 </script>
-
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-
-
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

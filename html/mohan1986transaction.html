@@ -27,7 +27,6 @@
     }
   }
 </style>
-
 <h1 id="transaction-management-in-the-r-distributed-database-management-system-1986"><a href="https://scholar.google.com/scholar?cluster=6135007404184895390">Transaction Management in the R* Distributed Database Management System (1986)</a></h1>
 <p>This paper describes the vanilla two-phase commit protocol, extends it to a hierarchical two-phase commit protocol, and then introduces three protocol optimizations to take advantage of presumed aborts, partially/fully read-only transactions, and presumed commits. It also discusses how R* detects deadlocks and chooses a victim to kill. Two-phase commit is one of those things where the more you understand it, the more you understand that you don't understand it. Good luck!</p>
 <h2 id="two-phase-commit">Two-Phase Commit</h2>
@@ -49,30 +48,29 @@
 <li>In the <strong>blue state</strong>, the transaction no longer needs to contact the coordinator. It either commits or aborts.</li>
 </ul>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopc_yes_commit"></svg>
-  </div>
-  <caption>
+<div class="shrink">
+<pre><code>&lt;svg viewBox=&quot;0 0 250 190&quot; id=&quot;twopc_yes_commit&quot;&gt;&lt;/svg&gt;</code></pre>
+</div>
+<caption>
 Figure 1. Subordinate votes yes; transaction commits.
 </caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopc_yes_abort"></svg>
-  </div>
-  <caption>
+<div class="shrink">
+<pre><code>&lt;svg viewBox=&quot;0 0 250 190&quot; id=&quot;twopc_yes_abort&quot;&gt;&lt;/svg&gt;</code></pre>
+</div>
+<caption>
 Figure 2. Subordinate votes yes; transaction aborts.
 </caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopc_no_abort"></svg>
-  </div>
-  <caption>
+<div class="shrink">
+<pre><code>&lt;svg viewBox=&quot;0 0 250 190&quot; id=&quot;twopc_no_abort&quot;&gt;&lt;/svg&gt;</code></pre>
+</div>
+<caption>
 Figure 3. Subordinate votes no; transaction aborts.
 </caption>
 </center>
-
 <h1 id="hierarchical-2pc">Hierarchical 2PC</h1>
 <p>In hierarchical two-phase commit, nodes are organized in a tree, and each node can only talk to its parent and its children. The root of the tree is the coordinator, the leaves of the tree are subordinates, and the internal nodes play the role of both. The root and the leaves behave as usual. The inner nodes forward prepare messages down the tree and aggregate votes up the tree. That is, if all of an inner node's children vote yes, the node forwards a yes upward. If <em>any</em> of the children vote no, the inner node forwards a no upward and also sends abort messages downward. When an inner node receives a commit or abort message, it force writes it, sends an acknowledgement upward, and forwards the abort or commit downward.</p>
 <h2 id="presumed-abort">Presumed Abort</h2>
@@ -89,30 +87,29 @@ Figure 3. Subordinate votes no; transaction aborts.
 <li>In the <strong>blue state</strong>, the subordinate does not contact the coordinator and commits the transaction.</li>
 </ul>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpa_yes_commit"></svg>
-  </div>
-  <caption>
+<div class="shrink">
+<pre><code>&lt;svg viewBox=&quot;0 0 250 190&quot; id=&quot;twopcpa_yes_commit&quot;&gt;&lt;/svg&gt;</code></pre>
+</div>
+<caption>
 Figure 4. Subordinate votes yes; transaction commits.
 </caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpa_yes_abort"></svg>
-  </div>
-  <caption>
+<div class="shrink">
+<pre><code>&lt;svg viewBox=&quot;0 0 250 190&quot; id=&quot;twopcpa_yes_abort&quot;&gt;&lt;/svg&gt;</code></pre>
+</div>
+<caption>
 Figure 5. Subordinate votes yes; transaction aborts.
 </caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpa_no_abort"></svg>
-  </div>
-  <caption>
+<div class="shrink">
+<pre><code>&lt;svg viewBox=&quot;0 0 250 190&quot; id=&quot;twopcpa_no_abort&quot;&gt;&lt;/svg&gt;</code></pre>
+</div>
+<caption>
 Figure 6. Subordinate votes no; transaction aborts.
 </caption>
 </center>
-
 <h2 id="read-only-subordinates">Read-Only Subordinates</h2>
 <p>If any subordinate only performed reads, then it responds to prepare messages with a read vote and then completely forgets about the transaction without logging anything. If a coordinator receives all read votes, it also forgets about the transaction and logs nothing.</p>
 <h2 id="presumed-commit">Presumed Commit</h2>
@@ -130,30 +127,29 @@ Figure 6. Subordinate votes no; transaction aborts.
 <li>In the <strong>brown state</strong>, the subordinate aborts the transaction and must ensure that the coordinator has received its acknowledgement.</li>
 </ul>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpc_yes_commit"></svg>
-  </div>
-  <caption>
+<div class="shrink">
+<pre><code>&lt;svg viewBox=&quot;0 0 250 190&quot; id=&quot;twopcpc_yes_commit&quot;&gt;&lt;/svg&gt;</code></pre>
+</div>
+<caption>
 Figure 7. Subordinate votes yes; transaction commits.
 </caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpc_yes_abort"></svg>
-  </div>
-  <caption>
+<div class="shrink">
+<pre><code>&lt;svg viewBox=&quot;0 0 250 190&quot; id=&quot;twopcpc_yes_abort&quot;&gt;&lt;/svg&gt;</code></pre>
+</div>
+<caption>
 Figure 8. Subordinate votes yes; transaction aborts.
 </caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpc_no_abort"></svg>
-  </div>
-  <caption>
+<div class="shrink">
+<pre><code>&lt;svg viewBox=&quot;0 0 250 190&quot; id=&quot;twopcpc_no_abort&quot;&gt;&lt;/svg&gt;</code></pre>
+</div>
+<caption>
 Figure 9. Subordinate votes no; transaction aborts.
 </caption>
 </center>
-
 <p>TODO: deadlock detection section.</p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg.js"></script>
 <script type="text/javascript">
@@ -493,10 +489,17 @@ Figure 9. Subordinate votes no; transaction aborts.
 
   window.onload = main;
 </script>
-
-
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

@@ -49,45 +49,45 @@ CP BS MR RMW
 <table>
 <thead>
 <tr class="header">
-<th align="left"></th>
-<th align="left">1</th>
-<th align="left">2</th>
-<th align="left">3</th>
-<th align="left">4</th>
-<th align="left">5</th>
-<th align="left">6</th>
-<th align="left">7</th>
-<th align="left">8</th>
-<th align="left">9</th>
-<th align="left">RUNS</th>
+<th></th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>RUNS</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Visitors</td>
-<td align="left">0</td>
-<td align="left">0</td>
-<td align="left">1</td>
-<td align="left">0</td>
-<td align="left">1</td>
-<td align="left">0</td>
-<td align="left">0</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left">2</td>
+<td>Visitors</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td></td>
+<td></td>
+<td>2</td>
 </tr>
 <tr class="even">
-<td align="left">Home</td>
-<td align="left">1</td>
-<td align="left">0</td>
-<td align="left">1</td>
-<td align="left">1</td>
-<td align="left">0</td>
-<td align="left">2</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left">5</td>
+<td>Home</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>2</td>
+<td></td>
+<td></td>
+<td></td>
+<td>5</td>
 </tr>
 </tbody>
 </table>
@@ -95,34 +95,34 @@ CP BS MR RMW
 <table>
 <thead>
 <tr class="header">
-<th align="left">Read Guarantee</th>
-<th align="left">Permitted Reads</th>
+<th>Read Guarantee</th>
+<th>Permitted Reads</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">SC</td>
-<td align="left"><code>2-5</code></td>
+<td>SC</td>
+<td><code>2-5</code></td>
 </tr>
 <tr class="even">
-<td align="left">EC</td>
-<td align="left"><code>{0, 1, 2}x{0, 1, 2, 3, 4, 5}</code></td>
+<td>EC</td>
+<td><code>{0, 1, 2}x{0, 1, 2, 3, 4, 5}</code></td>
 </tr>
 <tr class="odd">
-<td align="left">CP</td>
-<td align="left"><code>0-0</code>,<code>0-1</code>,<code>1-1</code>,<code>1-2</code>,<code>1-3</code>,<code>2-3</code>,<code>2-4</code>,<code>2-5</code></td>
+<td>CP</td>
+<td><code>0-0</code>,<code>0-1</code>,<code>1-1</code>,<code>1-2</code>,<code>1-3</code>,<code>2-3</code>,<code>2-4</code>,<code>2-5</code></td>
 </tr>
 <tr class="even">
-<td align="left">BS</td>
-<td align="left">1-inning: <code>2-3</code>,<code>2-4</code>,<code>2-5</code></td>
+<td>BS</td>
+<td>1-inning: <code>2-3</code>,<code>2-4</code>,<code>2-5</code></td>
 </tr>
 <tr class="odd">
-<td align="left">MR</td>
-<td align="left"><code>1-3</code>: <code>1-3</code>,<code>1-4</code>,<code>1-5</code>,<code>2-3</code>,<code>2-4</code>,<code>2-5</code></td>
+<td>MR</td>
+<td><code>1-3</code>: <code>1-3</code>,<code>1-4</code>,<code>1-5</code>,<code>2-3</code>,<code>2-4</code>,<code>2-5</code></td>
 </tr>
 <tr class="even">
-<td align="left">RMW</td>
-<td align="left">writer: <code>2-5</code>; other: <code>{0, 1, 2}x{0, 1, 2, 3, 4, 5}</code></td>
+<td>RMW</td>
+<td>writer: <code>2-5</code>; other: <code>{0, 1, 2}x{0, 1, 2, 3, 4, 5}</code></td>
 </tr>
 </tbody>
 </table>
@@ -140,5 +140,14 @@ CP BS MR RMW
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

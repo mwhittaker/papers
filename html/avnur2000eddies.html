@@ -17,15 +17,14 @@
     alignment-baseline: middle;
   }
 </style>
-
 <h1 id="eddies-continuously-adaptive-query-processing-2000"><a href="https://scholar.google.com/scholar?cluster=13049208738754012194">Eddies: Continuously Adaptive Query Processing (2000)</a></h1>
 <p>Traditional query optimizers take in a query, generate a plan, and execute the plan. Once the plan is generated, it is never changed. This paper focuses on dynamic query processing which takes in a query, generates a plan, and then executes the plan while simultaneously changing the plan. More specifically, the paper introduces an <strong>eddy operator</strong> which dynamically routes tuples through a set of other relational operators in an efficient way.</p>
 <h2 id="eddies">Eddies</h2>
 <p>The eddy operator is implemented in the River query processing system. In River, every operator of a query plan is run in its own thread, and operators exchange tuples between each other via fixed-length message queues.</p>
 <p>Before we insert eddy operators into a query plan, we first generate a fixed query plan with a traditional query optimizer. We restrict the query optimizer to choose either index joins or hash ripple joins to implement equijoins and to choose block ripple joins to implement non-equijoins. See the &quot;Reorderability of Plans&quot; section for the rationale behind this restriction.</p>
 <p>An eddy operator encapsulates multiple inputs and multiple unary and binary operators. It reads tuples from its inputs and feeds them in some order to the operators. Once a tuple has been processed by all the operators, it is output by the eddy. This looks something like this:</p>
-<svg viewBox="100 25 200 140" id="eddy1"></svg>
-
+<svg viewBox="100 25 200 140" id="eddy1">
+</svg>
 <p>Here, the eddy encapsulates a single input (i.e. R) and two unary operators (i.e. a and b). Each tuple is represented as a dot. Half the tuples are sent to a before b; the other half are sent to b before a. After a tuple has been sent to both operators, it is output by the eddy.</p>
 <p>An eddy which encapsulates $n$ operators annotates each tuple with an $n$-length Done bitstring and $n$-length Ready bitstring. Initially, a tuple $t$'s Done bitstring is zeroed and its Ready bitstring is oned. $t$ is then sent to operator $i$ if the $i$th bit of $t$'s Ready bitstring is set and the $i$th bit of $t$'s Done bitstring isn't set. Once $t$ has been processed by the $i$th operator, the $i$th bit in Done is set. Once all the bits in Done are set, $t$ is output.</p>
 <p>A couple things to note:</p>
@@ -116,10 +115,17 @@ WHERE s1() AND s2();</code></pre>
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-
-
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

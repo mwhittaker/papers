@@ -17,7 +17,7 @@
 <h2 id="search-engine-overview">Search Engine Overview</h2>
 <p>In this paper, we consider a simple search engine with the following design. Users write queries consisting of <strong>words</strong> (e.g. &quot;java list sort&quot;) and <strong>properties</strong> (e.g. &quot;language:english filetype:pdf&quot;). The search engine then finds every document that contains the words and satisfies the properties. Each document is scored based on the search, and the top results are returned. The score of a document $d$ for a query $Q$ with words $w_1, \ldots, w_k$ is computed as follows:</p>
 <div class="math">
-$$ Score(Q, d) \defeq Quality(d) + \sum_{i=1}^k Score(w_i, d) $$
+<p>$$ Score(Q, d) \defeq Quality(d) + \sum_{i=1}^k Score(w_i, d) $$</p>
 </div>
 <p>Here, $Quality$ determines the quality of a document irrespective of query (e.g. how long is it, what is its page rank). $Score(w, d)$ assigns a score to each word and document pair based on the location and frequency of the word. For example, if the title of a page is &quot;Java List Sort&quot; and its body contains the word &quot;list&quot; 49 times, it will probably receive a higher score for word &quot;list&quot; than a page titled &quot;How to Wax a Llama&quot; that includes the word &quot;list&quot; once.</p>
 <p>A <strong>crawler</strong> periodically crawls the web looking for pages. An <strong>indexer</strong> indexes these pages and computes an inverted index mapping words to the documents that contain the word (also annotated with scores). Finally, a <strong>server</strong> parses, optimizes, and executes queries and returns results back to the user.</p>
@@ -37,83 +37,82 @@ echo &quot;bar bar bar&quot; &gt;&gt; bar.html</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">DocId</th>
-<th align="left">URL</th>
-<th align="left">Date</th>
-<th align="left">Size</th>
-<th align="left">Abstract</th>
+<th>DocId</th>
+<th>URL</th>
+<th>Date</th>
+<th>Size</th>
+<th>Abstract</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">13048</td>
-<td align="left">foo.html</td>
-<td align="left">-</td>
-<td align="left">-</td>
-<td align="left">-</td>
+<td>13048</td>
+<td>foo.html</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
 </tr>
 <tr class="even">
-<td align="left">91481</td>
-<td align="left">bar.html</td>
-<td align="left">-</td>
-<td align="left">-</td>
-<td align="left">-</td>
+<td>91481</td>
+<td>bar.html</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
 <tr class="header">
-<th align="left">WordId</th>
-<th align="left">DocId</th>
-<th align="left">Score</th>
-<th align="left">PositionInfo</th>
+<th>WordId</th>
+<th>DocId</th>
+<th>Score</th>
+<th>PositionInfo</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">0</td>
-<td align="left">13048</td>
-<td align="left">100</td>
-<td align="left">-</td>
+<td>0</td>
+<td>13048</td>
+<td>100</td>
+<td>-</td>
 </tr>
 <tr class="even">
-<td align="left">1</td>
-<td align="left">13048</td>
-<td align="left">10</td>
-<td align="left">-</td>
+<td>1</td>
+<td>13048</td>
+<td>10</td>
+<td>-</td>
 </tr>
 <tr class="odd">
-<td align="left">1</td>
-<td align="left">91481</td>
-<td align="left">100</td>
-<td align="left">-</td>
+<td>1</td>
+<td>91481</td>
+<td>100</td>
+<td>-</td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
 <tr class="header">
-<th align="left">String</th>
-<th align="left">WordId</th>
-<th align="left">Stats</th>
+<th>String</th>
+<th>WordId</th>
+<th>Stats</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">foo</td>
-<td align="left">0</td>
-<td align="left">-</td>
+<td>foo</td>
+<td>0</td>
+<td>-</td>
 </tr>
 <tr class="even">
-<td align="left">bar</td>
-<td align="left">1</td>
-<td align="left">-</td>
+<td>bar</td>
+<td>1</td>
+<td>-</td>
 </tr>
 </tbody>
 </table>
 </center>
-
 <p>With these tables, we can express a search engine query as a relational algebra query which joins together quality scores, word scores, and documents (see Figure 2 in the paper). The meat of the query involves finding all the documents that match a given query. For this, we use a custom query language:</p>
 <pre><code>expr ::= expr AND expr
        | expr OR expr
@@ -158,10 +157,17 @@ prop ::= prop AND prop
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-
-
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

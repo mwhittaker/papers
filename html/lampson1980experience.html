@@ -39,7 +39,7 @@ buffer &lt;- join p</code></pre>
 </ul>
 <p>Special care also had to be taken to avoid priority inversion.</p>
 <p>Mesa also introduced Mesa semantics, best explained with this code snippet:</p>
-<pre class="sourceCode python"><code class="sourceCode python"><span class="co">&quot;&quot;&quot;</span>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="co">&quot;&quot;&quot;</span>
 <span class="co">Condition variables typically obey one of two semantics:</span>
 
 <span class="co">1. Under *Hoare semantics* [1], when a thread calls `notify` on a condition</span>
@@ -79,74 +79,81 @@ buffer &lt;- join p</code></pre>
 <span class="co">[2]: https://scholar.google.com/scholar?cluster=492255216248422903&amp;hl=en&amp;as_sdt=0,5</span>
 <span class="co">&quot;&quot;&quot;</span>
 
-<span class="ch">import</span> threading
+<span class="im">import</span> threading
 
 <span class="co"># The number of objects read from and written to the pipe.</span>
-NUM_OBJECTS = <span class="dv">10000</span>
+NUM_OBJECTS <span class="op">=</span> <span class="dv">10000</span>
 
 <span class="co"># The number of threads consuming from the pipe.</span>
-NUM_CONSUMERS = <span class="dv">2</span>
+NUM_CONSUMERS <span class="op">=</span> <span class="dv">2</span>
 
 <span class="co"># An asynchronous queue (a.k.a. pipe) that assumes (erroneously) that Python</span>
 <span class="co"># condition variables follow Hoare semantics.</span>
-<span class="kw">class</span> HoarePipe(<span class="dt">object</span>):
-    <span class="kw">def</span> <span class="ot">__init__</span>(<span class="ot">self</span>):
-        <span class="ot">self</span>.xs = []
-        <span class="ot">self</span>.lock = threading.Lock()
-        <span class="ot">self</span>.data_available = threading.Condition(<span class="ot">self</span>.lock)
+<span class="kw">class</span> HoarePipe(<span class="bu">object</span>):
+    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):
+        <span class="va">self</span>.xs <span class="op">=</span> []
+        <span class="va">self</span>.lock <span class="op">=</span> threading.Lock()
+        <span class="va">self</span>.data_available <span class="op">=</span> threading.Condition(<span class="va">self</span>.lock)
 
     <span class="co"># Pop the first element from the pipe, blocking if necessary until data is</span>
     <span class="co"># available.</span>
-    <span class="kw">def</span> pop(<span class="ot">self</span>):
-        <span class="kw">with</span> <span class="ot">self</span>.lock:
+    <span class="kw">def</span> pop(<span class="va">self</span>):
+        <span class="cf">with</span> <span class="va">self</span>.lock:
             <span class="co"># This code is incorrect beacuse Python condition variables follows</span>
             <span class="co"># Mesa, not Hoare, semantics. To correct the code, simply replace</span>
             <span class="co"># the `if` with a `while`.</span>
-            <span class="kw">if</span> <span class="dt">len</span>(<span class="ot">self</span>.xs) == <span class="dv">0</span>:
-                <span class="ot">self</span>.data_available.wait()
-            <span class="kw">return</span> <span class="ot">self</span>.xs.pop(<span class="dv">0</span>)
+            <span class="cf">if</span> <span class="bu">len</span>(<span class="va">self</span>.xs) <span class="op">==</span> <span class="dv">0</span>:
+                <span class="va">self</span>.data_available.wait()
+            <span class="cf">return</span> <span class="va">self</span>.xs.pop(<span class="dv">0</span>)
 
     <span class="co"># Push a value to the pipe.</span>
-    <span class="kw">def</span> push(<span class="ot">self</span>, x):
-        <span class="kw">with</span> <span class="ot">self</span>.lock:
-            <span class="ot">self</span>.xs.append(x)
-            <span class="ot">self</span>.data_available.notify()
+    <span class="kw">def</span> push(<span class="va">self</span>, x):
+        <span class="cf">with</span> <span class="va">self</span>.lock:
+            <span class="va">self</span>.xs.append(x)
+            <span class="va">self</span>.data_available.notify()
 
 <span class="kw">def</span> produce(pipe):
-    <span class="kw">for</span> i in <span class="dt">range</span>(NUM_OBJECTS):
+    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(NUM_OBJECTS):
         pipe.push(i)
 
 <span class="kw">def</span> consume(pipe):
-    <span class="kw">assert</span> NUM_OBJECTS % NUM_CONSUMERS == <span class="dv">0</span>
-    <span class="kw">for</span> i in <span class="dt">range</span>(NUM_OBJECTS / NUM_CONSUMERS):
+    <span class="cf">assert</span> NUM_OBJECTS <span class="op">%</span> NUM_CONSUMERS <span class="op">==</span> <span class="dv">0</span>
+    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(NUM_OBJECTS <span class="op">/</span> NUM_CONSUMERS):
         pipe.pop()
 
 <span class="kw">def</span> main():
-    pipe = HoarePipe()
-    producer = threading.Thread(target=produce, args=(pipe,))
-    consumers = [threading.Thread(target=consume, args=(pipe,))
-                 <span class="kw">for</span> i in <span class="dt">range</span>(NUM_CONSUMERS)]
+    pipe <span class="op">=</span> HoarePipe()
+    producer <span class="op">=</span> threading.Thread(target<span class="op">=</span>produce, args<span class="op">=</span>(pipe,))
+    consumers <span class="op">=</span> [threading.Thread(target<span class="op">=</span>consume, args<span class="op">=</span>(pipe,))
+                 <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(NUM_CONSUMERS)]
 
     producer.start()
-    <span class="kw">for</span> consumer in consumers:
+    <span class="cf">for</span> consumer <span class="kw">in</span> consumers:
         consumer.start()
 
     producer.join()
-    <span class="kw">for</span> consumer in consumers:
+    <span class="cf">for</span> consumer <span class="kw">in</span> consumers:
         consumer.join()
 
-<span class="kw">if</span> <span class="ot">__name__</span> == <span class="st">&quot;__main__&quot;</span>:
-    main()</code></pre>
+<span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&quot;__main__&quot;</span>:
+    main()</code></pre></div>
 <p>Threads waiting on a condition variable could also be awoken by a timeout, an abort, or a broadcast (e.g. <code>notify_all</code>).</p>
 <p>Mesa's implementation was divided between the processor, a runtime, and the compiler. The processor was responsible for process management and scheduling. Each process was on a ready queue, monitor lock queue, condition variable queue, or fault queue. The runtime was responsible for providing the fork/join interface. The compiler performed code generation and a few static sanity checks.</p>
 <p>Mesa was evaluated by Pilot (an OS), Violet (a distributed calendar), and Gateway (a router).</p>
 <link href='../css/default_highlight.css' rel='stylesheet'>
 <script src="../js/highlight.pack.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
-
-
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

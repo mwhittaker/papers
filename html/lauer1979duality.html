@@ -18,71 +18,81 @@
 <li><strong>process-oriented</strong> concurrency models in which there are a larger number of dynamic processes that share memory.</li>
 </ul>
 <p>Message-oriented systems can be characterized by the following hallmarks, consequences, and provided facilities.</p>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col width="29%" />
+<col width="34%" />
+<col width="36%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left">Hallmark</th>
-<th align="left">Consequences</th>
-<th align="left">Facilities</th>
+<th>Hallmark</th>
+<th>Consequences</th>
+<th>Facilities</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Long standing communication channels are typically created during program initialization</td>
-<td align="left">Synchronization is implicitly performed in the queues connecting processes</td>
-<td align="left">Messages and message ids</td>
+<td>Long standing communication channels are typically created during program initialization</td>
+<td>Synchronization is implicitly performed in the queues connecting processes</td>
+<td>Messages and message ids</td>
 </tr>
 <tr class="even">
-<td align="left">There are a fewer number of long lasting processes</td>
-<td align="left">Shared structures are passed by reference; only processes with a reference to a structure can act on it</td>
-<td align="left">Message channels and ports that provide the ability to <code>Send</code>, <code>WaitForReply</code>, <code>WaitForMessage</code>, or <code>SendReply</code></td>
+<td>There are a fewer number of long lasting processes</td>
+<td>Shared structures are passed by reference; only processes with a reference to a structure can act on it</td>
+<td>Message channels and ports that provide the ability to <code>Send</code>, <code>WaitForReply</code>, <code>WaitForMessage</code>, or <code>SendReply</code></td>
 </tr>
 <tr class="odd">
-<td align="left">Processes don't share memory</td>
-<td align="left">Peripheral devices are treated like processes and communicated with</td>
-<td align="left">Process creation (but no deletion)</td>
+<td>Processes don't share memory</td>
+<td>Peripheral devices are treated like processes and communicated with</td>
+<td>Process creation (but no deletion)</td>
 </tr>
 <tr class="even">
-<td align="left"></td>
-<td align="left">Processes read a small number of messages at a time</td>
-<td align="left"></td>
+<td></td>
+<td>Processes read a small number of messages at a time</td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <p>Process-oriented systems can be similarly characterized:</p>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col width="35%" />
+<col width="42%" />
+<col width="22%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th align="left">Hallmark</th>
-<th align="left">Consequences</th>
-<th align="left">Facilities</th>
+<th>Hallmark</th>
+<th>Consequences</th>
+<th>Facilities</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Global data can be protected and accessed via interfaces</td>
-<td align="left">Synchronization is performed in locks</td>
-<td align="left">Procedures</td>
+<td>Global data can be protected and accessed via interfaces</td>
+<td>Synchronization is performed in locks</td>
+<td>Procedures</td>
 </tr>
 <tr class="even">
-<td align="left">Process creation and deletion is a lightweight task</td>
-<td align="left">Data is shared directly, with small portions being locked</td>
-<td align="left"><code>fork</code>/<code>join</code> procedure invocation</td>
+<td>Process creation and deletion is a lightweight task</td>
+<td>Data is shared directly, with small portions being locked</td>
+<td><code>fork</code>/<code>join</code> procedure invocation</td>
 </tr>
 <tr class="odd">
-<td align="left">Processes typically have a single job</td>
-<td align="left">Peripheral interaction typically involves locking and sharing memory</td>
-<td align="left">Modules and monitors</td>
+<td>Processes typically have a single job</td>
+<td>Peripheral interaction typically involves locking and sharing memory</td>
+<td>Modules and monitors</td>
 </tr>
 <tr class="even">
-<td align="left"></td>
-<td align="left"></td>
-<td align="left">Module instantiation</td>
+<td></td>
+<td></td>
+<td>Module instantiation</td>
 </tr>
 <tr class="odd">
-<td align="left"></td>
-<td align="left"></td>
-<td align="left">Condition variables</td>
+<td></td>
+<td></td>
+<td>Condition variables</td>
 </tr>
 </tbody>
 </table>
@@ -90,46 +100,46 @@
 <table>
 <thead>
 <tr class="header">
-<th align="left">Message-oriented</th>
-<th align="left">Process-oriented</th>
+<th>Message-oriented</th>
+<th>Process-oriented</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Processes, <code>CreateProcess</code></td>
-<td align="left">Monitors, <code>NEW</code>/<code>START</code></td>
+<td>Processes, <code>CreateProcess</code></td>
+<td>Monitors, <code>NEW</code>/<code>START</code></td>
 </tr>
 <tr class="even">
-<td align="left">Message Channels</td>
-<td align="left">External Procedure identifiers</td>
+<td>Message Channels</td>
+<td>External Procedure identifiers</td>
 </tr>
 <tr class="odd">
-<td align="left">Message Ports</td>
-<td align="left"><code>ENTRY</code> procedure identifiers</td>
+<td>Message Ports</td>
+<td><code>ENTRY</code> procedure identifiers</td>
 </tr>
 <tr class="even">
-<td align="left"><code>SendMessage; AwaitReply</code></td>
-<td align="left">simple procedure call</td>
+<td><code>SendMessage; AwaitReply</code></td>
+<td>simple procedure call</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>SendMessage; ... AwaitReply</code></td>
-<td align="left"><code>FORK; ... JOIN</code></td>
+<td><code>SendMessage; ... AwaitReply</code></td>
+<td><code>FORK; ... JOIN</code></td>
 </tr>
 <tr class="even">
-<td align="left"><code>SendReply</code></td>
-<td align="left"><code>RETURN</code></td>
+<td><code>SendReply</code></td>
+<td><code>RETURN</code></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>WaitForMessage</code> loop with <code>case</code> statement</td>
-<td align="left">monitor lock, <code>ENTRY</code> attribute</td>
+<td><code>WaitForMessage</code> loop with <code>case</code> statement</td>
+<td>monitor lock, <code>ENTRY</code> attribute</td>
 </tr>
 <tr class="even">
-<td align="left">arms of <code>case</code> statement</td>
-<td align="left"><code>ENTRY</code> procedure declarations</td>
+<td>arms of <code>case</code> statement</td>
+<td><code>ENTRY</code> procedure declarations</td>
 </tr>
 <tr class="odd">
-<td align="left">selective waiting for messages</td>
-<td align="left">condition variables, <code>WAIT</code>, <code>SIGNAL</code></td>
+<td>selective waiting for messages</td>
+<td>condition variables, <code>WAIT</code>, <code>SIGNAL</code></td>
 </tr>
 </tbody>
 </table>
@@ -137,5 +147,14 @@
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>

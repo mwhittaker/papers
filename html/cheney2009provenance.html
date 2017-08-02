@@ -22,11 +22,9 @@
     padding: 4pt;
   }
 </style>
-
 <p hidden>
 $\newcommand{\parens}[1]{\left(#1\right)}$ $\newcommand{\set}[1]{\left\{#1\right\}}$ $\newcommand{\setst}[2]{\left\{#1 \,\middle|\, #2\right\}}$ $\newcommand{\lam}[2]{\lambda #1.\&gt;#2}$ $\newcommand{\typedlam}[3]{\lam{#1\in#2}{#3}}$ $\newcommand{\denote}[1]{[ \! [{#1}] \! ]}$ $\newcommand{\domain}{\textbf{D}}$ $\newcommand{\relations}{\mathcal{R}}$ $\newcommand{\fields}{\mathcal{U}}$ $\newcommand{\getfield}[2]{#1 \cdot #2}$ $\newcommand{\Tuple}{Tuple}$ $\newcommand{\UTuple}{U\text{-}Tuple}$ $\newcommand{\TupleLoc}{TupleLoc}$ $\newcommand{\FieldLoc}{FieldLoc}$ $\newcommand{\select}[1]{\sigma_{#1}}$ $\newcommand{\project}[1]{\pi_{#1}}$ $\newcommand{\join}{\bowtie}$ $\newcommand{\rename}[2]{\rho_{#1 \mapsto #2}}$ $\newcommand{\setdiff}{\backslash}$
 </p>
-
 <h1 id="provenance-in-databases-why-how-and-where"><a href="https://scholar.google.com/scholar?cluster=14688264622623487965">Provenance in Databases: Why, How, and Where</a></h1>
 <h2 id="chapter-1-introduction">Chapter 1: Introduction</h2>
 <p><strong>Data provenance</strong>, also known as <strong>data lineage</strong>, describes the origin and history of data as it is moved, copied, transformed, and queried in a data system. In the context of relational databases, provenance will allow us to point at a tuple (or part of a tuple) in the output of a query and ask why or how it got there. In this book, we'll study three forms of provenance known as <em>why-provenance</em>, <em>how-provenance</em>, and <em>where-provenance</em>.</p>
@@ -35,18 +33,18 @@ $\newcommand{\parens}[1]{\left(#1\right)}$ $\newcommand{\set}[1]{\left\{#1\right
 <table>
 <thead>
 <tr class="header">
-<th align="left">id</th>
-<th align="left">A</th>
+<th>id</th>
+<th>A</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">$t_1$</td>
-<td align="left">1</td>
+<td>$t_1$</td>
+<td>1</td>
 </tr>
 <tr class="even">
-<td align="left">$t_2$</td>
-<td align="left">2</td>
+<td>$t_2$</td>
+<td>2</td>
 </tr>
 </tbody>
 </table>
@@ -54,36 +52,36 @@ $\newcommand{\parens}[1]{\left(#1\right)}$ $\newcommand{\set}[1]{\left\{#1\right
 <table>
 <thead>
 <tr class="header">
-<th align="left">id</th>
-<th align="left">A</th>
-<th align="left">B</th>
+<th>id</th>
+<th>A</th>
+<th>B</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">$t_3$</td>
-<td align="left">1</td>
-<td align="left">blue</td>
+<td>$t_3$</td>
+<td>1</td>
+<td>blue</td>
 </tr>
 <tr class="even">
-<td align="left">$t_4$</td>
-<td align="left">1</td>
-<td align="left">blue</td>
+<td>$t_4$</td>
+<td>1</td>
+<td>blue</td>
 </tr>
 <tr class="odd">
-<td align="left">$t_5$</td>
-<td align="left">1</td>
-<td align="left">red</td>
+<td>$t_5$</td>
+<td>1</td>
+<td>red</td>
 </tr>
 <tr class="even">
-<td align="left">$t_6$</td>
-<td align="left">2</td>
-<td align="left">blue</td>
+<td>$t_6$</td>
+<td>2</td>
+<td>blue</td>
 </tr>
 <tr class="odd">
-<td align="left">$t_7$</td>
-<td align="left">2</td>
-<td align="left">red</td>
+<td>$t_7$</td>
+<td>2</td>
+<td>red</td>
 </tr>
 </tbody>
 </table>
@@ -95,18 +93,18 @@ WHERE  R.A = S.A AND S.B = blue</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">id</th>
-<th align="left">A</th>
+<th>id</th>
+<th>A</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">$t_8$</td>
-<td align="left">1</td>
+<td>$t_8$</td>
+<td>1</td>
 </tr>
 <tr class="even">
-<td align="left">$t_9$</td>
-<td align="left">2</td>
+<td>$t_9$</td>
+<td>2</td>
 </tr>
 </tbody>
 </table>
@@ -181,7 +179,6 @@ $$</code></pre>
 <p hidden>
 $\newcommand{\Rs}{R_1, \ldots, R_n}$ $\newcommand{\Rprimes}{R_1', \ldots, R_n'}$ $\newcommand{\Qs}{Q_1, \ldots, Q_n}$ $\newcommand{\Ss}{S_1, \ldots, S_n}$ $\newcommand{\lineage}{\textsf{Lineage}}$ $\newcommand{\blue}{\text{blue}}$ $\newcommand{\red}{\text{red}}$
 </p>
-
 <p>First, we review lineage. Let $Op$ be a relation operator over input relations $(\Rs)$. The <strong>lineage</strong> of a tuple $t \in Op(\Rs)$ is a subset $(\Rprimes)$ of $(\Rs)$ such that:</p>
 <ol style="list-style-type: decimal">
 <li>$Op(\Rprimes) = \set{t}$;</li>
@@ -225,7 +222,6 @@ $$</code></pre>
 <p hidden>
 $\newcommand{\lin}{\textsf{Lin}}$ $\newcommand{\strictunion}{\cup_{\text{S}}}$ $\newcommand{\lazyunion}{\cup_{\text{L}}}$ $\newcommand{\lazyflattening}{\cup_{\text{L}}}$
 </p>
-
 <p>The previous definition of lineage has a couple flaws: (a) it's confusing, (b) it doesn't handle queries with constants, and (c) it is only defined for tuples in the output of a query. We can fix these flaws with a <strong>compositional definition of lineage</strong>. Let $\lin$ be a partial function which takes a query $Q$, a database $I$, and a tuple $t$ and returns</p>
 <ul>
 <li>$\emptyset{}$ if $t$ was constructed from $Q$ itself,</li>
@@ -291,7 +287,6 @@ $$</code></pre>
 <p hidden>
 $\newcommand{\Wit}{\textsf{Wit}}$ $\newcommand{\Why}{\textsf{Why}}$ $\newcommand{\MWit}{\textsf{MWit}}$ $\newcommand{\MWhy}{\textsf{MWhy}}$ $\newcommand{\powerset}[1]{\mathcal{P}\parens{#1}}$
 <p>
-
 <p>Recall that lineage is not as precise as it could be. For example, $\lin(Q, I, t_8) = \set{R(t_1), S(t_3), S(t_4)}$, but $\set{R(t_1), S(t_3)}$ and $\set{R(t_1), S(t_4)}$ are both sufficient to produce $t_8$. <strong>Why-provenance</strong> refines lineage and addresses this problem.</p>
 <p>Given a database $I$, query $Q$, and tuple $t$, let $J \subseteq I$ be a <strong>witness</strong> of $t$ if $t \in Q(J)$. Let $\Wit(Q, I, t) = \setst{J \subseteq I}{t \in Q(J)}$ be the set of all witnesses of $t$ with respect to $Q$ and $I$. A couple things to note:</p>
 <ul>
@@ -349,10 +344,17 @@ $$</code></pre>
 <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-
-
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
 </body>
 </html>
