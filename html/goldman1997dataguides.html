@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="dataguides-enabling-query-formulation-and-optimization-in-semistructured-databases-1997"><a href="https://scholar.google.com/scholar?cluster=1701940952301007499">Dataguides: Enabling Query Formulation and Optimization in Semistructured Databases (1997)</a></h1>
+<p>Database schemata serve two purposes: (1) they allows users to understand the structure of the data and form meaningful queries over it, and (2) they allow the query optimizer to generate efficient query plans. Unfortunately, semistructured databases do not have clean schemata, so it becomes harder to accomplish (1) and (2). This paper presents <strong>DataGuides</strong>: a pseudo-schema data structure for semistructured graph databases. DataGuides are implemented in the Lore DBMS.</p>
+<h2 id="object-exchange-model">Object Exchange Model</h2>
+<p>DataGuides are designed to work with the <strong>object exchange model</strong> (OEM) which we now describe. In the OEM, data is represented as a directed possible cyclic graph with a designated root such that:</p>
+<ul>
+<li>Each vertex is an <strong>object</strong> with an <strong>object id</strong>. Every object either contains an atomic value like an int or contains edges to other objects.</li>
+<li>Each edge is annotated with a string-valued <strong>label</strong>.</li>
+<li>A <strong>label path</strong> $l$ is a sequence of labels $l_1.l_2.\ldots.l_n$.</li>
+<li>A <strong>data path</strong> $d$ is a sequence of labels and objects $l_1.x_1.\ldots.l_n.x_n$.</li>
+<li>A data path $d$ is an <strong>instance of</strong> label path $l$ of the labels in $d$ correspond to the labels in $l$.</li>
+<li>The <strong>target set</strong> $t = T_s(l)$ of label $l$ in object $s$ is the set of object ids reachable by path $l$.</li>
+</ul>
+<p>The object exchange model, unlike the relational model, is semistructured. Not all objects have the same set of outgoing labels. In fact, the set of labels is not even predetermined.</p>
+<p>One such query language for the OEM is Lore's query language called Lorel. Here's an example Lorel query:</p>
+<pre><code>SELECT Restarurant.Name
+WHERE Restarurant.Entree = &#39;Burger&#39;;</code></pre>
+<h2 id="dataguides">DataGuides</h2>
+<p>A DataGuide $d$ for OEM object $s$ is an OEM object such that</p>
+<ul>
+<li>every label path of $s$ has exactly one data path in $d$, and</li>
+<li>every label path of $d$ is a label path of $s$.</li>
+</ul>
+<p>A DataGuide $d$ makes it easy to answer questions about the source object $s$ that would otherwise be computationally hard to answer. For example, consider the question &quot;Does $s$ have any object reachable by label path $l = l_1.\ldots.l_n$?&quot;. Without a data guide, we would first have to follow every $l_1$ edge in $s$, then every $l_2$ edge, and so on. With a DataGuide, we are guaranteed that $d$ has exactly one label path $l$ if and only if $s$ has label path $l$. Thus, we can quickly check to see if $s$ has the label path $l$ by checking if $d$ has label path $l$ which takes time linear in the length of $l$.</p>
+<p>Also note that if we view an OEM object $s$ as nondeterministic finite state automaton, we can view a DataGuide $d$ as a determinization of $s$. This intuition is very important, and will come up many times.</p>
+<h2 id="existence-of-multiple-dataguides">Existence of Multiple DataGuides</h2>
+<p>There may exist multiple DataGuides for the same object $s$ (similar to how there are multiple determinizations of an NFA), so there is a question of which to construct. There always exists a minimal DataGuide (as there always exists a minimal DFA), and it seems logical to prefer a minimal DataGuide, however, this is not the case. A minimal DataGuide is a bad choice for a couple of reasons. For example, a minimal DataGuide can be much harder to maintain than larger DataGuides. The next section presents another compelling reason why minimal DataGuides are not preferred.</p>
+<h2 id="annotations">Annotations</h2>
+<p>Vanilla DataGuides do not contain any atomic data. However, it is useful to put some data into the DataGuide to describe the source object. For example, a DataGuide could contain example objects from the source object, or it could contain statistics about the distribution of source objects. Formally, we say an <em>annotation</em> of $l$ is some property of a target set $T_s(l)$.</p>
+<p>Let's say we want to store annotations in a DataGuide. Where do we put them? A natural place is to put them at the single object $x$ reachable by $l$. However, $x$ may be reachable from multiple labels which have different target sets. Thus, it would be ambiguous which target set corresponds to a given annotation. Minimal DataGuides experience this annotation ambiguity, but strong DataGuides, which we define next, do not.</p>
+<h2 id="strong-data-guides">Strong Data Guides</h2>
+<p>Say two labels $l$ and $l'$ are equivalent if they have the same target set. Let $L_s(l) = \setst{l'}{T_s(l') = T_s(l)}$ be the equivalence class of $l$. A <strong>strong DataGuide</strong> of $s$ is a DataGuide $d$ such that</p>
+<ul>
+<li>for every label path $l$ in $s$, $L_s(l) = L_d(l)$.</li>
+</ul>
+<p>In other words, two label paths in $d$ lead to the same object if and only if the label paths share the same target set in $s$. Put another way, there exists a bijection between the target sets of $s$ and the vertices in $d$.</p>
+<p>Drawing on our automata intuition, it is pretty easy to build a strong DataGuide. We simply perform a naive determinization (see <a href="http://dl.acm.org/citation.cfm?id=549365">Automata and Computability</a> for more information). The one small difference is that we maintain the DataGuide graph as we build up the tabular DFA.</p>
+<h2 id="incremental-maintenance">Incremental Maintenance</h2>
+<p>Now we describe how to update a strong DataGuide after the source object has been modified. First, we represent the set of changes as triplets of the form $u.l.v$ where the label $l$ from node $u$ to $v$ was either added or deleted. We call $u$ the update point. We maintain a couple of data structures. First, we maintain a bijection between target sets and the nodes in the strong DataGuide. Second, we maintain a map from every source object to the set of all target sets it is included in. The update algorithm essentially re-runs the determinization algorithm on the affected subgraphs. For each update point $u$, we find all affected target sets $t$ and re-run the determinization rooted at $t$.</p>
+<h2 id="query-formulation">Query Formulation</h2>
+<p>Lore provides an online web UI to interactively expand and collapse a DataGuide. Users can view the number of source objects at each DataGuide object and see examples. They can also write simple filters (conjunctions of comparisons to constants) in the UI which are translated to Lorel queries.</p>
+<h2 id="query-optimization">Query Optimization</h2>
+<p>A DataGuide acts as an index from a label path to a target set. It prevents a query plan from crawling the entire source object. Moreover, Lore maintains <strong>Vindex maps</strong> which map from a label, operator, value triples (e.g. $(Name, =, foo)$) to a set of object ids. The object ids read from a Vindex map can be intersected with the ones read from a strong DataGuide to further speed up queries.</p>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>
