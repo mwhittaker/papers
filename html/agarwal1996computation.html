@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="on-the-computation-of-multidimensional-aggregates-1996"><a href="https://scholar.google.com/scholar?cluster=8624620981335983298">On the Computation of Multidimensional Aggregates (1996)</a></h1>
+<p>Data analysts who interact with OLAP databases issue a lot of GROUP BY queries over huge amounts of data. These aggregates are often too big to compute interactively, so data analysts to resort to computing them ahead of time.</p>
+<p>Analysts can do so using the CUBE operator which builds a family of aggregates all at once. Given a set of grouping columns and a set of aggregates, the CUBE operator performs a GROUP BY on all subsets of the grouping columns. For example, the following query:</p>
+<pre><code>CUBE Product, Year, Customer
+BY SUM(Sales)</code></pre>
+<p>will compute the sum of sales for all eight subsets of <code>Product</code>, <code>Year</code>, and <code>Customer</code>. Each of these eight GROUP BYs is called a <strong>cuboid</strong>. The GROUP BY on all eight attributes is called the <strong>base cuboid</strong>. This paper presents a heuristic-based algorithm to efficiently compute a cube. It also proves that finding an optimal cube is NP-hard.</p>
+<h2 id="options-for-computing-the-cube">Options for Computing the CUBE</h2>
+<p>Throughout this paper we assume that aggregate functions $F$ are homomorphic. That is given two sets of tuples $X$ and $Y$, $F(X \cup Y)$ = $F(X) \oplus F(Y)$. For example, sum is homomorphic, but median is not.</p>
+<p>There are three methods to computing cuboids:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Independent Method.</strong> We can compute the base cuboid and then independently compute every other cuboid from the base cuboid.</li>
+<li><strong>Parent Method.</strong> We can compute a cuboid on attributes $X$ from a cuboid with attributes $Y \supset X$. Also, the smaller $Y$, the more likely it is that cuboid $Y$ is small, so we typically compute a cuboid on $X$ from a cuboid on $Y$ where $|Y| = |X| + 1$. The parent method independently computes every cuboid from one of its parent cuboids.</li>
+<li><strong>Overlap Method.</strong> The overlap method performs the parent method but computes multiple cuboids at once during a single pass of a parent cuboid.</li>
+</ol>
+<p>This paper only discusses how to compute cuboids using sorting. Sorting is desirable because a cuboid derived from a sorted cuboid parent is itself sorted. Hash based methods exist too but are not discussed here.</p>
+<h2 id="the-overlap-method">The Overlap Method</h2>
+<p>First, a bit of terminology. Consider cuboid $S = (A_1, \ldots, A_{l-1}, A_{l+1}, \ldots, A_j)$ computed from $B = (A_1, \ldots, A_j)$.</p>
+<ul>
+<li>A <strong>sorted run</strong> $R$ of $S$ in $B$ is a maximal subsequence of tuples in $B$ that share the same $l$ attributes and then have the $l$th attribute projected away. See paper for example.</li>
+<li>A <strong>partition</strong> of the cuboid $S$ in $B$ is a maximal subsequence of tuples in $B$ that share the same $l-1$ attributes and then have the $l$th attribute projected away. Note that we can generate a partition from a set of sorted runs that share the same first $l - 1$ attributes. See paper for example.</li>
+</ul>
+<p>Note that cuboids are formed as a union of disjoint partitions, and cuboids are totally ordered.</p>
+<h3 id="overview">Overview</h3>
+<p>The overlap method computes and sorts the base cuboid. It then derives every other cuboid using a parent. If a cuboid's partitions fit in memory, we can create the cuboid in a single pass partition by partition. For example, consider the following parent cuboid $(A, B, C)$ from which we want to compute cuboid $(A, C)$.</p>
+<center>
+<table>
+<thead>
+<tr class="header">
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>1</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>3</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>3</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+</center>
+<p>We scan the first partition $(1, 3)$, $(1, 4)$, $(1, 1)$, $(1, 2)$ and sort it to get $(1, 1)$, $(1, 2)$, $(1, 3)$, and $(1, 4)$. We than scan and sort the second partition and so on.</p>
+<h3 id="choosing-a-parent-to-compute-a-cuboid">Choosing a Parent to Compute a Cuboid</h3>
+<p>Every cuboid (except the base cuboid) has multiple parents to choose from. Ideally, we pick the parent cuboid which yields the fewest partitions. For example, $(A, C, D)$ is a much better parent than $(A, B, C)$ to build the cuboid $(A, C)$. As a heuristic, we choose the parent whose stripped attribute is furthest right.</p>
+<h3 id="computing-a-cuboid-from-its-parent">Computing a Cuboid From its Parent</h3>
+<p>As mentioned above, if the largest partition of a cuboid fits in memory, then we can compute a cuboid in a single pass partition by partition. We build up a sorted partition and update aggregates along the way. Once a partition is built, we can immediately emit it for our children.</p>
+<p>If a cuboid's permissions do not fit in memory, then we instead use a single buffer page to write sorted runs to disk. Later, we merge all sorted runs together using external sort.</p>
+<h3 id="choosing-a-set-of-cuboids-for-overlapped-computation">Choosing a Set of Cuboids for Overlapped Computation</h3>
+<p>Given a fixed amount of memory, we have to decide which cuboids to compute on a given pass and whether to compute them with partitions or sorted runs. Finding an optimal scheduling is NP-hard (see next) section. As a heuristic, we can perform a breadth first search on the parent tree going from left to right.</p>
+<h2 id="finding-an-optimal-allocation-strategy-is-np-hard">Finding an Optimal Allocation Strategy is NP-Hard</h2>
+<p>The paper performs a reduction from the knapsack problem to a version of the knapsack problem with $2^m$ objects for some $m$. They then reduce this version of the knapsack to the problem of finding an optimal scheduling for cuboid computation. See paper for details; it's complicated.</p>
+<h2 id="some-important-issues">Some Important Issues</h2>
+<ul>
+<li>In order to limit the number of sorted runs written to disk, we can append sorted runs from later partitions on to the sorted runs from previous partitions. This way, the number of runs that need to be merged is bounded by the maximum number of sorted runs in any partition.</li>
+<li>The initial sort order affects the cost of computing cuboids. Cuboids on the left can typically be partitioned easily while those on the right have much bigger partitions. Thus, we try to make the right cuboids the smallest cuboids. We can also sort attributes in decreasing order of distinct values to minimize the number of sorted runs produced.</li>
+</ul>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>
