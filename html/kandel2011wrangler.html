@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="wrangler-interactive-visual-specification-of-data-transformation-scripts-2011"><a href="https://scholar.google.com/scholar?cluster=4069328732173546194">Wrangler: Interactive Visual Specification of Data Transformation Scripts (2011)</a></h1>
+<p>Analysts spend a lot of time wrangling data. Wrangler is an interactive tool which makes data wrangling easier. Users upload data to Wrangler, click on stuff, and Wrangler automatically suggests data transformations to apply to the data. These transformations are expressed in a declarative transformation language which users can export into a script for later reuse.</p>
+<h2 id="usage-scenario">Usage Scenario</h2>
+<p>See the paper for a detailed walkthrough showing how to use Wrangler.</p>
+<h2 id="wrangler-transformation-language">Wrangler Transformation Language</h2>
+<p>The Wrangler transformation language features the following classes of transformations:</p>
+<ul>
+<li><strong>Map.</strong> Map produces zero, one, or multiple rows from every input rows. Mapping operations include delete, extract, and split.</li>
+<li><strong>Lookups and joins.</strong> Data uploaded to Wrangler can be joined with external data tables (e.g. one mapping zip codes to states). Wrangler supports equijoins and approximate joins based on string edit distance (e.g. for misspellings).</li>
+<li><strong>Reshape.</strong> Reshaping operators like fold and unfold create entirely new tables from existing tables. These operations work like pivot tables.</li>
+<li><strong>Positional.</strong> Positional operators can be used to fill data from surrounding data or move columns up and down.</li>
+<li><strong>Sorting, aggregation, and key generation.</strong></li>
+</ul>
+<p>There are also operators to manipulate the schema of the data.</p>
+<p>Data in Wrangler is assigned a <strong>data type</strong> (e.g. int, float, string). It is also assigned a <strong>semantic role</strong> (e.g. zip code, address). Semantic roles enable certain operators (e.g. converting a zip code to a latitude and longitude).</p>
+<p>The language features redundancy and understandability over minimality.</p>
+<h2 id="wrangler-interface-design">Wrangler Interface Design</h2>
+<p>Wrangler's interface offers 4 main features:</p>
+<ol style="list-style-type: decimal">
+<li>Direct manipulation.</li>
+<li>Automatic suggestion.</li>
+<li>Menu-based transform selection.</li>
+<li>Manual editing of transform parameters.</li>
+</ol>
+<p>Moreover, since it is hard to write code, an inference engine suggests transforms. Since it is hard to read code, the transforms are expressed using natural language descriptions, and Wrangler visualizes the effects of each transform.</p>
+<p>The basic interactions involve selecting a row, selecting a column, selecting a bar in the quality metric, selecting text in a cell, editing a cell, and assigning a column a name, type, or semantic role.</p>
+<p>Wrangler offers users three ways to prune suggestions. (1) They can click on more examples to refine the suggestions. (2) They can explicitly select the type of transform they want from a menu of transforms. (3) They can edit the parameters of a suggested transform.</p>
+<p>Wrangler visualizes the effect of every data transform. There are visualizations for selection, deletion, updates, adding a column, and creating a new tables.</p>
+<p>Wrangler also builds up a history of the past transforms which users can directly edit. If a user modifies an old transform and it invalidates future transforms, the broken transforms are highlighted in red.</p>
+<h2 id="types-roles-and-verification">Types, Roles, and Verification</h2>
+<p>Wrangler tries to infer the types and semantic roles of data. It presents a quality meter for every column to indicate what fraction of the data in the column satisfy both the type and role, satisfy the type but not the role, do not satisfy the type, and are empty. Users can also manually specify the type or role of a column.</p>
+<h2 id="wrangler-inference-engine">Wrangler Inference Engine</h2>
+<p>The Wrangler inference engine takes as input:</p>
+<ul>
+<li>user interactions,</li>
+<li>the current working transform,</li>
+<li>data statistics, and</li>
+<li>a corpus of historical transform frequencies.</li>
+</ul>
+<p>The procedure</p>
+<ul>
+<li>infers transform parameters,</li>
+<li>generates candidate transforms from the parameters, and</li>
+<li>ranks the candidate transforms.</li>
+</ul>
+<p>The inference engine relies heavily on a corpus of previous transform frequencies. Since the same exact transform is unlikely to appear before, Wrangler uses a looser notion of transform equivalence. For example, all row selections are considered equivalent, all column selections of the same type are considered equivalent, etc.</p>
+<p>The inference engine begins by inferring parameters based on the user gesture. Each kind of transform infers its parameter independently. For example, row selections infer predicates of the form row is empty, column equals text, column starts with text, etc. Columns infer the clicked column. Text selection infers matching regular expressions by tokenizing the text surrounding the user's selection and exhaustively generating matching token sequences which are converted to regular expressions.</p>
+<p>The inference engine then exhaustively generates transforms which match the predicates and fill in missing values using a top-k most popular search on the transform corpus.</p>
+<p>The inference engine ranks results using the following criteria:</p>
+<ol style="list-style-type: decimal">
+<li>If a user explicitly selects a transform type, transforms of that type are preferred.</li>
+<li>Text and row selections are considered hard and are sorted below easier transforms.</li>
+<li>Transforms which appear more frequently in corpus are ranked higher.</li>
+<li>Row predicates and regular expressions are ranked based on their complexity and are ranked below other simpler transforms.</li>
+</ol>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>
