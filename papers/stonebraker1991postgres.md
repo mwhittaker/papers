@@ -111,7 +111,7 @@ control. POSTGRES rules take the form "if some event happens which satisfies
 some properties, then run some sequence of commands."
 
 For example, imagine we want to maintain an invariant that Joe's salary and
-Fred's salary are th same.  We can install a rule which updates Joe's salary
+Fred's salary are the same.  We can install a rule which updates Joe's salary
 whenever Fred's salary is updated. Note that when the body of the rule is
 executed, it may trigger other rules to fire. This is known as **forward
 chaining**.

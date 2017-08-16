@@ -80,7 +80,7 @@
 <p>Note that the fast path is essentially an RPC mechanism.</p>
 <h2 id="postgres-rules">POSTGRES Rules</h2>
 <p>POSTGRES wanted <em>one</em> rule system which supported <em>all</em> of view management, triggers, integrity constraints, referential integrity, protection, and version control. POSTGRES rules take the form &quot;if some event happens which satisfies some properties, then run some sequence of commands.&quot;</p>
-<p>For example, imagine we want to maintain an invariant that Joe's salary and Fred's salary are th same. We can install a rule which updates Joe's salary whenever Fred's salary is updated. Note that when the body of the rule is executed, it may trigger other rules to fire. This is known as <strong>forward chaining</strong>.</p>
+<p>For example, imagine we want to maintain an invariant that Joe's salary and Fred's salary are the same. We can install a rule which updates Joe's salary whenever Fred's salary is updated. Note that when the body of the rule is executed, it may trigger other rules to fire. This is known as <strong>forward chaining</strong>.</p>
 <p>Alternatively, imagine we install a rule which rewrites reads of Joe's salary to reads of Fred's salary. In this case, reading a piece of data may trigger other rules to generate the read. This is known as <strong>backwards chaining</strong>.</p>
 <h2 id="implementaton-of-rules">Implementaton of Rules</h2>
 <p>There are two implementations of POSTGRES rules: a record-level implementation and a query rewrite implementation.</p>
