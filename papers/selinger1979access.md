@@ -61,77 +61,77 @@ conjunct is called a **boolean factor**. The query optimizer estimates a
 **selectivity factor** `F` for each boolean factor with the following rules.
 
 <table>
-  <tr>
-    <td>`column = value`</td>
-    <td>`F = 1 / ICARD(column index)`</td>
-    <td>If there exists an index.</td>
-  </tr>
-  <tr>
-    <td>`column = value`</td>
-    <td>`F = 1 / 10`</td>
-    <td>If there does not exist an index.</td>
-  </tr>
-  <tr>
-    <td>`column1 = column2`</td>
-    <td>`F = 1 / MAX(ICARD(columnn1 index), ICARD(columnn2 index))`</td>
-    <td>If there exists two indexes.</td>
-  </tr>
-  <tr>
-    <td>`column1 = column2`</td>
-    <td>`F = 1 / ICARD(columnni index)`</td>
-    <td>If there exists one index.</td>
-  </tr>
-  <tr>
-    <td>`column1 = column2`</td>
-    <td>`F = 1 / 10`</td>
-    <td>If there does not exist an index.</td>
-  </tr>
-  <tr>
-    <td>`column > value`</td>
-    <td>`F = (high key - value) / (high key - low key)`</td>
-    <td>If `column` is arithmetic.</td>
-  </tr>
-  <tr>
-    <td>`column > value`</td>
-    <td>`F = 1/3`</td>
-    <td>If `column` is not arithmetic.</td>
-  </tr>
-  <tr>
-    <td>`column BETWEEN value1 AND value2`</td>
-    <td>`F = (value2 - value1) / (high key - low key)`</td>
-    <td>If `column` is not arithmetic.</td>
-  </tr>
-  <tr>
-    <td>`column BETWEEN value1 AND value2`</td>
-    <td>`F = 1/4`</td>
-    <td>If `column` is not arithmetic.</td>
-  </tr>
-  <tr>
-    <td>`column IN (list of values)`</td>
-    <td>`F = (number of items in list) * (F for column=value)`</td>
-    <td>Capped at `1/2`.</td>
-  </tr>
-  <tr>
-    <td>`column IN subquery`</td>
-    <td>`F = (expected cardinality of subquery result) /
-             (product of subquery FROM cardinalities)`</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>`a OR b`</td>
-    <td>`F = F(a) + F(b) - F(a)*F(b)`</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>`a AND b`</td>
-    <td>`F = F(a)*F(b)`</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>`NOT a`</td>
-    <td>`F = 1 - F(a)`</td>
-    <td></td>
-  </tr>
+<tr>
+<td>`column = value`</td>
+<td>`F = 1 / ICARD(column index)`</td>
+<td>If there exists an index.</td>
+</tr>
+<tr>
+<td>`column = value`</td>
+<td>`F = 1 / 10`</td>
+<td>If there does not exist an index.</td>
+</tr>
+<tr>
+<td>`column1 = column2`</td>
+<td>`F = 1 / MAX(ICARD(columnn1 index), ICARD(columnn2 index))`</td>
+<td>If there exists two indexes.</td>
+</tr>
+<tr>
+<td>`column1 = column2`</td>
+<td>`F = 1 / ICARD(columnni index)`</td>
+<td>If there exists one index.</td>
+</tr>
+<tr>
+<td>`column1 = column2`</td>
+<td>`F = 1 / 10`</td>
+<td>If there does not exist an index.</td>
+</tr>
+<tr>
+<td>`column > value`</td>
+<td>`F = (high key - value) / (high key - low key)`</td>
+<td>If `column` is arithmetic.</td>
+</tr>
+<tr>
+<td>`column > value`</td>
+<td>`F = 1/3`</td>
+<td>If `column` is not arithmetic.</td>
+</tr>
+<tr>
+<td>`column BETWEEN value1 AND value2`</td>
+<td>`F = (value2 - value1) / (high key - low key)`</td>
+<td>If `column` is not arithmetic.</td>
+</tr>
+<tr>
+<td>`column BETWEEN value1 AND value2`</td>
+<td>`F = 1/4`</td>
+<td>If `column` is not arithmetic.</td>
+</tr>
+<tr>
+<td>`column IN (list of values)`</td>
+<td>`F = (number of items in list) * (F for column=value)`</td>
+<td>Capped at `1/2`.</td>
+</tr>
+<tr>
+<td>`column IN subquery`</td>
+<td>`F = (expected cardinality of subquery result) /
+     (product of subquery FROM cardinalities)`</td>
+<td></td>
+</tr>
+<tr>
+<td>`a OR b`</td>
+<td>`F = F(a) + F(b) - F(a)*F(b)`</td>
+<td></td>
+</tr>
+<tr>
+<td>`a AND b`</td>
+<td>`F = F(a)*F(b)`</td>
+<td></td>
+</tr>
+<tr>
+<td>`NOT a`</td>
+<td>`F = 1 - F(a)`</td>
+<td></td>
+</tr>
 </table>
 
 The cardinality of query (QCARD) is the product of the sizes of the relations
@@ -148,31 +148,34 @@ minimum cost plan for every interesting order. After taking into account the
 (potential) additional overhead of sorting unordered tuples for a GROUP BY or
 ORDER BY, the least cost plan is selected.
 
+The following costs include the number of index pages fetched, then the number
+of data pages fetched, and then the number of RSI calls weighted by `W`.
+
 <table>
-  <tr>
-    <td>Unique index matching an equal predicate.</td>
-    <td>`1 + 1 + W`</td>
-  </tr>
-  <tr>
-    <td>Clustered index `I` matching one or more boolean factors.</td>
-    <td>`F(preds)*(NINDX(I) + TCARD) + W*RSICARD`</td>
-  </tr>
-  <tr>
-    <td>Non-clustered index `I` matching one or more boolean factors.</td>
-    <td>`F(preds)*(NINDX(I) + NCARD) + W*RSICARD`</td>
-  </tr>
-  <tr>
-    <td>Clustered index `I` not matching any boolean factors</td>
-    <td>`NINDX(I) + TCARD + W*RSICARD`</td>
-  </tr>
-  <tr>
-    <td>Non-clustered index `I` not matching any boolean factors</td>
-    <td>NINDX(I) + NCARD + W*RSICARD</td>
-  </tr>
-  <tr>
-    <td>Segment scan.</td>
-    <td>TCARD/P + W*RSICARD</td>
-  </tr>
+<tr>
+<td>Unique index matching an equal predicate.</td>
+<td>`1 + 1 + W`</td>
+</tr>
+<tr>
+<td>Clustered index `I` matching one or more boolean factors.</td>
+<td>`F(preds)*(NINDX(I) + TCARD) + W*RSICARD`</td>
+</tr>
+<tr>
+<td>Non-clustered index `I` matching one or more boolean factors.</td>
+<td>`F(preds)*(NINDX(I) + NCARD) + W*RSICARD`</td>
+</tr>
+<tr>
+<td>Clustered index `I` not matching any boolean factors</td>
+<td>`NINDX(I) + TCARD + W*RSICARD`</td>
+</tr>
+<tr>
+<td>Non-clustered index `I` not matching any boolean factors</td>
+<td>`NINDX(I) + NCARD + W*RSICARD`</td>
+</tr>
+<tr>
+<td>Segment scan.</td>
+<td>`TCARD/P + W*RSICARD`</td>
+</tr>
 </table>
 
 ## Access Path Selection for Joins
@@ -204,5 +207,4 @@ orders) intermediate access paths.
 Non-correlated subqueries are evaluated once before their parent query.
 Correlated subqueries are evaluated every time the parent query is evaluated.
 As an optimization, we can sort the parent tuples by the correlated column and
-compute the subquery once for every unique value of teh correlated column.
-
+compute the subquery once for every unique value of the correlated column.

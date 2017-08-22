@@ -32,103 +32,207 @@
 <p>The WHERE clause of a query is considered in conjunctive normal form, and each conjunct is called a <strong>boolean factor</strong>. The query optimizer estimates a <strong>selectivity factor</strong> <code>F</code> for each boolean factor with the following rules.</p>
 <table>
 <tr>
-<pre><code>&lt;td&gt;`column = value`&lt;/td&gt;
-&lt;td&gt;`F = 1 / ICARD(column index)`&lt;/td&gt;
-&lt;td&gt;If there exists an index.&lt;/td&gt;</code></pre>
+<td>
+<code>column = value</code>
+</td>
+<td>
+<code>F = 1 / ICARD(column index)</code>
+</td>
+<td>
+If there exists an index.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column = value`&lt;/td&gt;
-&lt;td&gt;`F = 1 / 10`&lt;/td&gt;
-&lt;td&gt;If there does not exist an index.&lt;/td&gt;</code></pre>
+<td>
+<code>column = value</code>
+</td>
+<td>
+<code>F = 1 / 10</code>
+</td>
+<td>
+If there does not exist an index.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column1 = column2`&lt;/td&gt;
-&lt;td&gt;`F = 1 / MAX(ICARD(columnn1 index), ICARD(columnn2 index))`&lt;/td&gt;
-&lt;td&gt;If there exists two indexes.&lt;/td&gt;</code></pre>
+<td>
+<code>column1 = column2</code>
+</td>
+<td>
+<code>F = 1 / MAX(ICARD(columnn1 index), ICARD(columnn2 index))</code>
+</td>
+<td>
+If there exists two indexes.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column1 = column2`&lt;/td&gt;
-&lt;td&gt;`F = 1 / ICARD(columnni index)`&lt;/td&gt;
-&lt;td&gt;If there exists one index.&lt;/td&gt;</code></pre>
+<td>
+<code>column1 = column2</code>
+</td>
+<td>
+<code>F = 1 / ICARD(columnni index)</code>
+</td>
+<td>
+If there exists one index.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column1 = column2`&lt;/td&gt;
-&lt;td&gt;`F = 1 / 10`&lt;/td&gt;
-&lt;td&gt;If there does not exist an index.&lt;/td&gt;</code></pre>
+<td>
+<code>column1 = column2</code>
+</td>
+<td>
+<code>F = 1 / 10</code>
+</td>
+<td>
+If there does not exist an index.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column &gt; value`&lt;/td&gt;
-&lt;td&gt;`F = (high key - value) / (high key - low key)`&lt;/td&gt;
-&lt;td&gt;If `column` is arithmetic.&lt;/td&gt;</code></pre>
+<td>
+<code>column &gt; value</code>
+</td>
+<td>
+<code>F = (high key - value) / (high key - low key)</code>
+</td>
+<td>
+If <code>column</code> is arithmetic.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column &gt; value`&lt;/td&gt;
-&lt;td&gt;`F = 1/3`&lt;/td&gt;
-&lt;td&gt;If `column` is not arithmetic.&lt;/td&gt;</code></pre>
+<td>
+<code>column &gt; value</code>
+</td>
+<td>
+<code>F = 1/3</code>
+</td>
+<td>
+If <code>column</code> is not arithmetic.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column BETWEEN value1 AND value2`&lt;/td&gt;
-&lt;td&gt;`F = (value2 - value1) / (high key - low key)`&lt;/td&gt;
-&lt;td&gt;If `column` is not arithmetic.&lt;/td&gt;</code></pre>
+<td>
+<code>column BETWEEN value1 AND value2</code>
+</td>
+<td>
+<code>F = (value2 - value1) / (high key - low key)</code>
+</td>
+<td>
+If <code>column</code> is not arithmetic.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column BETWEEN value1 AND value2`&lt;/td&gt;
-&lt;td&gt;`F = 1/4`&lt;/td&gt;
-&lt;td&gt;If `column` is not arithmetic.&lt;/td&gt;</code></pre>
+<td>
+<code>column BETWEEN value1 AND value2</code>
+</td>
+<td>
+<code>F = 1/4</code>
+</td>
+<td>
+If <code>column</code> is not arithmetic.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column IN (list of values)`&lt;/td&gt;
-&lt;td&gt;`F = (number of items in list) * (F for column=value)`&lt;/td&gt;
-&lt;td&gt;Capped at `1/2`.&lt;/td&gt;</code></pre>
+<td>
+<code>column IN (list of values)</code>
+</td>
+<td>
+<code>F = (number of items in list) * (F for column=value)</code>
+</td>
+<td>
+Capped at <code>1/2</code>.
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`column IN subquery`&lt;/td&gt;
-&lt;td&gt;`F = (expected cardinality of subquery result) /
-         (product of subquery FROM cardinalities)`&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;</code></pre>
+<td>
+<code>column IN subquery</code>
+</td>
+<td>
+<code>F = (expected cardinality of subquery result) /      (product of subquery FROM cardinalities)</code>
+</td>
+<td>
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`a OR b`&lt;/td&gt;
-&lt;td&gt;`F = F(a) + F(b) - F(a)*F(b)`&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;</code></pre>
+<td>
+<code>a OR b</code>
+</td>
+<td>
+<code>F = F(a) + F(b) - F(a)*F(b)</code>
+</td>
+<td>
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`a AND b`&lt;/td&gt;
-&lt;td&gt;`F = F(a)*F(b)`&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;</code></pre>
+<td>
+<code>a AND b</code>
+</td>
+<td>
+<code>F = F(a)*F(b)</code>
+</td>
+<td>
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;`NOT a`&lt;/td&gt;
-&lt;td&gt;`F = 1 - F(a)`&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;</code></pre>
+<td>
+<code>NOT a</code>
+</td>
+<td>
+<code>F = 1 - F(a)</code>
+</td>
+<td>
+</td>
 </tr>
 </table>
 <p>The cardinality of query (QCARD) is the product of the sizes of the relations in the FROM clause multiplied by the selectivity factor of every boolean factor in the WHERE clause. The number of RSI calls (RSICARD) is the product of the sizes of the relations in the FROM clause multiplied by the selectivity of the sargable boolean factors.</p>
 <p>Some access paths produce tuples in a particular order. For example, an index scan produces tuples in the order of the index key. If this order is consistent with the order of a GROUP BY or ORDER BY clause, we say it is an <strong>interesting order</strong>. The query optimizer computes the minimum cost unordered plan and the minimum cost plan for every interesting order. After taking into account the (potential) additional overhead of sorting unordered tuples for a GROUP BY or ORDER BY, the least cost plan is selected.</p>
+<p>The following costs include the number of index pages fetched, then the number of data pages fetched, and then the number of RSI calls weighted by <code>W</code>.</p>
 <table>
 <tr>
-<pre><code>&lt;td&gt;Unique index matching an equal predicate.&lt;/td&gt;
-&lt;td&gt;`1 + 1 + W`&lt;/td&gt;</code></pre>
+<td>
+Unique index matching an equal predicate.
+</td>
+<td>
+<code>1 + 1 + W</code>
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;Clustered index `I` matching one or more boolean factors.&lt;/td&gt;
-&lt;td&gt;`F(preds)*(NINDX(I) + TCARD) + W*RSICARD`&lt;/td&gt;</code></pre>
+<td>
+Clustered index <code>I</code> matching one or more boolean factors.
+</td>
+<td>
+<code>F(preds)*(NINDX(I) + TCARD) + W*RSICARD</code>
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;Non-clustered index `I` matching one or more boolean factors.&lt;/td&gt;
-&lt;td&gt;`F(preds)*(NINDX(I) + NCARD) + W*RSICARD`&lt;/td&gt;</code></pre>
+<td>
+Non-clustered index <code>I</code> matching one or more boolean factors.
+</td>
+<td>
+<code>F(preds)*(NINDX(I) + NCARD) + W*RSICARD</code>
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;Clustered index `I` not matching any boolean factors&lt;/td&gt;
-&lt;td&gt;`NINDX(I) + TCARD + W*RSICARD`&lt;/td&gt;</code></pre>
+<td>
+Clustered index <code>I</code> not matching any boolean factors
+</td>
+<td>
+<code>NINDX(I) + TCARD + W*RSICARD</code>
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;Non-clustered index `I` not matching any boolean factors&lt;/td&gt;
-&lt;td&gt;NINDX(I) + NCARD + W*RSICARD&lt;/td&gt;</code></pre>
+<td>
+Non-clustered index <code>I</code> not matching any boolean factors
+</td>
+<td>
+<code>NINDX(I) + NCARD + W*RSICARD</code>
+</td>
 </tr>
 <tr>
-<pre><code>&lt;td&gt;Segment scan.&lt;/td&gt;
-&lt;td&gt;TCARD/P + W*RSICARD&lt;/td&gt;</code></pre>
+<td>
+Segment scan.
+</td>
+<td>
+<code>TCARD/P + W*RSICARD</code>
+</td>
 </tr>
 </table>
 <h2 id="access-path-selection-for-joins">Access Path Selection for Joins</h2>
@@ -137,7 +241,7 @@
 <p>The query optimizer performs a couple of tricks to speed up this algorithm. First, it does not consider a cross-join if there are other more selective joins possible. Second, it computes interesting order equivalence classes to avoid computing redundant interesting orders. For example, if there are predicates <code>E.DNO = D.DNO</code> and <code>D.DNO = F.DNO</code>, then all three columns belong to the same equivalence class.</p>
 <p>This algorithm computes at worst (2<sup>n</sup> times the number of interesting orders) intermediate access paths.</p>
 <h2 id="nested-queries">Nested Queries</h2>
-<p>Non-correlated subqueries are evaluated once before their parent query. Correlated subqueries are evaluated every time the parent query is evaluated. As an optimization, we can sort the parent tuples by the correlated column and compute the subquery once for every unique value of teh correlated column.</p>
+<p>Non-correlated subqueries are evaluated once before their parent query. Correlated subqueries are evaluated every time the parent query is evaluated. As an optimization, we can sort the parent tuples by the correlated column and compute the subquery once for every unique value of the correlated column.</p>
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>
