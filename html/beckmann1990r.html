@@ -65,7 +65,7 @@ svg text {
 </svg>
 <h2 id="r-tree">R*-tree</h2>
 <p>Given a node with entries $E_1, \ldots, E_n$ define the overlap of $E_k$ to be $$\sum_{i=1, i \neq k}^n \text{area}(E_k \cap E_i)$$</p>
-<p>The <strong>R*-tree ChooseSubtree method</strong> selects the child which increases overlap the least. Ties are broken by least area increase and then least area.</p>
+<p>For internal nodes that point to leaf nodes, the <strong>R*-tree ChooseSubtree method</strong> selects the child which increases overlap the least. Ties are broken by least area increase and then least area. For internal nodes that point to other internal nodes, the R*-tree ChooseSubtree method uses the original method and chooses the child which requires the least area enlargement, ties broken by least area.</p>
 <p>The <strong>R*-tree Split method</strong> sorts each entry along every axis (first by low point, ties broken by high point). We then consider all possible splits of the entries such that both partitions contain at least $m$ entries. The axis which minimizes the sum of the perimeter of the bounding boxes for every partition is chosen. Next, the points are sorted along the chosen axis and the partition which minimizes bounding box overlap is selected (ties broken by minimum area).</p>
 <p>R*-trees also perform reinsertion during a regular insertion. If a node is overfull, we sort the entries in decreasing order based on their center distance to the center of the bounding box. We then reinsert the first $p$ values (for some $p$). These insertions may in turn cause more re-insertions, but at most one reinsertion is performed at every level. Finally, if a split still occurs, things are propagated upwards through the tree.</p>
 <script type="text/javascript">

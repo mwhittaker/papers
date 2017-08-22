@@ -93,8 +93,12 @@ are divided into a group of `R1`-`R4` and a group of `R5`-`R8`.
 Given a node with entries $E_1, \ldots, E_n$ define the overlap of $E_k$ to be
   $$\sum_{i=1, i \neq k}^n \text{area}(E_k \cap E_i)$$
 
-The **R\*-tree ChooseSubtree method** selects the child which increases overlap
-the least. Ties are broken by least area increase and then least area.
+For internal nodes that point to leaf nodes, the **R\*-tree ChooseSubtree
+method** selects the child which increases overlap the least. Ties are broken
+by least area increase and then least area. For internal nodes that point to
+other internal nodes, the R\*-tree ChooseSubtree method uses the original
+method and chooses the child which requires the least area enlargement, ties
+broken by least area.
 
 The **R\*-tree Split method** sorts each entry along every axis (first by low
 point, ties broken by high point). We then consider all possible splits of the
