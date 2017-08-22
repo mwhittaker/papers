@@ -17,7 +17,7 @@ Consider a table `R(a,b,c)`. A **projection** anchored on R is a subset of the
 columns of `R` (without deduplication) sorted on some subset of the columns
 called the **sort key**.  For example `R1(a,b)` sorted on `a`, `R2(b,c)` sorted
 on `c` and `R3(a,c)` sorted on `c,a` are all projections anchored on `R`.
-C-Store a table as a set of projections that cover the table.
+C-Store stores a table as a set of projections that cover the table.
 
 Projections are stored column-wise and are horizontally range-partitioned on
 their sort key into a set of **segments**. Segments distributed across the
@@ -25,7 +25,7 @@ nodes in a C-Store cluster. Moreover, the same column can appear in multiple
 projections. Projections can include columns from other relations as well so
 long as the two tables are linked by a foreign key.
 
-Column entries in a projection is assigned a logical **storage key** that is
+Column entries in a projection are assigned a logical **storage key** that is
 unique within a projection (but not across projections).  Column entries with
 the same storage key belong to the same logical tuple.  Column entries in WS
 explicitly store their storage keys whereas tuples in RS compute them when
@@ -70,7 +70,6 @@ queries at a particular epoch.  C-Store maintains a lower and upper bound on
 the epochs at which a query can be run dubbed the **low water mark** and **high
 water mark**.
 
-
 In order to support historical queries, tuples are not updated in place.
 Instead, updates are represented as deletion followed by an insertion. Thus, a
 historical query at epoch `t` must determine the tuples which were inserted
@@ -101,7 +100,8 @@ RS.
 The tuple mover creates a new segment `S'` for a segment `S` in RS. It moves
 any tuples from `S` into `S'` that were not deleted and also merges in the
 tuples from WS. After finishing the merge and updating join indexes, `S` and
-`S'` are swapped.
+`S'` are swapped. The timestamp authority periodically increments the low
+watermark.
 
 ## Query Execution
 Query plans in C-Store are built with the following operators:
