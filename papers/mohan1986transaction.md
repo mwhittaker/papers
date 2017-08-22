@@ -68,22 +68,22 @@ And the subordinate:
   coordinator. It either commits or aborts.
 
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopc_yes_commit"></svg>
-  </div>
-  <caption>Figure 1. Subordinate votes yes; transaction commits.</caption>
+ <div class="shrink">
+  <svg viewBox="0 0 250 190" id="twopc_yes_commit"></svg>
+ </div>
+ <caption>Figure 1. Subordinate votes yes; transaction commits.</caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopc_yes_abort"></svg>
-  </div>
-  <caption>Figure 2. Subordinate votes yes; transaction aborts.</caption>
+ <div class="shrink">
+  <svg viewBox="0 0 250 190" id="twopc_yes_abort"></svg>
+ </div>
+ <caption>Figure 2. Subordinate votes yes; transaction aborts.</caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopc_no_abort"></svg>
-  </div>
-  <caption>Figure 3. Subordinate votes no; transaction aborts.</caption>
+ <div class="shrink">
+  <svg viewBox="0 0 250 190" id="twopc_no_abort"></svg>
+ </div>
+ <caption>Figure 3. Subordinate votes no; transaction aborts.</caption>
 </center>
 
 # Hierarchical 2PC
@@ -129,22 +129,22 @@ Subordinate action on restart:
   commits the transaction.
 
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpa_yes_commit"></svg>
-  </div>
-  <caption>Figure 4. Subordinate votes yes; transaction commits.</caption>
+ <div class="shrink">
+  <svg viewBox="0 0 250 190" id="twopcpa_yes_commit"></svg>
+ </div>
+ <caption>Figure 4. Subordinate votes yes; transaction commits.</caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpa_yes_abort"></svg>
-  </div>
-  <caption>Figure 5. Subordinate votes yes; transaction aborts.</caption>
+ <div class="shrink">
+  <svg viewBox="0 0 250 190" id="twopcpa_yes_abort"></svg>
+ </div>
+ <caption>Figure 5. Subordinate votes yes; transaction aborts.</caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpa_no_abort"></svg>
-  </div>
-  <caption>Figure 6. Subordinate votes no; transaction aborts.</caption>
+ <div class="shrink">
+  <svg viewBox="0 0 250 190" id="twopcpa_no_abort"></svg>
+ </div>
+ <caption>Figure 6. Subordinate votes no; transaction aborts.</caption>
 </center>
 
 ## Read-Only Subordinates
@@ -185,22 +185,22 @@ Subordinate action on restart:
   ensure that the coordinator has received its acknowledgement.
 
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpc_yes_commit"></svg>
-  </div>
-  <caption>Figure 7. Subordinate votes yes; transaction commits.</caption>
+ <div class="shrink">
+  <svg viewBox="0 0 250 190" id="twopcpc_yes_commit"></svg>
+ </div>
+ <caption>Figure 7. Subordinate votes yes; transaction commits.</caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpc_yes_abort"></svg>
-  </div>
-  <caption>Figure 8. Subordinate votes yes; transaction aborts.</caption>
+ <div class="shrink">
+  <svg viewBox="0 0 250 190" id="twopcpc_yes_abort"></svg>
+ </div>
+ <caption>Figure 8. Subordinate votes yes; transaction aborts.</caption>
 </center>
 <center>
-  <div class="shrink">
-    <svg viewBox="0 0 250 190" id="twopcpc_no_abort"></svg>
-  </div>
-  <caption>Figure 9. Subordinate votes no; transaction aborts.</caption>
+ <div class="shrink">
+  <svg viewBox="0 0 250 190" id="twopcpc_no_abort"></svg>
+ </div>
+ <caption>Figure 9. Subordinate votes no; transaction aborts.</caption>
 </center>
 
 TODO: deadlock detection section.
