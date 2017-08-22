@@ -11,7 +11,7 @@
     <a href="../">Papers</a>
   </div>
   <div id="container">
-<h1 id="c-store-a-column-oriented-dbms-2005"><a href="https://scholar.google.com/scholar?cluster=12924804892742402591">C-store: A Column-oriented DBMS (2005)</a></h1>
+<h1 id="c-store-a-column-oriented-dbms-2005"><a href="https://scholar.google.com/scholar?cluster=12924804892742402591">C-Store: A Column-oriented DBMS (2005)</a></h1>
 <p>Row-oriented databases---databases that store data a row at a time---are write-optimized and suitable for OLTP workloads. Column-oriented databases---databases that store data a column at a time---are read-optimized and are suitable for OLAP workloads. This paper presents C-Store: a distributed shared-nothing column-oriented database.</p>
 <p>C-Store has a number of notable features which make it super fast. First, C-Store physically physically stores relations as sets of compressed columns called projections. Second, projections are divided between large read-optimized storage (RS) and smaller writable-storage (WS). A tuple mover periodically moves tuples from WS to RS. Finally, read-only queries can be run on a past snapshot of the data.</p>
 <h2 id="data-model">Data Model</h2>

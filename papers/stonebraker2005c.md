@@ -1,4 +1,4 @@
-# [C-store: A Column-oriented DBMS (2005)](https://scholar.google.com/scholar?cluster=12924804892742402591)
+# [C-Store: A Column-oriented DBMS (2005)](https://scholar.google.com/scholar?cluster=12924804892742402591)
 Row-oriented databases---databases that store data a row at a time---are
 write-optimized and suitable for OLTP workloads. Column-oriented
 databases---databases that store data a column at a time---are read-optimized
