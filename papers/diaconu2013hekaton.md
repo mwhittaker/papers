@@ -1,8 +1,16 @@
 # [Hekaton: SQL Server's Memory-Optimized OLTP Engine (2013)](https://scholar.google.com/scholar?cluster=14161764654889427045)
 Hekaton is a fast in-memory OLTP engine integrated with Microsoft SQL Server.
-Hekaton accesses data via lock-free indexes and compiled stored procedures.
+Hekaton accesses data via latch-free indexes and compiled stored procedures.
 Hekaton also implements optimistic multiversion concurrency control as well as
 parallel recovery and garbage collection procedures.
+
+## Overview
+Hekaton is not a stand-alone database. Rather, it is an OLTP engine embedded
+within Microsoft SQL Server. Users can specify which tables they want to be
+Hekaton tables (which are stored in memory) and which tables they want to be
+normal SQL Server tables (which are stored on disk). Queries can be issued
+against both Hekaton and SQL Server tables, but stored procedures which only
+reference Hekaton tables can be compiled and optimized.
 
 ## Design Considerations
 1. **Optimize indexes for main memory.** Hekaton uses lock-free hash indexes
@@ -23,13 +31,15 @@ segments:
    multiversion concurrency control, each tuple is annotated with a logical
    begin and end timestamp.
 2. **Links for indexes.** Hekaton uses lock-free hash indexes and Bw-tree
-   indexes. Multiple tuple versions that share the same index key are linked
-   together.
+   indexes. Every Hekaton tuple contains one link column for every index which
+   links together the tuples that share the same index key. This is similar to
+   how the Linux kernel embeds linked lists into data items.
 3. **The tuple's data.** Duh.
 
 Reads are issued at particular logical time and scan through all index entries
-matching the specified key. Though all entries are scanned, only those whose
-begin and end timestamp envelope the read timestamp are read.
+matching the specified key by following the index links. Though all entries are
+scanned, only those whose begin and end timestamp envelope the read timestamp
+are read.
 
 When a transaction deletes a tuple, it temporarily writes its transaction id
 into the tuples end timestamp. Similarly, when a transaction inserts a tuple,
@@ -62,8 +72,8 @@ write Hekaton tables.
 
 ## Transaction Management
 Hekaton supports snapshot isolation, repeatable read, and serializability all
-implemented with multiversion concurrency control. There are two conditions
-which can be checked during validation:
+implemented with optimistic multiversion concurrency control. There are two
+conditions which can be checked during validation:
 
 1. **Read stability**. All the versions that a transaction read must still be
    valid versions upon commit.

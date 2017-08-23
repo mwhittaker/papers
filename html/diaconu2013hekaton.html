@@ -12,7 +12,9 @@
   </div>
   <div id="container">
 <h1 id="hekaton-sql-servers-memory-optimized-oltp-engine-2013"><a href="https://scholar.google.com/scholar?cluster=14161764654889427045">Hekaton: SQL Server's Memory-Optimized OLTP Engine (2013)</a></h1>
-<p>Hekaton is a fast in-memory OLTP engine integrated with Microsoft SQL Server. Hekaton accesses data via lock-free indexes and compiled stored procedures. Hekaton also implements optimistic multiversion concurrency control as well as parallel recovery and garbage collection procedures.</p>
+<p>Hekaton is a fast in-memory OLTP engine integrated with Microsoft SQL Server. Hekaton accesses data via latch-free indexes and compiled stored procedures. Hekaton also implements optimistic multiversion concurrency control as well as parallel recovery and garbage collection procedures.</p>
+<h2 id="overview">Overview</h2>
+<p>Hekaton is not a stand-alone database. Rather, it is an OLTP engine embedded within Microsoft SQL Server. Users can specify which tables they want to be Hekaton tables (which are stored in memory) and which tables they want to be normal SQL Server tables (which are stored on disk). Queries can be issued against both Hekaton and SQL Server tables, but stored procedures which only reference Hekaton tables can be compiled and optimized.</p>
 <h2 id="design-considerations">Design Considerations</h2>
 <ol style="list-style-type: decimal">
 <li><strong>Optimize indexes for main memory.</strong> Hekaton uses lock-free hash indexes and Bw-tree indexes as opposed to more traditional indexes which were designed for disks.</li>
@@ -24,10 +26,10 @@
 <p>Hekaton stores tuples in-memory row-by-row. Each physical tuple contains three segments:</p>
 <ol style="list-style-type: decimal">
 <li><strong>A header with logical timestamps.</strong> Because Hekaton implements multiversion concurrency control, each tuple is annotated with a logical begin and end timestamp.</li>
-<li><strong>Links for indexes.</strong> Hekaton uses lock-free hash indexes and Bw-tree indexes. Multiple tuple versions that share the same index key are linked together.</li>
+<li><strong>Links for indexes.</strong> Hekaton uses lock-free hash indexes and Bw-tree indexes. Every Hekaton tuple contains one link column for every index which links together the tuples that share the same index key. This is similar to how the Linux kernel embeds linked lists into data items.</li>
 <li><strong>The tuple's data.</strong> Duh.</li>
 </ol>
-<p>Reads are issued at particular logical time and scan through all index entries matching the specified key. Though all entries are scanned, only those whose begin and end timestamp envelope the read timestamp are read.</p>
+<p>Reads are issued at particular logical time and scan through all index entries matching the specified key by following the index links. Though all entries are scanned, only those whose begin and end timestamp envelope the read timestamp are read.</p>
 <p>When a transaction deletes a tuple, it temporarily writes its transaction id into the tuples end timestamp. Similarly, when a transaction inserts a tuple, it temporarily writes its transaction id in the begin timestamp. Once the transaction completes, it overwrites its id with its end timestamp. An update is modelled as a deletion followed by an insertion.</p>
 <h2 id="programmability-and-query-processing">Programmability and Query Processing</h2>
 <p>Hekaton compiles stored procedures to C code, then compiles and links the C code into Hekaton. The compilation re-uses a lot of existing SQL Server components. First, the stored procedure is run through SQL Server's query optimizer into a <strong>mixed abstract syntax tree</strong> (MAT). A MAT can encode metadata, imperative code, expressions, and query plans. The MAT is then compiled into lower level <strong>pure imperative tree</strong> (PIT) that is easier to compile to C.</p>
