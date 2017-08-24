@@ -36,7 +36,7 @@
 <p>Hekaton does not compile query plans into a series of function calls. Instead, a query plan is compiled into a single function and operators are connected together via labels and gotos. This allows the code to bypass some otherwise unnecessary function calls. For example, when the query is initially executed, it jumps immediately to the leaves of the query plan rather than recursively calling down to them. Some code (e.g. sort and complicated arithmetic functions) is not generated.</p>
 <p>Hekaton stored procedures have some restrictions (e.g. the schema of the tables that a stored procedure reads must be fixed, the stored procedures must execute within a single transaction). To overcome some of these restrictions, SQL Server allows regular/unrestricted/interpreted stored procedures to read and write Hekaton tables.</p>
 <h2 id="transaction-management">Transaction Management</h2>
-<p>Hekaton supports snapshot isolation, repeatable read, and serializability all implemented with multiversion concurrency control. There are two conditions which can be checked during validation:</p>
+<p>Hekaton supports snapshot isolation, repeatable read, and serializability all implemented with optimistic multiversion concurrency control. There are two conditions which can be checked during validation:</p>
 <ol style="list-style-type: decimal">
 <li><strong>Read stability</strong>. All the versions that a transaction read must still be valid versions upon commit.</li>
 <li><strong>Phantom avoidance</strong>. All the scans a transaction made must be repeatable upon commit.</li>

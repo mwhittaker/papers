@@ -72,7 +72,7 @@ described later.
 ## Write Stability and Commitment
 When a write is applied by a server for the last time, it is considered
 **stable** (equivalently, committed). Clients can query servers to see which
-writes have been committed. How to servers commit writes? One approach is to
+writes have been committed. How do servers commit writes? One approach is to
 commit a write whenever its timestamp is less than the current timestamp of all
 servers. Unfortunately, if any of the servers is disconnected, this strategy
 can delay commit. In Bayou, a single server is designated as the primary and
