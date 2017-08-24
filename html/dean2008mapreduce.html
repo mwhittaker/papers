@@ -11,15 +11,17 @@
     <a href="../">Papers</a>
   </div>
   <div id="container">
-<h2 id="mapreduce-simplified-data-processing-on-large-clusters-2004"><a href="https://scholar.google.com/scholar?cluster=10940266603640308767&amp;hl=en&amp;as_sdt=0,5">MapReduce: Simplified Data Processing on Large Clusters (2004)</a></h2>
+<h1 id="mapreduce-simplified-data-processing-on-large-clusters-2004"><a href="https://scholar.google.com/scholar?cluster=10940266603640308767&amp;hl=en&amp;as_sdt=0,5">MapReduce: Simplified Data Processing on Large Clusters (2004)</a></h1>
 <p>In order to be robust and efficient, programs that process huge amounts of data have to take into account how to parallelize work, distribute work, handle failures, and load balance work. The MapReduce framework implements these complicated pieces of boilerplate, allowing programmers to process huge amounts of data only having to write simple map and reduce functions.</p>
-<p><strong>Programming Model.</strong> Logically, users implement map and reduce functions of the following type:</p>
+<h2 id="programming-model">Programming Model</h2>
+<p>Logically, users implement map and reduce functions of the following type:</p>
 <ul>
 <li><code>map: (k1, v1) -&gt; (k2, v2) list</code></li>
 <li><code>reduce: (k2, v2 list) -&gt; v2 list</code></li>
 </ul>
 <p>though in reality, the MapReduce framework deals only with strings. In addition to providing map and reduce functions, the user also provides the name of inputs, the name of outputs, tuning parameters, etc. The MapReduce framework is expressive enough to implement distributed grep, URL access counts, reverse web-link graph, inverted index, and distributed sort.</p>
-<p><strong>Implementation.</strong> The MapReduce interface can be implemented in many different ways. For example, a simple single-threaded implementation could be used for debugging, or a NUMA multi-processor implementation could be used for datasets that fit in memory. Here, we discuss an implementation for a cluster of commodity machines. Execution proceeds in a number of steps:</p>
+<h2 id="implementation">Implementation</h2>
+<p>The MapReduce interface can be implemented in many different ways. For example, a simple single-threaded implementation could be used for debugging, or a NUMA multi-processor implementation could be used for datasets that fit in memory. Here, we discuss an implementation for a cluster of commodity machines. Execution proceeds in a number of steps:</p>
 <ol style="list-style-type: decimal">
 <li>The input data is split into <code>M</code> 16-64 MB partitions. A master and a collection of workers are spawned.</li>
 <li>The single master assigns the <code>M</code> map tasks and <code>R</code> reduce tasks to workers.</li>
@@ -38,7 +40,16 @@
 <li><em>Task granularity.</em> Increasing <code>M</code> and <code>R</code> improves load balancing and decreases the time it takes for work to be redone after a worker failure. However, if there are too many tasks, the master becomes a memory bottleneck.</li>
 <li><em>Backup tasks.</em> Near the end of the computation, the master begins to reassign incomplete work to mitigate stragglers.</li>
 </ul>
-<p><strong>Refinements.</strong> - <em>Partition function.</em> Users can specify custom partition functions to replace the default (i.e. <code>hash(k) % R</code>). This is useful if, for example, users want to place logically grouped keys on the same reducer. - <em>Combiner function.</em> Users can specify a reduce function, known as a combiner, to run at the mapper. - <em>Input/output types.</em> There are a number of default input types (e.g. text, SSTable) and users can implement their own as well. - <em>Skipping bad records.</em> Sometimes a bug in the code causes a map or reduce function to deterministically crash. The MapReduce framework will inform workers to skip this task. Each worker registers a signal handler which sends a last-breathe UDP message to the master informing of the record which caused the crash. If the master sees multiple failures caused by the same record, it tells workers not to process it. - <em>Local execution.</em> The MapReduce framework supports a local execution to allow for easier debugging. - <em>Status information.</em> The master exports an HTTP server which includes a bunch of useful statistics and metadata. - <em>Counters.</em> The MapReduce framework also supports global counters which can be incremented and decremented by workers. The increments and decrements are aggregated by the master and are displayed on the master's HTTP server.</p>
+<h2 id="refinements">Refinements</h2>
+<ul>
+<li><em>Partition function.</em> Users can specify custom partition functions to replace the default (i.e. <code>hash(k) % R</code>). This is useful if, for example, users want to place logically grouped keys on the same reducer.</li>
+<li><em>Combiner function.</em> Users can specify a reduce function, known as a combiner, to run at the mapper.</li>
+<li><em>Input/output types.</em> There are a number of default input types (e.g. text, SSTable) and users can implement their own as well.</li>
+<li><em>Skipping bad records.</em> Sometimes a bug in the code causes a map or reduce function to deterministically crash. The MapReduce framework will inform workers to skip this task. Each worker registers a signal handler which sends a last-breathe UDP message to the master informing of the record which caused the crash. If the master sees multiple failures caused by the same record, it tells workers not to process it.</li>
+<li><em>Local execution.</em> The MapReduce framework supports a local execution to allow for easier debugging.</li>
+<li><em>Status information.</em> The master exports an HTTP server which includes a bunch of useful statistics and metadata.</li>
+<li><em>Counters.</em> The MapReduce framework also supports global counters which can be incremented and decremented by workers. The increments and decrements are aggregated by the master and are displayed on the master's HTTP server.</li>
+</ul>
   </div>
 
   <script type="text/javascript" src="../js/mathjax_config.js"></script>

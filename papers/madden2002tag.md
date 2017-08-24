@@ -15,7 +15,7 @@ time).
 Motes communicate using a CSMA protocol over a shared backbone in which
 messages are broadcast to all motes. To achieve point-to-point communication,
 every mote is assigned a unique id and every message is prefixed with the id
-its recipient. Though motes receive every message sent, the ignore the ones
+its recipient. Though motes receive every message sent, they ignore the ones
 that are not destined for them.
 
 In order to route messages and compute aggregates, motes for a routing tree. A

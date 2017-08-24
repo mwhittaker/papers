@@ -1,11 +1,11 @@
-## [MapReduce: Simplified Data Processing on Large Clusters (2004)](https://scholar.google.com/scholar?cluster=10940266603640308767&hl=en&as_sdt=0,5)
+# [MapReduce: Simplified Data Processing on Large Clusters (2004)](https://scholar.google.com/scholar?cluster=10940266603640308767&hl=en&as_sdt=0,5)
 In order to be robust and efficient, programs that process huge amounts of data
 have to take into account how to parallelize work, distribute work, handle
 failures, and load balance work. The MapReduce framework implements these
 complicated pieces of boilerplate, allowing programmers to process huge amounts
 of data only having to write simple map and reduce functions.
 
-**Programming Model.**
+## Programming Model
 Logically, users implement map and reduce functions of the following type:
 
 - `map: (k1, v1) -> (k2, v2) list`
@@ -17,7 +17,7 @@ inputs, the name of outputs, tuning parameters, etc. The MapReduce framework
 is expressive enough to implement distributed grep, URL access counts, reverse
 web-link graph, inverted index, and distributed sort.
 
-**Implementation.**
+## Implementation
 The MapReduce interface can be implemented in many different ways. For example,
 a simple single-threaded implementation could be used for debugging, or a NUMA
 multi-processor implementation could be used for datasets that fit in memory.
@@ -59,7 +59,7 @@ Execution proceeds in a number of steps:
 - *Backup tasks.* Near the end of the computation, the master begins to
   reassign incomplete work to mitigate stragglers.
 
-**Refinements.**
+## Refinements
 - *Partition function.* Users can specify custom partition functions to replace
   the default (i.e. `hash(k) % R`). This is useful if, for example, users want
   to place logically grouped keys on the same reducer.
