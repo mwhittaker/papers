@@ -1,4 +1,4 @@
-# [Dataguides: Enabling Query Formulation and Optimization in Semistructured Databases (1997)](https://scholar.google.com/scholar?cluster=1701940952301007499)
+# [DataGuides: Enabling Query Formulation and Optimization in Semistructured Databases (1997)](https://scholar.google.com/scholar?cluster=1701940952301007499)
 Database schemata serve two purposes: (1) they allows users to understand the
 structure of the data and form meaningful queries over it, and (2) they allow
 the query optimizer to generate efficient query plans. Unfortunately,
