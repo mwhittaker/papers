@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="eventually-consistent-2009"><a href="https://scholar.google.com/scholar?cluster=4308857796184904369">Eventually Consistent (2009)</a></h1>
+<p>In this CACM article, Werner Vogels discusses eventual consistency as well as a couple other forms of consistency.</p>
+<h2 id="historical-perspective">Historical Perspective</h2>
+<p>Back in the day, when people were thinking about how to build distributed systems, they thought that strong consistency was the only option. Anything else would just be incorrect, right? Well, fast forward to the 90's and availability started being favored over consistency. In 2000, Brewer released the CAP theorem unto the world, and weak consistency really took off.</p>
+<h2 id="clients-perspective-of-consistency">Client's Perspective of Consistency</h2>
+<p>There is a zoo of consistency from the perspective of a client.</p>
+<ul>
+<li><strong>Strong consistency.</strong> A data store is strongly consistent if after a write completes, it is visible to all subsequent reads.</li>
+<li><strong>Weak consistency.</strong> Weak consistency is a synonym for no consistency. Your reads can return garbage.</li>
+<li><strong>Eventual consistency.</strong> &quot;the storage system guarantees that if no new updates are made to the object, eventually all accesses will return the last updated value.&quot;</li>
+<li><strong>Causal consistency.</strong> If A issues a write and then contacts B, B's read will see the effect of A's write since it causally comes after it. Causally unrelated reads can return whatever they want.</li>
+<li><strong>Read-your-writes consistency.</strong> Clients read their most recent write or a more recent version.</li>
+<li><strong>Session consistency.</strong> So long as a client maintains a session, it gets read-your-writes consistency.</li>
+<li><strong>Monotonic read consistency.</strong> Over time, a client will see increasingly more fresh versions of data.</li>
+<li><strong>Monotonic write consistency.</strong> A client's writes will be executed in the order in which they are issued.</li>
+</ul>
+<h2 id="servers-perspective-of-consistency">Server's Perspective of Consistency</h2>
+<p>Systems can implement consistency using quorums in which a write is sent to W of the N replicas, and a read is sent to R of the N replicas. If R + W &gt; N, then we have strong consistency.</p>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>
