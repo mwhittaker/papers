@@ -43,20 +43,19 @@ servicing reads and writes. They also split tablets that have grown too large.
   tablet without talking to the master.
 - __Tablet assignment.__ Each tablet is assigned to a single tablet server, and
   tablet assignments are managed by the master.
-
-  When a tablet server wants to join Bigtable, it acquires an exclusive lock on
-  a file in the `servers` directory in Chubby. So long as it has the lock, it
-  can serve tablets. If it loses the lock, it tries to reacquire it, and if the
-  file is deleted, the tablet server kills itself. The master heartbeats
-  servers periodically. If the server doesn't respond or the server reports it
-  lost the lock, the master tries to acquire the lock. If it does, it deletes
-  the file and reassigns tablets.
-
-  When a master joins Bigtable, it acquires an exclusive lock on a master file.
-  It then scans the `servers` directory, contacts the servers to see what
-  tablets they own, and compares it to the METADATA table. It can then start
-  assigning unassigned tablets. It also manages the creation, deletion, and
-  merging of tablets. Tablet servers manage the splitting of tablets.
+    - When a tablet server wants to join Bigtable, it acquires an exclusive
+      lock on a file in the `servers` directory in Chubby. So long as it has
+      the lock, it can serve tablets. If it loses the lock, it tries to
+      reacquire it, and if the file is deleted, the tablet server kills itself.
+      The master heartbeats servers periodically. If the server doesn't respond
+      or the server reports it lost the lock, the master tries to acquire the
+      lock. If it does, it deletes the file and reassigns tablets.
+    - When a master joins Bigtable, it acquires an exclusive lock on a master
+      file.  It then scans the `servers` directory, contacts the servers to see
+      what tablets they own, and compares it to the METADATA table. It can then
+      start assigning unassigned tablets. It also manages the creation,
+      deletion, and merging of tablets. Tablet servers manage the splitting of
+      tablets.
 - __Tablet serving.__ Tablet servers commit updates to a log and also buffer
   the most recent updates in a sorted __memtable__. The rest of the data is
   stored in a series of SSTables in GFS. Each SSTable is a persistent immutable
