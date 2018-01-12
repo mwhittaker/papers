@@ -5,12 +5,12 @@ databases---databases that store data a column at a time---are read-optimized
 and are suitable for OLAP workloads. This paper presents C-Store: a distributed
 shared-nothing column-oriented database.
 
-C-Store has a number of notable features which make it super fast.  First,
-C-Store physically physically stores relations as sets of compressed columns
-called projections.  Second, projections are divided between large
-read-optimized storage (RS) and smaller writable-storage (WS). A tuple mover
-periodically moves tuples from WS to RS.  Finally, read-only queries can be run
-on a past snapshot of the data.
+C-Store has a number of notable features which make it super fast. First,
+C-Store physically stores relations as sets of compressed columns called
+projections. Second, projections are divided between large read-optimized
+storage (RS) and smaller writable-storage (WS). A tuple mover periodically
+moves tuples from WS to RS. Finally, read-only queries can be run on a past
+snapshot of the data.
 
 ## Data Model
 Consider a table `R(a,b,c)`. A **projection** anchored on R is a subset of the
@@ -26,10 +26,10 @@ projections. Projections can include columns from other relations as well so
 long as the two tables are linked by a foreign key.
 
 Column entries in a projection are assigned a logical **storage key** that is
-unique within a projection (but not across projections).  Column entries with
-the same storage key belong to the same logical tuple.  Column entries in WS
-explicitly store their storage keys whereas tuples in RS compute them when
-necessary based on entry offsets.
+unique within a segment (but not across segments). Column entries with the same
+storage key belong to the same logical tuple. Column entries in WS explicitly
+store their storage keys whereas tuples in RS compute them when necessary based
+on entry offsets.
 
 C-Store uses **join indexes** to combine multiple projections together. A join
 index from one projection `P1` to another `P2` is a two-columned relation that
@@ -43,16 +43,37 @@ Columns in RS are compressed in one of four ways depending on (a) whether the
 column is part of the sort key (**self-ordered**) or not (**foreign-ordered**)
 and (b) how many distinct values are in the column.
 
-- *Self-ordered and few distinct values.* A column is stored as set of
-  `(v,f,n)` tuples where value `v` appears `n` times at index `f`. A dense B+
-  tree is stored on the `v` field.
-- *Foreign-ordered and few distinct values.* A column is stored as a set of
-  `(v,b)` tuples where `b` is a bitmap indicating which entries have value `v`.
-  A dense B+ tree maps indexes to values.
-- *Self-ordered and many distinct values.* A column is stored as blocks of
-  `value,delta,delta,delta`. For example, the sequence `0,3,7,7,9` is stored as
-  `0,3,3,0,2`.
-- *Foreign-ordered and many distinct values.* Here, a column is not compressed.
+<center>
+  <table>
+    <tr>
+      <td></td>
+      <td>__Self-Ordered__</td>
+      <td>__Foreign-Ordered__</td>
+    </tr>
+    <tr>
+      <td>__Few Distinct Values__</td>
+      <td>
+        A column is stored as set of `(v,f,n)` tuples where value `v` appears
+        `n` times at index `f`. A dense B+ tree is stored on the `v` field.
+      </td>
+      <td>
+        A column is stored as a set of `(v,b)` tuples where `b` is a bitmap
+        indicating which entries have value `v`. A dense B+ tree maps indexes
+        to values.
+      </td>
+    </tr>
+    <tr>
+      <td>__Many Distinct Values__</td>
+      <td>
+        A column is stored as blocks of `value,delta,delta,delta`. For example,
+        the sequence `0,3,7,7,9` is stored as `0,3,3,0,2`.
+      </td>
+      <td>
+        Here, a column is not compressed.
+      </td>
+    </tr>
+  </table>
+</center>
 
 ## Writable Storage
 WS has the same physical design as RS; relations are stored as a collection of

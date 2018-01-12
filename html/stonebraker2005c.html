@@ -12,21 +12,51 @@
   </div>
   <div id="container">
 <h1 id="c-store-a-column-oriented-dbms-2005"><a href="https://scholar.google.com/scholar?cluster=12924804892742402591">C-Store: A Column-oriented DBMS (2005)</a></h1>
-<p>Row-oriented databases---databases that store data a row at a time---are write-optimized and suitable for OLTP workloads. Column-oriented databases---databases that store data a column at a time---are read-optimized and are suitable for OLAP workloads. This paper presents C-Store: a distributed shared-nothing column-oriented database.</p>
-<p>C-Store has a number of notable features which make it super fast. First, C-Store physically physically stores relations as sets of compressed columns called projections. Second, projections are divided between large read-optimized storage (RS) and smaller writable-storage (WS). A tuple mover periodically moves tuples from WS to RS. Finally, read-only queries can be run on a past snapshot of the data.</p>
+<p>Row-oriented databases&#8212;databases that store data a row at a time&#8212;are write-optimized and suitable for OLTP workloads. Column-oriented databases&#8212;databases that store data a column at a time&#8212;are read-optimized and are suitable for OLAP workloads. This paper presents C-Store: a distributed shared-nothing column-oriented database.</p>
+<p>C-Store has a number of notable features which make it super fast. First, C-Store physically stores relations as sets of compressed columns called projections. Second, projections are divided between large read-optimized storage (RS) and smaller writable-storage (WS). A tuple mover periodically moves tuples from WS to RS. Finally, read-only queries can be run on a past snapshot of the data.</p>
 <h2 id="data-model">Data Model</h2>
 <p>Consider a table <code>R(a,b,c)</code>. A <strong>projection</strong> anchored on R is a subset of the columns of <code>R</code> (without deduplication) sorted on some subset of the columns called the <strong>sort key</strong>. For example <code>R1(a,b)</code> sorted on <code>a</code>, <code>R2(b,c)</code> sorted on <code>c</code> and <code>R3(a,c)</code> sorted on <code>c,a</code> are all projections anchored on <code>R</code>. C-Store stores a table as a set of projections that cover the table.</p>
 <p>Projections are stored column-wise and are horizontally range-partitioned on their sort key into a set of <strong>segments</strong>. Segments distributed across the nodes in a C-Store cluster. Moreover, the same column can appear in multiple projections. Projections can include columns from other relations as well so long as the two tables are linked by a foreign key.</p>
-<p>Column entries in a projection are assigned a logical <strong>storage key</strong> that is unique within a projection (but not across projections). Column entries with the same storage key belong to the same logical tuple. Column entries in WS explicitly store their storage keys whereas tuples in RS compute them when necessary based on entry offsets.</p>
+<p>Column entries in a projection are assigned a logical <strong>storage key</strong> that is unique within a segment (but not across segments). Column entries with the same storage key belong to the same logical tuple. Column entries in WS explicitly store their storage keys whereas tuples in RS compute them when necessary based on entry offsets.</p>
 <p>C-Store uses <strong>join indexes</strong> to combine multiple projections together. A join index from one projection <code>P1</code> to another <code>P2</code> is a two-columned relation that is the exact same size as <code>P1</code>. The ith row of the join index is a tuple <code>(s,sk)</code> which says that the ith tuple in <code>P1</code> corresponds to the tuple in segment <code>s</code> of <code>P2</code> with storage key <code>sk</code>. Note that join indexes are difficult to maintain in the face of updates.</p>
 <h2 id="read-optimized-storage">Read-Optimized Storage</h2>
 <p>Columns in RS are compressed in one of four ways depending on (a) whether the column is part of the sort key (<strong>self-ordered</strong>) or not (<strong>foreign-ordered</strong>) and (b) how many distinct values are in the column.</p>
-<ul>
-<li><em>Self-ordered and few distinct values.</em> A column is stored as set of <code>(v,f,n)</code> tuples where value <code>v</code> appears <code>n</code> times at index <code>f</code>. A dense B+ tree is stored on the <code>v</code> field.</li>
-<li><em>Foreign-ordered and few distinct values.</em> A column is stored as a set of <code>(v,b)</code> tuples where <code>b</code> is a bitmap indicating which entries have value <code>v</code>. A dense B+ tree maps indexes to values.</li>
-<li><em>Self-ordered and many distinct values.</em> A column is stored as blocks of <code>value,delta,delta,delta</code>. For example, the sequence <code>0,3,7,7,9</code> is stored as <code>0,3,3,0,2</code>.</li>
-<li><em>Foreign-ordered and many distinct values.</em> Here, a column is not compressed.</li>
-</ul>
+<center>
+<table>
+<tr>
+<td>
+</td>
+<td>
+<strong>Self-Ordered</strong>
+</td>
+<td>
+<strong>Foreign-Ordered</strong>
+</td>
+</tr>
+<tr>
+<td>
+<strong>Few Distinct Values</strong>
+</td>
+<td>
+A column is stored as set of <code>(v,f,n)</code> tuples where value <code>v</code> appears <code>n</code> times at index <code>f</code>. A dense B+ tree is stored on the <code>v</code> field.
+</td>
+<td>
+A column is stored as a set of <code>(v,b)</code> tuples where <code>b</code> is a bitmap indicating which entries have value <code>v</code>. A dense B+ tree maps indexes to values.
+</td>
+</tr>
+<tr>
+<td>
+<strong>Many Distinct Values</strong>
+</td>
+<td>
+A column is stored as blocks of <code>value,delta,delta,delta</code>. For example, the sequence <code>0,3,7,7,9</code> is stored as <code>0,3,3,0,2</code>.
+</td>
+<td>
+Here, a column is not compressed.
+</td>
+</tr>
+</table>
+</center>
 <h2 id="writable-storage">Writable Storage</h2>
 <p>WS has the same physical design as RS; relations are stored as a collection of projections. Moreover, WS is horizontally partitioned exactly like RS, so that each segment in RS is co-located with its corresponding segment in WS.</p>
 <p>WS does not compress its projections. Whenever a tuple is inserted into WS, it is assigned a storage key larger than any in RS, and each column entry explicitly stores its storage key. Each column has a B+ tree mapping storage key to value, and a single B+ tree maps sort keys to storage key.</p>
