@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="the-escrow-transactional-method-1986"><a href="https://scholar.google.com/scholar?cluster=395072728627094003">The Escrow Transactional Method (1986)</a></h1>
+<style>
+    .infvalsup {
+        text-align: center;
+        border-top: 0pt solid black;
+        border-right: 0pt solid black;
+        border-bottom: 2pt solid black;
+        border-left: 0pt solid black;
+    }
+
+    .inf {
+        text-align: center;
+        border-top: 2pt solid black;
+        border-right: 2pt solid gray;
+        border-bottom: 2pt solid gray;
+        border-left: 2pt solid black;
+    }
+
+    .val {
+        text-align: center;
+        border-top: 2pt solid black;
+        border-right: 2pt solid gray;
+        border-bottom: 2pt solid gray;
+        border-left: 2pt solid gray;
+    }
+
+    .sup {
+        text-align: center;
+        border-top: 2pt solid black;
+        border-right: 2pt solid black;
+        border-bottom: 2pt solid gray;
+        border-left: 2pt solid gray;
+    }
+
+    .timestamp {
+        text-align: center;
+        border-top: 2pt solid gray;
+        border-right: 2pt solid black;
+        border-bottom: 2pt solid black;
+        border-left: 2pt solid black;
+    }
+
+    .northwest {
+        border-top: 2pt solid black;
+        border-right: 0pt solid black;
+        border-bottom: 0pt solid black;
+        border-left: 2pt solid black;
+    }
+
+    .northeast {
+        border-top: 2pt solid black;
+        border-right: 2pt solid black;
+        border-bottom: 0pt solid black;
+        border-left: 0pt solid black;
+    }
+
+    .west {
+        border-top: 0pt solid black;
+        border-right: 0pt solid black;
+        border-bottom: 0pt solid black;
+        border-left: 2pt solid black;
+    }
+
+    .east {
+        border-top: 0pt solid black;
+        border-right: 2pt solid black;
+        border-bottom: 0pt solid black;
+        border-left: 0pt solid black;
+    }
+
+    .southwest {
+        border-top: 0pt solid black;
+        border-right: 0pt solid black;
+        border-bottom: 2pt solid black;
+        border-left: 2pt solid black;
+    }
+
+    .southeast {
+        border-top: 0pt solid black;
+        border-right: 2pt solid black;
+        border-bottom: 2pt solid black;
+        border-left: 0pt solid black;
+    }
+</style>
+<p>Imagine that we have a database consisting of three integers <code>x</code>, <code>y</code>, and <code>z</code>, each representing some amount of money. And, imagine that we have the following transaction that transfers money from <code>x</code> and <code>y</code> to <code>z</code>, with the invariant that all three dollar amounts are nonnegative.</p>
+<pre><code>if x - 10 &gt;= 0:
+  x -= 10
+else:
+  abort
+
+if y - 20 &gt;= 0:
+  y -= 20
+else:
+  abort
+
+z += 30
+commit</code></pre>
+<p>Now imagine that we want to run this transaction many times concurrently with itself. Using a standard two-phase locking approach, a transaction would lock <code>x</code>, then lock <code>y</code>, and then lock <code>z</code>. This locking would limit the throughput of the system because when one transaction has an exclusive lock on <code>x</code>, no other transaction can touch <code>x</code>.</p>
+<p>Worse, this locking is not necessary. Instead of issuing reads and writes, transactions can issue reads, increments, and decrements. As long as a transaction can guarantee that executing its increments or decrements will not violate its invariants no matter which other transactions commit or abort, the increments and decrements can be executed in any order, and transactions can issue their increments and decrements without locking.</p>
+<p>This is the main idea behind escrow transactions.</p>
+<h2 id="the-general-escrow-transactional-method">The General Escrow Transactional Method</h2>
+<p>Escrow transactions provide the following API:</p>
+<pre><code>IF ESCROW(field=&lt;F&gt;, quantity=&lt;C&gt;, test=&lt;condition&gt;):
+  continue with normall processing
+ELSE:
+  perform exception handling such as abort</code></pre>
+<p>If quantity <code>C</code> can be subtracted from field <code>F</code> with the guarantee that <code>condition</code> will not be violated, then the <code>ESCROW</code> call returns true. Otherwise it returns false. The tricky bit is that other in-progress transactions may have incremented and decremented <code>F</code>, and we don&#8217;t know which of these transactions will commit and which will abort.</p>
+<p>For example, imagine we want to issue a <code>ESCROW(a, 10, a &gt;= 0)</code> command where <code>a = 50</code> and where there are outstanding transactions with the following increments and decrements: <code>+30</code>, <code>+10</code>, <code>-15</code>, <code>-10</code> and <code>-20</code>. If all of these increments and decrements commit, then we&#8217;re safe to subtract <code>10</code> from <code>a</code>. However, if all the increments abort and all the decrements commit, then we cannot subtract <code>10</code> from <code>a</code> while preserving our condition.</p>
+<h2 id="internal-design-for-the-escrow-method">Internal Design for the Escrow Method</h2>
+<p>To implement escrow transactions, we store a <strong>logical field</strong> record with each field in our database. The logical field contains four things:</p>
+<ul>
+<li><code>inf</code>: the lowest possible value the field can take on given that some in-progress transactions abort and some commit</li>
+<li><code>val</code>: the value the field can take on given that all transactions commit.</li>
+<li><code>sup</code>: the highest possible value the field can take on given that some in-progress transactions abort and some commit.</li>
+<li><code>timestamp</code>: a unique monotonically increasing timestamp.</li>
+</ul>
+<p>In addition, whenever a transaction issues an escrow request, it appends an <strong>escrow journal entry</strong> to the logical field and updates the <code>INF</code>, <code>VAL</code>, <code>SUP</code>, and <code>TIMESTAMP</code> fields accordingly. The journal entry includes:</p>
+<ul>
+<li>the <strong>transaction id</strong>,</li>
+<li>the <strong>pool</strong> (an unimportant detail),</li>
+<li>the <strong>lower bound</strong> on the condition (e.g. <code>x &gt;= 10</code> has lower bound 10; <code>x &lt;= 10</code> has lower bound -infty),</li>
+<li>the <strong>upper bound</strong> on the condition (e.g. <code>x &gt;= 10</code> has upper bound infty; <code>x &lt;= 10</code> has upper bound 10),</li>
+<li>the <strong>amount escrowed</strong>, and</li>
+<li>the <strong>amount used</strong> (an unimportant detail).</li>
+</ul>
+<p>An escrow journal can be successfully appended only if performing the increment or decrement satisfies the condition and all the conditions in existing journal entries. This is best explained with the example below.</p>
+<p>When a transaction commits or aborts, its journal entry is removed and the values of <code>INF</code>, <code>VAL</code>, <code>SUP</code>, and <code>TIMESTAMP</code> are updated accordingly.</p>
+<h2 id="an-example">An Example</h2>
+Consider a field <code>A</code> that is initially equal to <code>100</code>. We have the following logical field:
+<center id="logical_field_0">
+</center>
+Next, transaction 1 makes a <code>ESCROW(A, 50, A &gt;= 0)</code> request. The request is granted, and we get the following logical field:
+<center id="logical_field_1">
+</center>
+<p>Next, transaction 2 makes a <code>ESCROW(A, 50, A &gt;= 20)</code> request. The request is denied because decrementing <code>50</code> would take <code>INF</code> below <code>20</code>.</p>
+Next, transaction 2 makes a <code>ESCROW(A, 20, A &gt;= 30)</code> request. The request is granted, and we get the following logical field:
+<center id="logical_field_2">
+</center>
+<p>Next, transaction 1 makes a <code>ESCROW(A, 20, A &gt;= 0)</code> request. The request is denied because decrementing <code>20</code> from <code>A</code> would violated transaction 2&#8217;s journal entry.</p>
+Next, transaction 3 makes a <code>ESCROW(A, -30, A &lt;= 200)</code> request. The request is granted, and we get the following logical field:
+<center id="logical_field_3">
+</center>
+Then, transaction 1 commits:
+<center id="logical_field_4">
+</center>
+Transaction 2 commits:
+<center id="logical_field_5">
+</center>
+Transaction 3 commits:
+<center id="logical_field_6">
+</center>
+<h2 id="utility-and-benefits-of-escrow-transactions">Utility and Benefits of Escrow Transactions</h2>
+<p>Escrow transactions allow increment/decrement transactions to run with higher degrees of concurrency. This is particularly important if the fields being incremented and decremented are hot spots in an application.</p>
+<p>Moreover, escrow transactions are guaranteed to never deadlock since escrow requests are non-blocking. It is possible to have an escrow request wait on other escrow requests, but deadlock detection becomes quite a bit more complicated.</p>
+<h2 id="odds-and-ends">Odds and Ends</h2>
+<p>This paper also discusses how to perform recovery for escrow transactions, but the details are left for future work. It also discusses an API to <code>USE</code> escrowed values, but the paper admits that this feature is not really necessary.</p>
+<script type="text/javascript">
+  function create_element(parent, name, attributes) {
+    var el = document.createElement(name);
+    for (var k in attributes) {
+        if (attributes.hasOwnProperty(k)) {
+          el.setAttribute(k, attributes[k]);
+        }
+    }
+    parent.appendChild(el);
+    return el;
+  }
+
+  function create_text(parent, text) {
+    var el = document.createTextNode(text);
+    parent.appendChild(el);
+    return el;
+  }
+
+  function create_logical_field(field) {
+    var table = document.createElement("table");
+
+    // Header.
+    var header_row = create_element(table, "tr", {});
+    var header_attrs = {class: "infvalsup", colspan: 2}
+    var inf_header = create_element(header_row, "td", header_attrs);
+    create_text(inf_header, "INF");
+    var val_header = create_element(header_row, "td", header_attrs);
+    create_text(val_header, "VAL");
+    var sup_header = create_element(header_row, "td", header_attrs);
+    create_text(sup_header, "SUP");
+
+    // Logical field.
+    var infvalsup_row = create_element(table, "tr", {});
+    var inf = create_element(infvalsup_row, "td", {class: "inf", colspan: 2});
+    create_text(inf, field.inf);
+    var val = create_element(infvalsup_row, "td", {class: "val", colspan: 2});
+    create_text(val, field.val);
+    var sup = create_element(infvalsup_row, "td", {class: "sup", colspan: 2});
+    create_text(sup, field.sup);
+
+    var ts_row = create_element(table, "tr", {});
+    var ts = create_element(ts_row, "td", {class: "timestamp", colspan: 6})
+    create_text(ts, "TIMESTAMP = " + field.timestamp);
+
+    // Journal entries.
+    for (var i = 0; i < field.journals.length; ++i) {
+      var journal = field.journals[i];
+
+      var row0 = create_element(table, "tr", {});
+      var txn = create_element(row0, "td", {class: "northwest", colspan: 3});
+      create_text(txn, "txn #" + journal.txn);
+      var pool = create_element(row0, "td", {class: "northeast", colspan: 3});
+      create_text(pool, "pool = " + journal.pool);
+
+      var row1 = create_element(table, "tr", {});
+      var lo = create_element(row1, "td", {class: "west", colspan: 3});
+      create_text(lo, "low = " + journal.lo);
+      var hi = create_element(row1, "td", {class: "east", colspan: 3});
+      create_text(hi, "high = " + journal.hi);
+
+      var row2 = create_element(table, "tr", {});
+      var e = create_element(row2, "td", {class: "southwest", colspan: 3});
+      create_text(e, "escrowed = " + journal.e);
+      var u = create_element(row2, "td", {class: "southeast", colspan: 3});
+      create_text(u, "used = " + journal.u);
+    }
+
+    return table;
+  }
+
+  function draw_logical_field(id, field) {
+    var el = document.getElementById(id);
+    el.appendChild(create_logical_field(field));
+  }
+
+  var f = {
+    inf: 100,
+    val: 100,
+    sup: 100,
+    timestamp: 0,
+    journals: [],
+  }
+  draw_logical_field("logical_field_0", f);
+
+  f.inf = 50;
+  f.val = 50;
+  f.timestamp = 1;
+  f.journals.push({txn: 1, pool: "p", lo: 0, hi: "infty", e: 50, u: 50});
+  draw_logical_field("logical_field_1", f);
+
+  f.inf = 30;
+  f.val = 30;
+  f.timestamp = 2;
+  f.journals.push({txn: 2, pool: "p", lo: 30, hi: "infty", e: 20, u: 20});
+  draw_logical_field("logical_field_2", f);
+
+  f.val = 60;
+  f.sup = 130;
+  f.timestamp = 3;
+  f.journals.push({txn: 3, pool: "n", lo: "-infty", hi: 200, e: -30, u: -30});
+  draw_logical_field("logical_field_3", f);
+
+  f.sup = 80;
+  f.timestamp = 4;
+  f.journals.shift()
+  draw_logical_field("logical_field_4", f);
+
+  f.inf = 50;
+  f.val = 80;
+  f.timestamp = 5;
+  f.journals.shift()
+  draw_logical_field("logical_field_5", f);
+
+  f.inf = 80;
+  f.sup = 80;
+  f.timestamp = 5;
+  f.journals.shift()
+  draw_logical_field("logical_field_6", f);
+</script>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>
