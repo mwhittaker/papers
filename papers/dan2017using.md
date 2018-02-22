@@ -1,4 +1,8 @@
 # [On Using Time Without Clocks via Zigzag Causality (2017)](https://scholar.google.com/scholar?cluster=11713178453108585079)
+__tl;dr__ If we have bounds on message delay but no local clocks, we can use
+zigzag communication and a bunch of inequalities to guarantee that certain
+events take place before or after each other with a given duration $x$. These
+zigzag communications are both sufficient and necessary.
 
 There are a couple different ways to model communication in a distributed
 system. One one extreme is the __asynchronous model__ where we assume that
