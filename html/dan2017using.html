@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="on-using-time-without-clocks-via-zigzag-causality-2017"><a href="https://scholar.google.com/scholar?cluster=11713178453108585079">On Using Time Without Clocks via Zigzag Causality (2017)</a></h1>
+<p>There are a couple different ways to model communication in a distributed system. One one extreme is the <strong>asynchronous model</strong> where we assume that messages can be delayed arbitrarily. On the other extreme is the <strong>synchronous model</strong> where we assume that all processors in the distributed system execute in lockstep. This paper introduces a new communication model, the <strong>bounded communication model without clocks</strong>, that sits between the two extremes. The authors then describe necessary and sufficient communication patterns for ensuring that two events take place at least a duration $x$ apart.</p>
+<h2 id="overview">Overview</h2>
+<p>This paper introduced the <strong>bounded communication model without clocks</strong>, also dubbed the clockless model. In this model, every channel between a pair of processors has an upper and lower bound on the time it takes to send a message over the channel. That&#8217;s convenient. Also, processors do <em>not</em> have a local clock which means they cannot wait for any amount of time. That&#8217;s inconvenient.</p>
+<p>Now assume that a process $A$ is going to perform an event $a$. Process $B$ wants to perform an event $b$, but only <em>after</em> $A$ performs $a$. How can we guarantee that $b$ takes place after $a$?</p>
+<p>One way to guarantee it is to have $A$ perform $a$ and then send a message to $B$. Upon receiving this message, $B$ performs $b$. This works in the clockless model (and in the asynchronous model). Are there any other situations in which we can guarantee that $B$ performs $b$ after $A$ performs $a$?</p>
+<p>Yes! Assume a process $C$ sends a message to both $A$ and $B$. Upon receiving this message, $A$ performs $a$. Upon receiving this message, $B$ performs $b$. If the upper bound on the link $CA$ is less than the lower bound on the link $CB$, then $b$ is guaranteed to happen after $a$. This is illustrated below:</p>
+<p><img src="../images/dan2017using_fork.png" alt="fork" style="width:100%;"/></p>
+<p>Also note that the scenario in which $A$ sends a message to $B$ is really just a special case of the image above in which $A = C$.</p>
+<p>Okay, but are there any other situations? Yes. The image below shows that we can have a zigzag like communication. If certain inequalities between upper and lower bounds are met, then we can guarantee that $b$ happens after $a$ (see paper for details).</p>
+<p><img src="../images/dan2017using_zigzag.png" alt="zigzag" style="width:100%;"/></p>
+<p>Okay okay, but are there any other situations? No! This paper shows the only way to guarantee that $b$ follows $a$ by at least a duration $x$ (or $b$ precedes $a$ by at least a duration $x$) is for there to be a zigzag communication like the one pictured above. That is, zigzag communication is both sufficient and necessary.</p>
+<h2 id="bounded-communication-model">Bounded Communication Model</h2>
+<p>We formalize the clockless model as follows. We represent a network as a graph $(\textsf{Procs}, \textsf{Chans})$ where $\textsf{Procs} = \set{1, \ldots, n}$ consists of $n$ processors. We have functions $L, U: \textsf{Chans} \to \nats^+$ that give an upper and lower bound for each channel.</p>
+<p>A <strong>global state</strong> $g = (l_e, l_1, \ldots, l_n)$ consists of a state $l_e$ for the environment (e.g.&#160;message buffers and whatnot) and local states $l_i$ for each of the processors. We assume that local state $l_i$ encode every message received, every action taken, and every message sent by processor $i$.</p>
+<p>A <strong>run</strong> $r$ is an infinite sequence of global states where transitions between global states occur from processors receiving a message, performing an action, or sending a message. Notably, processors <em>cannot</em> spontaneously execute an action after some desired amount of time (i.e.&#160;no clocks); transitions only happen because of message delivery.</p>
+<p>A <strong>basic node</strong> $\sigma = (i, l)$ is a pair of a processor and a local state. In a given run $r$, $l$ may only appear in one contiguous region for $i$. We let $\textsf{time}_r(\sigma)$ be the first time at which $l$ appears for $i$. We use basic nodes as a proxy for points in time in the clockless model.</p>
+<p>The paper also defines <strong>general nodes</strong> $\theta$ which are very important for the rest of the paper. See paper for details.</p>
+<h2 id="using-zigzag-causality-for-coordination">Using Zigzag Causality for Coordination</h2>
+<p>The paper shows that zigzag communication is both necessary and sufficient for a system to guarantee that an event $b$ occurs before or after an event $a$ by a specified duration $x$. Thus, in order for a processor $B$ to decide whether or not it can safely execute $b$, it must know whether or not there is a zigzag communication. The paper defines when a process knows about a zigzag communication. In short, the heads of the zigzags must causally precede the point at which $B$ decides whether to execute $b$.</p>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>
