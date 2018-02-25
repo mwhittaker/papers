@@ -53,8 +53,11 @@ body {
   color: gray;
 }
 
-a:link, a:visited {color: #222; text-decoration: none; }
-a:active, a:hover {color: #444; text-decoration: none; }
+a { text-decoration: none; }
+h1 a:link, h1 a:visited { color: #222; }
+h1 a:active, h1 a:hover { color: #444; }
+#paperlist a:link, #paperlist a:visited { color: #222; }
+#paperlist a:active, #paperlist a:hover { color: #444; }
 
 h1 {
   line-height: 1;
