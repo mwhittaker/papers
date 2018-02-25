@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Papers</title>
+  <link href='../css/style.css' rel='stylesheet'>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div id=header>
+    <a href="../">Papers</a>
+  </div>
+  <div id="container">
+<h1 id="all-about-eve-execute-verify-replication-for-multi-core-servers-2012"><a href="https://scholar.google.com/scholar?cluster=5784325423715415895">All about Eve: Execute-Verify Replication for Multi-Core Servers (2012)</a></h1>
+<p><strong>tl;dr</strong> If we want to implement state-machine replication in which each replica runs batches of requests with multiple threads, we can <em>execute</em> the requests first and then <em>verify</em> that the results are the same. If they are, good. If not, rollback and run sequentially. Also check out the <a href="https://www.usenix.org/node/170851">video presentation of this paper</a>; it&#8217;s very good!</p>
+<h2 id="how-do-we-build-fault-tolerant-systems">How do we build fault tolerant systems?</h2>
+<p>Typically, we use state machine replication (SMR). We model our system as a deterministic state machine and then uses a consensus algorithm like Paxos or Raft or Viewstamped Replication to agree on a totally ordered log of commands that the replicas then execute <em>serially</em>. Since the replicas start off in the same state, execute the same commands in the same order, and are all deterministic, the replicas never diverge. This paper refers to this as the <strong>agree-execute</strong>: replicas first <em>agree</em> on the order of inputs and then <em>execute</em> them.</p>
+<h2 id="execute-everything-serially-why-cant-replicas-run-multithreaded">Execute everything serially!? Why can&#8217;t replicas run multithreaded?</h2>
+<p>In SMR, replicas run commands serially. Imagine instead that replicas were to execute a batch of commands at a time, executing the batch with multiple threads. The execution of these threads can be non-deterministic. For example, imagine a database that is concurrently executing two transactions that write to the same object. The order in which these two writes are serialized is non-deterministic. Now that our state-machines are nondeterministic, they can diverge.</p>
+<h2 id="how-can-we-build-fault-tolerant-multithreaded-systems">How can we build fault-tolerant multithreaded systems?</h2>
+<p>This paper proposes Eve as a way to implement fault-tolerant multithreaded systems. With Eve, client requests are sent to a master node which clusters requests into batches and sends these batches to all the other replicas. Replicas execute requests a batch at a time using (potentially) multiple threads. Then, they produce a token which summarizes their state and the result of every request (it&#8217;s pretty much a hash of state and responses). The replicas send their tokens to a verification service which checks to see that all the tokens are the same. If they are, then the replicas can move on to execute the next batch. If they aren&#8217;t, then the replicas have to roll back their state, and re-execute the operations serially to make sure that they don&#8217;t diverge. In this paradigm, we first <em>execute</em> requests and then <em>verify</em> that replicas haven&#8217;t diverged.</p>
+<h2 id="if-we-execute-batches-of-requests-arent-there-bound-to-be-conflicts">If we execute batches of requests, aren&#8217;t there bound to be conflicts?</h2>
+<p>If a batch of requests has any non-commutative operations and any two replicas execute them in different orders, then we&#8217;re destined to have divergence. Surely, this must be the common case, right? Probably. Eve addresses this issue with <strong>mixers</strong>. A mixer is a bit of code running on each replica that divides each batch of requests into a sequence of smaller batches called <strong>parallelBatches</strong>. A mixer only puts operations into the same parallelBatch, if it thinks the operations commute. The, replicas execute operations one parallelBatch at a time. The mixer doesn&#8217;t have to be an oracle. If it gets things wrong, the verify portion of Eve will still detect and correct the divergence.</p>
+<h2 id="ok-so-how-does-verification-work-again">Ok, so how does verification work again?</h2>
+<p>The way that verification is implemented depends on our assumptions about the system. This paper presents two different verification implementations for two very different set of assumptions. First, it implements a verifier assuming Byzantine faults and an asynchronous network. The implementation is similar to PBFT, and admittedly I don&#8217;t fully understand the details here. One important thing to note, though, is that not every replica&#8217;s token has to agree. We only need some fraction of the tokens to agree. The replicas who have diverged will be fixed later. Second, it implements a verifier for a synchronous primary/backup system. The primary forms a batch and sends it to the backup. Both execute the batch, and the backup sends its token tot he primary. The primary verifies. If the primary crashes, the backup becomes the primary and acts without consulting the failed primary (which is safe to do assuming we have a synchronous network; otherwise, both could think that they are the primary).</p>
+<h2 id="if-not-every-replica-agrees-how-do-we-fix-the-divergent-replicas">If not every replica agrees, how do we fix the divergent replicas?</h2>
+<p>Eve doesn&#8217;t require <em>every</em> replica to agree. Some can diverge. How do we make sure that these replicas eventually become up-to-date? We can have nodes gossip with one another and use Merkle trees to know which state they have to exchange with one another. This paper describes that in order for this to work, all replicas have to agree to the same leaf order of their Merkle trees despite the fact that they execute nondeterministically. To do so, they implement a deterministic Merkle tree which takes advantage of the fact that Eve is implemented in Java. It scans the leaves of the Merkle tree, adding new objects to the tree. See paper for details.</p>
+<h2 id="are-there-any-other-advantages-to-eve-besides-being-faster">Are there any other advantages to Eve besides being faster?</h2>
+<p>Yes! Eve can help detect and mitigate concurrency bugs. Imagine that two replicas execute the same batch of requests and diverge only because one had a concurrency bug. Eve will detect this divergence and force the nodes to re-execute serially, mitigating the bug. The authors found a real concurrency bug in the H2 database using this approach.</p>
+<h2 id="what-are-the-alternatives-to-eve">What are the alternatives to Eve?</h2>
+<p>There are a handful:</p>
+<ol type="1">
+<li><strong>Deterministic Multithreading.</strong> Deterministic multithreading is a low-level mechanism that ensures that different nodes executing the same multithreaded code will execute the exact same sequence of instructions. It eliminates all the non-deterministic aspects of multithreading. We could run each replica with deterministic multithreading to ensure replicas don&#8217;t diverge. There are two drawbacks. First, deterministic multithreading comes with a lot of overhead. Second, not all operations are sent to all replicas. For example, some systems don&#8217;t send reads to all replicas. If different replicas run different sets of operations, the deterministic multithreading can get out of sync.</li>
+<li><strong>Deterministic Locking.</strong> Some systems like <a href="https://scholar.google.com/scholar?cluster=11098336506858442351">Calvin</a> and <a href="https://scholar.google.com/scholar?cluster=18427232211525620689">this paper</a> implement deterministic locking. Deterministic locking, unlike deterministic multithreading, is not a low-level thing. It&#8217;s a higher level modification of a lock manager which ensures that locks are granted to transactions in a pre-agreed upon order. Thus, batches of requests could be run with multiple threads using deterministic locking and ensure convergence. The drawback of this approach is that it&#8217;s not general.</li>
+<li><strong>Semi-active Replication.</strong> With semi-active replication, a primary executes a batch of operations nondeterministically and records all nondeterministic choices that it makes. Then, it sends the operations and choices to backups which execute the operations according to the primary. This approach cannot handle Byzantine failures.</li>
+<li><strong>Remus-style Primary/Backup.</strong> Remus is a system which implements something similar to semi-active replication. The primary executes batches of requests nondeterministically, and then it sends over entire pages of memory to the backup which it then uses. Remus cannot handle Byzantine failures and comes with high overhead. Otherwise, it is very general.</li>
+<li><strong>Multiple State Machines.</strong> As Robert Escriva mentions in his question after the Eve talk at Usenix ATC, if we want linearizability, we can shard our objects and run one state machine for each shard. This incurs some higher overheads and is not (I think?) general to serializability.</li>
+</ol>
+<h2 id="questions">Questions</h2>
+<ul>
+<li>If a state machine wants to use an external system (e.g.&#160;H2), how do we do rollback?</li>
+<li>Copy-on-write data structures and fine-grained rollback make rollback faster, but like shadow paging, can&#8217;t it make execution slower because of things like worse locality?</li>
+<li>Do we have to have a master node batch requests? Or can a client send requests directly to the replicas?</li>
+</ul>
+  </div>
+
+  <script type="text/javascript" src="../js/mathjax_config.js"></script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-90310997-2', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>
