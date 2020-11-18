@@ -71,13 +71,14 @@ implemented.
 
 ## Comparison to Other Correctness Conditions
 Sequential consistency is equivalent to linearizability without condition L2.
-Serializability is analogous to sequential consistency with transactions, and
-strict serializability is analogous to linearizability with transactions.
-Sequential consistency, serializability, and strict serializability do not have
-the same locality and non-blocking properties as linearizability. Moreover,
+Serializability is analogous to sequential consistency with transactions (see
+https://github.com/mwhittaker/papers/issues/5 for more details), and strict
+serializability is analogous to linearizability with transactions.  Sequential
+consistency, serializability, and strict serializability do not have the same
+locality and non-blocking properties as linearizability. Moreover,
 serializability and linearizability are for different domains. Serializability
 works well for databases because application developers should be able to
-easily express complex transactions. Linearizability is better for
+easily express complex transactions.  Linearizability is better for
 infrastructure in which the developer is willing to spend considerable effort
 to maximize concurrency.
 
